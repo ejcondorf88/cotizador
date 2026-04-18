@@ -1,0 +1,154 @@
+# ASDD Configuration for OpenCode
+# Schema: Spec-Driven Development (SDD) adapted for Agent Spec-Driven Development
+schema: spec-driven
+version: "1.0"
+framework: ASDD
+
+context: |
+  Framework: ASDD (Agent Spec-Driven Development)
+  
+  Flujo de trabajo:
+  Requerimiento → Spec → [Backend ∥ Frontend ∥ DB] → [Tests BE ∥ Tests FE] → QA → Docs
+  
+  Regla de Oro:
+  Ningún agente escribe código sin que la spec tenga status: APPROVED
+  
+  Ciclo de vida de specs:
+  DRAFT → APPROVED → IN_PROGRESS → IMPLEMENTED → DEPRECATED
+
+persistence:
+  mode: openspec
+  specs_path: .github/specs/
+  requirements_path: .github/requirements/
+
+workflow:
+  phases:
+    - name: spec
+      skill: generate-spec
+      requires_approval: true
+      approval_field: status
+      approval_value: APPROVED
+      
+    - name: backend
+      skill: implement-backend
+      depends_on: spec
+      
+    - name: frontend
+      skill: implement-frontend
+      depends_on: spec
+      
+    - name: database
+      skill: database-agent
+      depends_on: spec
+      optional: true  # Only if spec includes DB changes
+      
+    - name: testing
+      skill: unit-testing
+      depends_on: [backend, frontend]
+      
+    - name: qa
+      skills: 
+        - gherkin-case-generator
+        - risk-identifier
+      depends_on: testing
+      optional_skills:
+        - performance-analyzer
+        - automation-flow-proposer
+      
+    - name: docs
+      skill: documentation-agent
+      depends_on: qa
+      optional: true
+
+hooks:
+  pre_edit:
+    blocked_files:
+      - ".env"
+      - "firebase_credentials.json"
+      - "*.pem"
+      - "*.key"
+      - ".env.*"
+      - "secrets/**"
+    
+  post_spec:
+    validate_frontmatter: true
+    required_fields:
+      - id
+      - status
+      - feature
+      - created
+      - author
+    
+  blocked_commands:
+    - "git push *"
+    - "git reset --hard *"
+    - "rm -rf *"
+
+agents:
+  orchestrator:
+    description: Orquestador ASDD principal. Coordina el flujo paralelo Spec → Backend/Frontend/DB → Tests → QA.
+    skills: [asdd-orchestrate]
+    
+  spec-generator:
+    description: Genera especificaciones técnicas ASDD antes de cualquier implementación.
+    skills: [generate-spec]
+    
+  backend-developer:
+    description: Implementa funcionalidades en el backend siguiendo specs aprobadas.
+    skills: [implement-backend]
+    
+  frontend-developer:
+    description: Implementa funcionalidades en el frontend siguiendo specs aprobadas.
+    skills: [implement-frontend]
+    
+  database-agent:
+    description: Diseña modelos, migraciones y seeders cuando la spec incluye cambios de DB.
+    skills: []
+    
+  test-engineer-backend:
+    description: Genera tests unitarios para el backend. Trabaja en paralelo con test-engineer-frontend.
+    skills: [unit-testing]
+    
+  test-engineer-frontend:
+    description: Genera tests unitarios para el frontend. Trabaja en paralelo con test-engineer-backend.
+    skills: [unit-testing]
+    
+  qa-agent:
+    description: Genera estrategia QA completa (Gherkin, riesgos, performance).
+    skills: 
+      - gherkin-case-generator
+      - risk-identifier
+      - performance-analyzer
+      - automation-flow-proposer
+    
+  documentation-agent:
+    description: Genera documentación técnica del proyecto.
+    skills: []
+
+skills:
+  asdd-orchestrate:
+    trigger: /asdd-orchestrate
+    
+  generate-spec:
+    trigger: /generate-spec
+    
+  implement-backend:
+    trigger: /implement-backend
+    
+  implement-frontend:
+    trigger: /implement-frontend
+    
+  unit-testing:
+    trigger: /unit-testing
+    
+  gherkin-case-generator:
+    trigger: /gherkin-case-generator
+    
+  risk-identifier:
+    trigger: /risk-identifier
+    
+  automation-flow-proposer:
+    trigger: /automation-flow-proposer
+    
+  performance-analyzer:
+    trigger: /performance-analyzer

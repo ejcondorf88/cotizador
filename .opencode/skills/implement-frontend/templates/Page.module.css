@@ -1,0 +1,145 @@
+/* FeaturePage.module.css - Estilos CSS Modules */
+/* Cada clase es scoped al componente, no hay conflictos globales */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+  margin: 0;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  color: var(--text-secondary, #666);
+  transition: all 0.2s ease;
+}
+
+.backButton:hover {
+  background: var(--hover-bg, #f5f5f5);
+  color: var(--text-primary, #1a1a1a);
+}
+
+.createButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.createButton:hover {
+  background: var(--primary-hover, #0056b3);
+}
+
+.main {
+  flex: 1;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  font-size: 1.2rem;
+  color: var(--text-secondary, #666);
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1rem;
+  text-align: center;
+}
+
+.error p {
+  color: var(--error-color, #dc3545);
+  margin: 0;
+}
+
+.error button {
+  padding: 0.5rem 1rem;
+  background: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1rem;
+  text-align: center;
+  color: var(--text-secondary, #666);
+}
+
+.emptyState button {
+  padding: 0.75rem 1.5rem;
+  background: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: var(--bg-dark, #1a1a1a);
+  }
+
+  .title {
+    color: var(--text-primary-dark, #ffffff);
+  }
+
+  .backButton {
+    border-color: var(--border-dark, #333);
+    color: var(--text-secondary-dark, #aaa);
+  }
+
+  .backButton:hover {
+    background: var(--hover-bg-dark, #2a2a2a);
+    color: var(--text-primary-dark, #ffffff);
+  }
+}
