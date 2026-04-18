@@ -1,6 +1,6 @@
 ---
 id: SPEC-003
-status: DRAFT
+status: APPROVED
 feature: cotizador-backend
 created: 2025-01-18
 updated: 2025-01-18
