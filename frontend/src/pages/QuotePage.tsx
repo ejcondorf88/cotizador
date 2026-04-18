@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { Button } from 'primereact/button';
@@ -24,9 +24,11 @@ const statusColors: Record<QuoteStatus, string> = {
 
 export function QuotePage() {
   const { mutate: createQuote, data: quote, isPending: loading, error, isSuccess, reset } = useQuoteMutation();
+  const hasRequested = useRef(false);
 
   useEffect(() => {
-    if (!quote && !loading && !error) {
+    if (!hasRequested.current && !quote && !loading && !error) {
+      hasRequested.current = true;
       createQuote();
     }
   }, []);
