@@ -1,6 +1,6 @@
 ---
 id: SPEC-002
-status: DRAFT
+status: APPROVED
 feature: segurax-homepage
 created: 2025-01-17
 updated: 2025-01-17
