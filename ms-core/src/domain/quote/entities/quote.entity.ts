@@ -29,6 +29,7 @@ export class Quote {
     public readonly createdAt: Date,
     public updatedAt: Date,
     public details?: QuoteDetails,
+    public propertyCount?: number,
   ) {}
 
   static create(folioNumber: string): Quote {
@@ -48,6 +49,11 @@ export class Quote {
 
   changeStatus(newStatus: QuoteStatus): void {
     this.status = newStatus;
+    this.updatedAt = new Date();
+  }
+
+  setPropertyCount(count: number): void {
+    this.propertyCount = count;
     this.updatedAt = new Date();
   }
 }

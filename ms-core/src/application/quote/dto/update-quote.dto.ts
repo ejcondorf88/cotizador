@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MaxLength, Matches, IsIn, IsDateString } from 'class-validator';
+import { IsOptional, IsString, MaxLength, Matches, IsIn, IsDateString, IsInt, Min, Max } from 'class-validator';
 import { QuoteStatus } from '../../../domain/quote/enums/quote-status.enum';
 
 export class UpdateQuoteDto {
@@ -68,4 +68,11 @@ export class UpdateQuoteDto {
   @IsOptional()
   @IsIn(['DRAFT', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'])
   status?: QuoteStatus;
+
+  // Property count
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  propertyCount?: number;
 }

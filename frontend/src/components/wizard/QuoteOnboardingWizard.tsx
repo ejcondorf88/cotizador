@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
@@ -34,6 +35,7 @@ const steps = [
 ];
 
 export function QuoteOnboardingWizard({ quote, visible, onHide, onSuccess }: QuoteOnboardingWizardProps) {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<WizardFormData>(initialWizardFormData);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -178,8 +180,16 @@ export function QuoteOnboardingWizard({ quote, visible, onHide, onSuccess }: Quo
       setFormData(initialWizardFormData);
       setCurrentStep(1);
 
-      onSuccess();
+      // Hide the wizard dialog
       onHide();
+
+      // Navigate to properties page with state indicating wizard completion
+      navigate(`/quote/${quote.id}/properties`, {
+        state: { fromWizard: true },
+      });
+
+      // Call onSuccess callback
+      onSuccess();
     } catch (error) {
       toast.current?.show({
         severity: 'error',

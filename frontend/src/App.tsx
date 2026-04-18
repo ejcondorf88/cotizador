@@ -3,6 +3,7 @@ import { PrimeReactProvider } from 'primereact/api';
 import { HomePage } from './pages/HomePage';
 import { QuotePage } from './pages/QuotePage';
 import { QuotesListPage } from './pages/QuotesListPage';
+import { InsuredPropertiesPage } from './pages/InsuredPropertiesPage';
 
 // PrimeReact styles
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -20,6 +21,7 @@ function App() {
           <Route path="/cotizador" element={<QuotePage />} />
           <Route path="/quotes" element={<QuotesListPage />} />
           <Route path="/cotizaciones" element={<QuotesListPage />} />
+          <Route path="/quote/:id/properties" element={<InsuredPropertiesPage />} />
         </Routes>
       </BrowserRouter>
     </PrimeReactProvider>

@@ -1,6 +1,6 @@
 ---
 id: SPEC-010
-status: DRAFT
+status: APPROVED
 feature: add-insured-properties-flow
 created: 2026-04-18
 updated: 2026-04-18

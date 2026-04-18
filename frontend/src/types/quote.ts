@@ -44,6 +44,7 @@ export interface Quote {
   createdAt: string;
   updatedAt: string;
   details?: QuoteDetail;
+  propertyCount?: number;
 }
 
 export interface CreateQuoteRequest {
@@ -79,6 +80,9 @@ export interface UpdateQuoteRequest {
 
   // Cambio de estado
   status?: QuoteStatus;
+
+  // Paso 4: Inmuebles
+  propertyCount?: number;
 }
 
 // Catalog types

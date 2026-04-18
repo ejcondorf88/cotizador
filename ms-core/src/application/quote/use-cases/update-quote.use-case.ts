@@ -19,6 +19,7 @@ interface UpdateQuoteInput {
   currency?: 'MXN' | 'USD';
   paymentType?: 'CONTADO' | 'MENSUAL' | 'TRIMESTRAL' | 'SEMESTRAL' | 'ANUAL';
   status?: QuoteStatus;
+  propertyCount?: number;
 }
 
 @Injectable()
@@ -77,11 +78,12 @@ export class UpdateQuoteUseCase {
       if (input.currency !== undefined) details.currency = input.currency;
       if (input.paymentType !== undefined) details.paymentType = input.paymentType;
 
-      // Update the quote
-      const updatedQuote = await this.quoteRepo.update(id, {
-        status: input.status,
-        details,
-      });
+    // Update the quote
+    const updatedQuote = await this.quoteRepo.update(id, {
+      status: input.status,
+      details,
+      propertyCount: input.propertyCount,
+    });
 
       const duration = Date.now() - startTime;
       this.logger.info(

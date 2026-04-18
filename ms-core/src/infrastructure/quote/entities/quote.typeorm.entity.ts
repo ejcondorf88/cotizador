@@ -55,4 +55,8 @@ export class QuoteTypeOrmEntity {
 
   @Column({ name: 'payment_type', nullable: true, length: 20 })
   paymentType: string;
+
+  // Inmuebles
+  @Column({ name: 'property_count', nullable: true, type: 'int' })
+  propertyCount: number;
 }
