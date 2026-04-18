@@ -16,4 +16,43 @@ export class QuoteTypeOrmEntity {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  // Asegurado
+  @Column({ name: 'company_name', nullable: true, length: 150 })
+  companyName: string;
+
+  @Column({ name: 'rfc', nullable: true, length: 13 })
+  rfc: string;
+
+  @Column({ name: 'business_line', nullable: true, length: 50 })
+  businessLine: string;
+
+  @Column({ name: 'business_type', nullable: true, length: 50 })
+  businessType: string;
+
+  // Conducción
+  @Column({ name: 'agent_key', nullable: true, length: 20 })
+  agentKey: string;
+
+  @Column({ name: 'agent_name', nullable: true, length: 100 })
+  agentName: string;
+
+  @Column({ name: 'subscriber', nullable: true, length: 100 })
+  subscriber: string;
+
+  @Column({ name: 'office', nullable: true, length: 100 })
+  office: string;
+
+  // Vigencia
+  @Column({ name: 'validity_start', nullable: true, type: 'timestamp' })
+  validityStart: Date;
+
+  @Column({ name: 'validity_end', nullable: true, type: 'timestamp' })
+  validityEnd: Date;
+
+  @Column({ name: 'currency', nullable: true, length: 3, default: 'MXN' })
+  currency: string;
+
+  @Column({ name: 'payment_type', nullable: true, length: 20 })
+  paymentType: string;
 }

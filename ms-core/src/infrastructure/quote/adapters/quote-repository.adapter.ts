@@ -169,4 +169,65 @@ export class QuoteRepositoryAdapter implements QuoteRepositoryPort {
     const match = result.folioNumber.match(/COT-\d{4}-(\d{5})/);
     return match ? parseInt(match[1], 10) : 0;
   }
+
+  async findByStatus(status: string): Promise<Quote[]> {
+    this.logger.debug(
+      'infrastructure',
+      'QuoteRepositoryAdapter',
+      'DB_QUERY',
+      'Finding quotes by status',
+      { status },
+    );
+    const entities = await this.quoteRepo.find({
+      where: { status },
+      order: { createdAt: 'DESC' },
+    });
+    return entities.map(QuoteMapper.toDomain);
+  }
+
+  async update(id: string, data: Partial<Quote>): Promise<Quote> {
+    this.logger.info(
+      'infrastructure',
+      'QuoteRepositoryAdapter',
+      'DB_UPDATE_START',
+      'Updating quote',
+      { quoteId: id },
+    );
+
+    const existing = await this.quoteRepo.findOne({ where: { id } });
+    if (!existing) {
+      throw new Error(`Quote with id ${id} not found`);
+    }
+
+    // Update fields
+    if (data.status) existing.status = data.status;
+    if (data.details) {
+      if (data.details.companyName) existing.companyName = data.details.companyName;
+      if (data.details.rfc) existing.rfc = data.details.rfc;
+      if (data.details.businessLine) existing.businessLine = data.details.businessLine;
+      if (data.details.businessType) existing.businessType = data.details.businessType;
+      if (data.details.agentKey) existing.agentKey = data.details.agentKey;
+      if (data.details.agentName) existing.agentName = data.details.agentName;
+      if (data.details.subscriber) existing.subscriber = data.details.subscriber;
+      if (data.details.office) existing.office = data.details.office;
+      if (data.details.validityStart) existing.validityStart = data.details.validityStart;
+      if (data.details.validityEnd) existing.validityEnd = data.details.validityEnd;
+      if (data.details.currency) existing.currency = data.details.currency;
+      if (data.details.paymentType) existing.paymentType = data.details.paymentType;
+    }
+
+    existing.updatedAt = new Date();
+
+    const saved = await this.quoteRepo.save(existing);
+
+    this.logger.info(
+      'infrastructure',
+      'QuoteRepositoryAdapter',
+      'DB_UPDATE_SUCCESS',
+      'Quote updated successfully',
+      { quoteId: saved.id },
+    );
+
+    return QuoteMapper.toDomain(saved);
+  }
 }
