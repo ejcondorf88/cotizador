@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { PrimeReactProvider } from 'primereact/api';
 import { HomePage } from './pages/HomePage';
 import { QuotePage } from './pages/QuotePage';
+import { QuotesListPage } from './pages/QuotesListPage';
 
 // PrimeReact styles
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -17,6 +18,8 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/quote" element={<QuotePage />} />
           <Route path="/cotizador" element={<QuotePage />} />
+          <Route path="/quotes" element={<QuotesListPage />} />
+          <Route path="/cotizaciones" element={<QuotesListPage />} />
         </Routes>
       </BrowserRouter>
     </PrimeReactProvider>

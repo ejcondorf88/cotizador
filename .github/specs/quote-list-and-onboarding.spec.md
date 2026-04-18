@@ -1,6 +1,6 @@
 ---
 id: SPEC-008
-status: DRAFT
+status: APPROVED
 feature: quote-list-and-onboarding
 created: 2026-04-18
 updated: 2026-04-18
