@@ -1,7 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { QuoteModule } from './presentation/quote/quote.module';
+import { StructuredLogger } from './common/logger/logger.service';
+import { CorrelationIdMiddleware } from './common/logger/correlation-id.middleware';
+import { HttpLoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 @Module({
   imports: [
@@ -26,5 +30,19 @@ import { QuoteModule } from './presentation/quote/quote.module';
     }),
     QuoteModule,
   ],
+  providers: [
+    StructuredLogger,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: HttpLoggingInterceptor,
+    },
+  ],
+  exports: [StructuredLogger],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(CorrelationIdMiddleware)
+      .forRoutes('*');
+  }
+}

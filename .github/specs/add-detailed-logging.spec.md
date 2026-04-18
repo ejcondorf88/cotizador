@@ -1,6 +1,6 @@
 ---
 id: SPEC-007
-status: DRAFT
+status: IMPLEMENTED
 feature: add-detailed-logging
 created: 2025-01-18
 updated: 2025-01-18
