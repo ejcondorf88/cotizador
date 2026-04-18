@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CotizacionModule } from './presentation/cotizacion/cotizacion.module';
+import { QuoteModule } from './presentation/quote/quote.module';
 
 @Module({
   imports: [
@@ -24,7 +24,7 @@ import { CotizacionModule } from './presentation/cotizacion/cotizacion.module';
       }),
       inject: [ConfigService],
     }),
-    CotizacionModule,
+    QuoteModule,
   ],
 })
 export class AppModule {}

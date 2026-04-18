@@ -1,6 +1,6 @@
 ---
 id: SPEC-006
-status: DRAFT
+status: APPROVED
 feature: unify-naming-english
 created: 2025-01-18
 updated: 2025-01-18
