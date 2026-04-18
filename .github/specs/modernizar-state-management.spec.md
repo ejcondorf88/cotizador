@@ -1,6 +1,6 @@
 ---
 id: SPEC-005
-status: DRAFT
+status: APPROVED
 feature: modernizar-state-management
 created: 2025-01-18
 updated: 2025-01-18

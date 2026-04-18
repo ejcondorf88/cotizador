@@ -5,12 +5,13 @@ import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Message } from 'primereact/message';
-import { useCrearCotizacion } from '../hooks/useCrearCotizacion';
+import { useCotizacionMutation } from '../hooks/queries/useCotizacionMutation';
 
 export function CotizadorPage() {
-  const { cotizacion, loading, error, crearCotizacion, reset } = useCrearCotizacion();
+  // TanStack Query maneja todo: loading, error, data
+  const { mutate: crearCotizacion, data: cotizacion, isPending: loading, error, isSuccess, reset } = useCotizacionMutation();
 
-  // Auto-crear cotización al cargar la página
+  // Auto-crear al cargar
   useEffect(() => {
     if (!cotizacion && !loading && !error) {
       crearCotizacion();
@@ -30,7 +31,7 @@ export function CotizadorPage() {
         <div className="max-w-4xl mx-auto px-4">
           <Card className="shadow-lg">
             <div className="text-center py-8">
-              {/* Estado: Loading */}
+              {/* TanStack Query maneja los estados automáticamente */}
               {loading && (
                 <div className="flex flex-col items-center gap-6 py-12">
                   <ProgressSpinner
@@ -48,7 +49,6 @@ export function CotizadorPage() {
                 </div>
               )}
 
-              {/* Estado: Error */}
               {error && (
                 <div className="py-8">
                   <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-100 flex items-center justify-center">
@@ -57,7 +57,7 @@ export function CotizadorPage() {
                   <h2 className="font-heading text-2xl font-bold text-primary mb-4">
                     Error al crear cotización
                   </h2>
-                  <Message severity="error" text={error} className="mb-6" />
+                  <Message severity="error" text={error.message} className="mb-6" />
                   <Button
                     label="Intentar de nuevo"
                     icon="pi pi-refresh"
@@ -68,8 +68,7 @@ export function CotizadorPage() {
                 </div>
               )}
 
-              {/* Estado: Success */}
-              {cotizacion && (
+              {isSuccess && cotizacion && (
                 <div className="py-8">
                   <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
                     <i className="pi pi-check text-4xl text-green-500" />
