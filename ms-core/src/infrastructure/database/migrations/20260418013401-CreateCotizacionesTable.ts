@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreateCotizacionesTable20260418013401 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -43,11 +43,14 @@ export class CreateCotizacionesTable20260418013401 implements MigrationInterface
     );
 
     // Create index on numero_folio for faster lookups
-    await queryRunner.createIndex('cotizaciones', {
-      name: 'IDX_COTIZACIONES_NUMERO_FOLIO',
-      columnNames: ['numero_folio'],
-      isUnique: true,
-    });
+    await queryRunner.createIndex(
+      'cotizaciones',
+      new TableIndex({
+        name: 'IDX_COTIZACIONES_NUMERO_FOLIO',
+        columnNames: ['numero_folio'],
+        isUnique: true,
+      }),
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
