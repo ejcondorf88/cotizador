@@ -1,6 +1,6 @@
 ---
 id: SPEC-013
-status: DRAFT
+status: IMPLEMENTED
 feature: docker-containerization
 created: 2026-04-19
 updated: 2026-04-19

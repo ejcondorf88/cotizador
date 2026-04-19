@@ -1,0 +1,19 @@
+# ==========================================
+# Development Dockerfile (Watch Mode)
+# ==========================================
+FROM node:20-alpine
+
+# Instalar herramientas de desarrollo
+RUN apk add --no-cache git
+
+# Directorio de trabajo
+WORKDIR /app
+
+# Cambiar a usuario no-root (node ya existe)
+USER node
+
+# Exponer puerto
+EXPOSE 3000
+
+# Comando por defecto (se sobrescribe en docker-compose)
+CMD ["npm", "run", "start:dev"]

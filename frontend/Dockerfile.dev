@@ -1,0 +1,20 @@
+# ==========================================
+# Development Dockerfile (Hot Reload)
+# ==========================================
+FROM node:20-alpine
+
+# Crear usuario no-root
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -u 1001 -S appuser -G appgroup
+
+# Directorio de trabajo
+WORKDIR /app
+
+# Cambiar a usuario no-root
+USER appuser
+
+# Exponer puerto de Vite
+EXPOSE 5173
+
+# Comando por defecto (se sobrescribe en docker-compose)
+CMD ["npm", "run", "dev", "--", "--host"]
