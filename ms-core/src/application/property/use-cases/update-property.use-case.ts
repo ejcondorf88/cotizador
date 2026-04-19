@@ -7,15 +7,26 @@ import { StructuredLogger } from '../../../common/logger/logger.service';
 
 interface UpdatePropertyInput {
   id: string;
+  // Ubicación
   name?: string;
   street?: string;
   neighborhood?: string;
   city?: string;
   state?: string;
   zipCode?: string;
-  insuredValue?: number;
+  // Construcción
   constructionType?: ConstructionType;
-  usage?: PropertyUsage;
+  constructionYear?: number;
+  levels?: number;
+  propertyUsage?: PropertyUsage;
+  specificActivity?: string;
+  activityCode?: string;
+  // Garantías
+  coverageBuilding?: number;
+  coverageContents?: number;
+  coverageElectronic?: number;
+  coverageMachinery?: number;
+  coverageStock?: number;
 }
 
 @Injectable()
@@ -56,21 +67,41 @@ export class UpdatePropertyUseCase {
         throw new BadRequestException('Zip code must be exactly 5 digits');
       }
 
-      // Validate insured value if provided
-      if (input.insuredValue !== undefined) {
-        if (input.insuredValue < 0) {
-          throw new BadRequestException('Insured value must be positive');
+      // Validate construction year
+      if (input.constructionYear !== undefined) {
+        const currentYear = new Date().getFullYear();
+        if (input.constructionYear < 1900 || input.constructionYear > currentYear) {
+          throw new BadRequestException(`Construction year must be between 1900 and ${currentYear}`);
         }
-        if (input.insuredValue > 100000000) {
-          throw new BadRequestException('Maximum insured value is $100,000,000 MXN');
+      }
+
+      // Validate coverage values
+      const coverages = [
+        { value: input.coverageBuilding, max: 100000000, name: 'Building' },
+        { value: input.coverageContents, max: 50000000, name: 'Contents' },
+        { value: input.coverageElectronic, max: 20000000, name: 'Electronic equipment' },
+        { value: input.coverageMachinery, max: 30000000, name: 'Machinery' },
+        { value: input.coverageStock, max: 20000000, name: 'Stock' },
+      ];
+
+      for (const coverage of coverages) {
+        if (coverage.value !== undefined) {
+          if (coverage.value < 0) {
+            throw new BadRequestException(`${coverage.name} coverage must be positive`);
+          }
+          if (coverage.value > coverage.max) {
+            throw new BadRequestException(`Maximum ${coverage.name.toLowerCase()} coverage is $${coverage.max.toLocaleString()} MXN`);
+          }
         }
       }
 
       // Build update data
       const updateData: Partial<Property> = {};
-      if (input.name !== undefined) updateData.name = input.name;
-      if (input.street !== undefined || input.neighborhood !== undefined ||
-          input.city !== undefined || input.state !== undefined || input.zipCode !== undefined) {
+      
+      // Ubicación
+      if (input.name !== undefined || input.street !== undefined || 
+          input.neighborhood !== undefined || input.city !== undefined || 
+          input.state !== undefined || input.zipCode !== undefined) {
         updateData.address = {
           street: input.street ?? existing.address.street,
           neighborhood: input.neighborhood ?? existing.address.neighborhood,
@@ -79,9 +110,33 @@ export class UpdatePropertyUseCase {
           zipCode: input.zipCode ?? existing.address.zipCode,
         };
       }
-      if (input.insuredValue !== undefined) updateData.insuredValue = input.insuredValue;
-      if (input.constructionType !== undefined) updateData.constructionType = input.constructionType;
-      if (input.usage !== undefined) updateData.usage = input.usage;
+
+      // Construcción
+      if (input.constructionType !== undefined || input.constructionYear !== undefined ||
+          input.levels !== undefined || input.propertyUsage !== undefined ||
+          input.specificActivity !== undefined || input.activityCode !== undefined) {
+        updateData.construction = {
+          type: input.constructionType ?? existing.construction.type,
+          year: input.constructionYear ?? existing.construction.year,
+          levels: input.levels ?? existing.construction.levels,
+          usage: input.propertyUsage ?? existing.construction.usage,
+          specificActivity: input.specificActivity ?? existing.construction.specificActivity,
+          activityCode: input.activityCode ?? existing.construction.activityCode,
+        };
+      }
+
+      // Garantías
+      if (input.coverageBuilding !== undefined || input.coverageContents !== undefined ||
+          input.coverageElectronic !== undefined || input.coverageMachinery !== undefined ||
+          input.coverageStock !== undefined) {
+        updateData.coverages = {
+          building: input.coverageBuilding ?? existing.coverages.building,
+          contents: input.coverageContents ?? existing.coverages.contents,
+          electronicEquipment: input.coverageElectronic ?? existing.coverages.electronicEquipment,
+          machinery: input.coverageMachinery ?? existing.coverages.machinery,
+          stock: input.coverageStock ?? existing.coverages.stock,
+        };
+      }
 
       const updated = await this.propertyRepo.update(id, updateData);
 
@@ -90,7 +145,12 @@ export class UpdatePropertyUseCase {
         'UpdatePropertyUseCase',
         'USE_CASE_SUCCESS',
         'Property updated successfully',
-        { propertyId: id, completionPercentage: updated.completionPercentage },
+        { 
+          propertyId: id, 
+          status: updated.status,
+          completionPercentage: updated.completionPercentage,
+          totalCoverage: updated.getTotalCoverage(),
+        },
       );
 
       return updated;

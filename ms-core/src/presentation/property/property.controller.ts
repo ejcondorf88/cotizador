@@ -10,19 +10,17 @@ import {
   HttpStatus,
   UsePipes,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { CreatePropertiesBulkUseCase } from '../../application/property/use-cases/create-properties-bulk.use-case';
 import { GetPropertiesByQuoteUseCase } from '../../application/property/use-cases/get-properties-by-quote.use-case';
 import { UpdatePropertyUseCase } from '../../application/property/use-cases/update-property.use-case';
 import { DeletePropertiesByQuoteUseCase } from '../../application/property/use-cases/delete-properties-by-quote.use-case';
-import { CreatePropertyDto } from '../../application/property/dto/create-property.dto';
 import { UpdatePropertyDto } from '../../application/property/dto/update-property.dto';
 import {
   PropertyResponseDto,
   PropertiesListResponseDto,
 } from '../../application/property/dto/property-response.dto';
-import { ConstructionType } from '../../domain/property/enums/construction-type.enum';
-import { PropertyUsage } from '../../domain/property/enums/property-usage.enum';
 
 @Controller()
 export class PropertyController {
@@ -52,9 +50,9 @@ export class PropertyController {
             quoteId: p.quoteId,
             name: p.name,
             address: p.address,
-            insuredValue: p.insuredValue,
-            constructionType: p.constructionType,
-            usage: p.usage,
+            construction: p.construction,
+            coverages: p.coverages,
+            status: p.status,
             completionPercentage: p.completionPercentage,
             createdAt: p.createdAt,
             updatedAt: p.updatedAt,
@@ -78,9 +76,9 @@ export class PropertyController {
           quoteId: p.quoteId,
           name: p.name,
           address: p.address,
-          insuredValue: p.insuredValue,
-          constructionType: p.constructionType,
-          usage: p.usage,
+          construction: p.construction,
+          coverages: p.coverages,
+          status: p.status,
           completionPercentage: p.completionPercentage,
           createdAt: p.createdAt,
           updatedAt: p.updatedAt,
@@ -104,9 +102,17 @@ export class PropertyController {
       city: dto.city,
       state: dto.state,
       zipCode: dto.zipCode,
-      insuredValue: dto.insuredValue,
       constructionType: dto.constructionType,
-      usage: dto.usage,
+      constructionYear: dto.constructionYear,
+      levels: dto.levels,
+      propertyUsage: dto.propertyUsage,
+      specificActivity: dto.specificActivity,
+      activityCode: dto.activityCode,
+      coverageBuilding: dto.coverageBuilding,
+      coverageContents: dto.coverageContents,
+      coverageElectronic: dto.coverageElectronic,
+      coverageMachinery: dto.coverageMachinery,
+      coverageStock: dto.coverageStock,
     });
 
     return new PropertyResponseDto({
@@ -114,9 +120,9 @@ export class PropertyController {
       quoteId: property.quoteId,
       name: property.name,
       address: property.address,
-      insuredValue: property.insuredValue,
-      constructionType: property.constructionType,
-      usage: property.usage,
+      construction: property.construction,
+      coverages: property.coverages,
+      status: property.status,
       completionPercentage: property.completionPercentage,
       createdAt: property.createdAt,
       updatedAt: property.updatedAt,
@@ -129,5 +135,48 @@ export class PropertyController {
     @Param('quoteId') quoteId: string,
   ): Promise<void> {
     await this.deletePropertiesByQuoteUseCase.execute({ quoteId });
+  }
+
+  // Endpoint para validar CP (placeholder - integrar con API de SEPOMEX)
+  @Get('cp/:cp/validate')
+  async validateZipCode(
+    @Param('cp') cp: string,
+  ): Promise<{ valid: boolean; message: string }> {
+    // Validación básica de formato
+    if (!/^\d{5}$/.test(cp)) {
+      return { valid: false, message: 'Código postal debe tener 5 dígitos' };
+    }
+    // TODO: Integrar con API de SEPOMEX
+    // Por ahora, aceptamos cualquier CP con formato válido
+    return { valid: true, message: 'Código postal válido' };
+  }
+
+  // Endpoint para buscar clave de giro (placeholder)
+  @Get('activities/search')
+  async searchActivity(
+    @Query('query') query: string,
+  ): Promise<{ code: string; description: string }[]> {
+    if (!query || query.length < 3) {
+      return [];
+    }
+    // TODO: Integrar con catálogo de actividades SAT
+    // Placeholder: retornar resultados simulados
+    const activities = [
+      { code: '461110', description: 'Comercio al por mayor de abarrotes' },
+      { code: '461121', description: 'Comercio al por mayor de bebidas' },
+      { code: '461122', description: 'Comercio al por mayor de cigarros' },
+      { code: '462111', description: 'Comercio al por mayor de productos textiles' },
+      { code: '463111', description: 'Comercio al por mayor de calzado' },
+      { code: '464111', description: 'Comercio al por mayor de mobiliario' },
+      { code: '465111', description: 'Comercio al por mayor de artículos electrónicos' },
+      { code: '466111', description: 'Comercio al por mayor de maquinaria' },
+      { code: '531111', description: 'Servicios de telecomunicaciones' },
+      { code: '561111', description: 'Restaurantes con servicio de mesa' },
+    ];
+    
+    return activities.filter(a => 
+      a.description.toLowerCase().includes(query.toLowerCase()) ||
+      a.code.includes(query)
+    );
   }
 }

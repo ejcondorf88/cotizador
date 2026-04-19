@@ -14,6 +14,11 @@ export enum PropertyUsage {
   MIXTO = 'MIXTO',
 }
 
+export enum PropertyStatus {
+  INCOMPLETE = 'INCOMPLETE',
+  COMPLETE = 'COMPLETE',
+}
+
 export const ConstructionTypeLabels: Record<ConstructionType, string> = {
   [ConstructionType.CONCRETO]: 'Concreto',
   [ConstructionType.ACERO]: 'Acero',
@@ -30,6 +35,12 @@ export const PropertyUsageLabels: Record<PropertyUsage, string> = {
   [PropertyUsage.MIXTO]: 'Mixto',
 };
 
+export const PropertyStatusLabels: Record<PropertyStatus, string> = {
+  [PropertyStatus.INCOMPLETE]: 'Incompleta',
+  [PropertyStatus.COMPLETE]: 'Completa',
+};
+
+// ========== UBICACIÓN ==========
 export interface PropertyAddress {
   street: string;
   neighborhood: string;
@@ -38,33 +49,65 @@ export interface PropertyAddress {
   zipCode: string;
 }
 
+// ========== CONSTRUCCIÓN ==========
+export interface ConstructionDetails {
+  type: ConstructionType;
+  year?: number;
+  levels?: number;
+  usage: PropertyUsage;
+  specificActivity: string;
+  activityCode?: string;
+}
+
+// ========== GARANTÍAS ==========
+export interface PropertyCoverages {
+  building: number;
+  contents: number;
+  electronicEquipment: number;
+  machinery: number;
+  stock: number;
+}
+
+// ========== PROPIEDAD COMPLETA ==========
 export interface Property {
   id: string;
   quoteId: string;
   name: string;
   address: PropertyAddress;
-  insuredValue: number;
-  constructionType: ConstructionType | null;
-  usage: PropertyUsage | null;
+  construction: ConstructionDetails;
+  coverages: PropertyCoverages;
+  status: PropertyStatus;
   completionPercentage: number;
+  totalSumInsured?: number;
   createdAt: string;
   updatedAt: string;
 }
 
+// ========== REQUESTS/RESPONSES ==========
 export interface CreatePropertyRequest {
   name: string;
   address: PropertyAddress;
-  insuredValue: number;
-  constructionType: ConstructionType;
-  usage: PropertyUsage;
+  construction: ConstructionDetails;
+  coverages: PropertyCoverages;
 }
 
 export interface UpdatePropertyRequest {
+  // Ubicación
   name?: string;
   address?: Partial<PropertyAddress>;
-  insuredValue?: number;
+  // Construcción
   constructionType?: ConstructionType;
-  usage?: PropertyUsage;
+  constructionYear?: number;
+  levels?: number;
+  propertyUsage?: PropertyUsage;
+  specificActivity?: string;
+  activityCode?: string;
+  // Garantías
+  coverageBuilding?: number;
+  coverageContents?: number;
+  coverageElectronic?: number;
+  coverageMachinery?: number;
+  coverageStock?: number;
 }
 
 export interface BulkCreatePropertiesRequest {
@@ -79,4 +122,11 @@ export interface GetPropertiesByQuoteResponse {
   properties: Property[];
   total: number;
   completed: number;
+  totalSumInsured: number;
+}
+
+// ========== CATÁLOGOS ==========
+export interface ActivityOption {
+  code: string;
+  description: string;
 }

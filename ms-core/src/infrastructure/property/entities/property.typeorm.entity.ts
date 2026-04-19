@@ -26,6 +26,11 @@ export enum PropertyUsage {
   MIXTO = 'MIXTO',
 }
 
+export enum PropertyStatus {
+  INCOMPLETE = 'INCOMPLETE',
+  COMPLETE = 'COMPLETE',
+}
+
 @Entity('properties')
 export class PropertyTypeOrmEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -35,6 +40,7 @@ export class PropertyTypeOrmEntity {
   @Index()
   quoteId: string;
 
+  // ========== UBICACIÓN ==========
   @Column({ name: 'name', length: 100 })
   name: string;
 
@@ -53,14 +59,44 @@ export class PropertyTypeOrmEntity {
   @Column({ name: 'zip_code', length: 5 })
   zipCode: string;
 
-  @Column({ name: 'insured_value', type: 'decimal', precision: 15, scale: 2, default: 0 })
-  insuredValue: number;
+  // ========== CONSTRUCCIÓN ==========
+  @Column({ name: 'construction_type', type: 'enum', enum: ConstructionType })
+  constructionType: ConstructionType;
 
-  @Column({ name: 'construction_type', type: 'enum', enum: ConstructionType, nullable: true })
-  constructionType: ConstructionType | null;
+  @Column({ name: 'construction_year', nullable: true, type: 'int' })
+  constructionYear: number;
 
-  @Column({ name: 'usage', type: 'enum', enum: PropertyUsage, nullable: true })
-  usage: PropertyUsage | null;
+  @Column({ name: 'levels', nullable: true, type: 'int' })
+  levels: number;
+
+  @Column({ name: 'property_usage', type: 'enum', enum: PropertyUsage })
+  propertyUsage: PropertyUsage;
+
+  @Column({ name: 'specific_activity', length: 100 })
+  specificActivity: string;
+
+  @Column({ name: 'activity_code', length: 20, nullable: true })
+  activityCode: string;
+
+  // ========== GARANTÍAS (COBERTURAS) ==========
+  @Column({ name: 'coverage_building', type: 'decimal', precision: 15, scale: 2, default: 0 })
+  coverageBuilding: number;
+
+  @Column({ name: 'coverage_contents', type: 'decimal', precision: 15, scale: 2, default: 0 })
+  coverageContents: number;
+
+  @Column({ name: 'coverage_electronic', type: 'decimal', precision: 15, scale: 2, default: 0 })
+  coverageElectronic: number;
+
+  @Column({ name: 'coverage_machinery', type: 'decimal', precision: 15, scale: 2, default: 0 })
+  coverageMachinery: number;
+
+  @Column({ name: 'coverage_stock', type: 'decimal', precision: 15, scale: 2, default: 0 })
+  coverageStock: number;
+
+  // ========== ESTADO ==========
+  @Column({ name: 'status', type: 'enum', enum: PropertyStatus, default: PropertyStatus.INCOMPLETE })
+  status: PropertyStatus;
 
   @Column({ name: 'completion_percentage', type: 'int', default: 0 })
   completionPercentage: number;

@@ -4,6 +4,7 @@ import type {
   BulkCreatePropertiesResponse,
   GetPropertiesByQuoteResponse,
   UpdatePropertyRequest,
+  ActivityOption,
 } from '../types/property';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -89,5 +90,41 @@ export const propertyService = {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.message || 'Error deleting properties');
     }
+  },
+
+  async validateZipCode(cp: string): Promise<{ valid: boolean; message: string }> {
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/cp/${cp}/validate`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Error validating zip code');
+    }
+
+    return response.json();
+  },
+
+  async searchActivities(query: string): Promise<ActivityOption[]> {
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/activities/search?query=${encodeURIComponent(query)}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Error searching activities');
+    }
+
+    return response.json();
   },
 };

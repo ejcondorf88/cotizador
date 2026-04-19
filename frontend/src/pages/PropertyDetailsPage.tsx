@@ -1,11 +1,10 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { PropertyCard } from '../components/properties/PropertyCard';
-import { PropertyProgress } from '../components/properties/PropertyProgress';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { useRequireWizardCompletion } from '../hooks/useRequireWizardCompletion';
@@ -47,6 +46,7 @@ export function PropertyDetailsPage() {
   const total = propertiesData?.total || 0;
   const completed = propertiesData?.completed || 0;
   const allComplete = completed === total && total > 0;
+  const totalSumInsured = propertiesData?.totalSumInsured || 0;
 
   const handleToggleCard = useCallback(
     (index: number) => {
@@ -188,36 +188,87 @@ export function PropertyDetailsPage() {
             </div>
           </Card>
 
-          {/* Progress */}
-          <PropertyProgress total={total} completed={completed} />
-
-          {/* Properties List */}
-          <div className="space-y-4">
-            {properties.length === 0 && (
-              <div className="text-center py-12">
-                <i className="pi pi-home text-4xl text-gray-600 mb-4"></i>
-                <p className="text-gray-400">No hay inmuebles configurados</p>
-                <Button
-                  label="Volver"
-                  onClick={() => navigate(`/quote/${id}/properties`)}
-                  className="mt-4 bg-[#C9A84C] hover:bg-[#B8983E] text-white border-none"
+      {/* Progress Overview */}
+          <div className="bg-[#252540] rounded-lg p-4 border border-[#C9A84C]/30">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-[#C9A84C]/20 flex items-center justify-center">
+              <i className="pi pi-chart-bar text-[#C9A84C] text-xl"></i>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-white">Progreso del Proceso</h2>
+              <p className="text-sm text-gray-400">
+                {completed} de {total} inmuebles completados
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="text-right">
+              <p className="text-xs text-gray-400">Suma Asegurada Total</p>
+              <p className="text-xl font-bold text-[#C9A84C]">
+                {new Intl.NumberFormat('es-MX', {
+                  style: 'currency',
+                  currency: 'MXN',
+                  minimumFractionDigits: 0,
+                }).format(totalSumInsured)}
+              </p>
+            </div>
+            <div className="w-16 h-16 relative">
+              <svg className="w-full h-full transform -rotate-90">
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="28"
+                  fill="none"
+                  stroke="#374151"
+                  strokeWidth="6"
                 />
-              </div>
-            )}
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="28"
+                  fill="none"
+                  stroke={allComplete ? '#22C55E' : '#C9A84C'}
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(completed / total) * 175.93} 175.93`}
+                />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-white">
+                {Math.round((completed / total) * 100) || 0}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Properties List */}
+          <div className="space-y-4">
+        {properties.length === 0 && (
+          <div className="text-center py-12 bg-[#252540] rounded-lg border border-gray-700">
+            <i className="pi pi-home text-4xl text-gray-600 mb-4"></i>
+            <p className="text-gray-400">No hay inmuebles configurados</p>
+            <Button
+              label="Volver"
+              onClick={() => navigate(`/quote/${id}/properties`)}
+              className="mt-4 bg-[#C9A84C] hover:bg-[#B8983E] text-white border-none"
+            />
+          </div>
+        )}
 
             {properties.map((property, index) => (
-              <PropertyCard
-                key={property.id}
-                property={property}
-                propertyIndex={index + 1}
-                isExpanded={expandedIndex === index}
-                isSaving={updatePropertyMutation.isPending}
-                onToggle={() => handleToggleCard(index)}
-                onSave={(data) => handleSaveProperty(property.id, data)}
-                autoSave={true}
-              />
-            ))}
-          </div>
+          <PropertyCard
+            key={property.id}
+            property={property}
+            propertyIndex={index + 1}
+            isExpanded={expandedIndex === index}
+            isSaving={updatePropertyMutation.isPending}
+            onToggle={() => handleToggleCard(index)}
+            onSave={(data) => handleSaveProperty(property.id, data)}
+            autoSave={true}
+          />
+        ))}
+      </div>
 
           {/* Action Buttons */}
           {properties.length > 0 && (

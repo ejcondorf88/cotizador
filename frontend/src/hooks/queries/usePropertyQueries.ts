@@ -71,6 +71,26 @@ export function useDeletePropertiesMutation() {
   });
 }
 
+// Query hook for zip code validation
+export function useValidateZipCodeQuery(cp: string) {
+  return useQuery<{ valid: boolean; message: string }, Error>({
+    queryKey: ['zipCode', cp],
+    queryFn: () => propertyService.validateZipCode(cp),
+    enabled: cp.length === 5 && /^\d{5}$/.test(cp),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+// Query hook for activity search
+export function useSearchActivitiesQuery(query: string) {
+  return useQuery<ActivityOption[], Error>({
+    queryKey: ['activities', query],
+    queryFn: () => propertyService.searchActivities(query),
+    enabled: query.length >= 3,
+    staleTime: 1 * 60 * 1000, // 1 minute
+  });
+}
+
 // Hook to invalidate properties
 export function useInvalidateProperties() {
   const queryClient = useQueryClient();
