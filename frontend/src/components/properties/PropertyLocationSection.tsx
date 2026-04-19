@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Message } from 'primereact/message';
-import { propertyService } from '../../services/propertyService';
 import type { PropertyAddress } from '../../types/property';
 
 interface PropertyLocationSectionProps {
@@ -57,11 +56,6 @@ export function PropertyLocationSection({
     name: propertyName,
     address,
   });
-  const [cpValidation, setCpValidation] = useState<{
-    valid: boolean;
-    message: string;
-    loading: boolean;
-  }>({ valid: true, message: '', loading: false });
 
   // Sync with parent
   useEffect(() => {
@@ -71,57 +65,30 @@ export function PropertyLocationSection({
   const handleFieldChange = useCallback(
     (field: string, value: string) => {
       const newData = { ...localData };
-      
+
       if (field === 'name') {
         newData.name = value;
       } else {
         newData.address = { ...newData.address, [field]: value };
       }
-      
+
       setLocalData(newData);
       onChange(newData);
     },
     [localData, onChange]
   );
 
-  const validateZipCode = useCallback(
-    async (cp: string) => {
-      if (!/^\d{5}$/.test(cp)) {
-        setCpValidation({ valid: false, message: 'El CP debe tener 5 dígitos', loading: false });
-        return;
-      }
-
-      setCpValidation((prev) => ({ ...prev, loading: true }));
-
-      try {
-        const result = await propertyService.validateZipCode(cp);
-        setCpValidation({
-          valid: result.valid,
-          message: result.message,
-          loading: false,
-        });
-      } catch {
-        setCpValidation({
-          valid: false,
-          message: 'Error validando CP',
-          loading: false,
-        });
-      }
-    },
-    []
-  );
-
   const handleZipCodeChange = useCallback(
     (value: string) => {
+      // Solo permitir números, máximo 5 dígitos
       const cleaned = value.replace(/\D/g, '').slice(0, 5);
       handleFieldChange('zipCode', cleaned);
-
-      if (cleaned.length === 5) {
-        validateZipCode(cleaned);
-      }
     },
-    [handleFieldChange, validateZipCode]
+    [handleFieldChange]
   );
+
+  // Validación simple: solo verificar que tenga 5 dígitos
+  const isZipCodeValid = localData.address.zipCode?.length === 5;
 
   return (
     <div className="space-y-6">
@@ -169,30 +136,13 @@ export function PropertyLocationSection({
         <label className="block text-sm font-medium text-gray-300">
           Código Postal <span className="text-red-400">*</span>
         </label>
-        <div className="relative">
-          <InputText
-            value={localData.address.zipCode}
-            onChange={(e) => handleZipCodeChange(e.target.value)}
-            placeholder="00000"
-            maxLength={5}
-            className="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
-          />
-          {cpValidation.loading && (
-            <i className="pi pi-spin pi-spinner absolute right-3 top-1/2 -translate-y-1/2 text-[#C9A84C]"></i>
-          )}
-          {!cpValidation.loading && localData.address.zipCode.length === 5 && (
-            <i
-              className={`pi ${cpValidation.valid ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'} absolute right-3 top-1/2 -translate-y-1/2`}
-            ></i>
-          )}
-        </div>
-        {cpValidation.message && !cpValidation.loading && (
-          <Message
-            severity={cpValidation.valid ? 'success' : 'error'}
-            text={cpValidation.message}
-            className="text-xs"
-          />
-        )}
+        <InputText
+          value={localData.address.zipCode}
+          onChange={(e) => handleZipCodeChange(e.target.value)}
+          placeholder="00000"
+          maxLength={5}
+          className="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
+        />
         {errors.zipCode && <Message severity="error" text={errors.zipCode} className="text-xs" />}
       </div>
 

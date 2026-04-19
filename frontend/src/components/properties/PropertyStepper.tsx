@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { PropertyLocationSection } from './PropertyLocationSection';
@@ -6,12 +6,12 @@ import { PropertyConstructionSection } from './PropertyConstructionSection';
 import { PropertyCoverageSection } from './PropertyCoverageSection';
 import { PropertySummarySection } from './PropertySummarySection';
 import type { Property, PropertyAddress, ConstructionDetails, PropertyCoverages, UpdatePropertyRequest } from '../../types/property';
+import { ConstructionType, PropertyUsage } from '../../types/property';
 
 interface PropertyStepperProps {
   property: Property;
   onSave: (data: UpdatePropertyRequest) => void;
   isSaving: boolean;
-  autoSave?: boolean;
 }
 
 const steps = [
@@ -25,7 +25,6 @@ export function PropertyStepper({
   property,
   onSave,
   isSaving,
-  autoSave = true,
 }: PropertyStepperProps) {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState<{
@@ -34,29 +33,32 @@ export function PropertyStepper({
     construction: ConstructionDetails;
     coverages: PropertyCoverages;
   }>({
-    name: property.name,
-    address: property.address,
-    construction: property.construction,
-    coverages: property.coverages,
+    name: property.name || '',
+    address: property.address || {
+      street: '',
+      neighborhood: '',
+      city: '',
+      state: '',
+      zipCode: '',
+    },
+    construction: property.construction || {
+      type: ConstructionType.CONCRETO,
+      usage: PropertyUsage.COMERCIAL,
+      specificActivity: '',
+    },
+    coverages: property.coverages || {
+      building: 0,
+      contents: 0,
+      electronicEquipment: 0,
+      machinery: 0,
+      stock: 0,
+    },
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isDirty, setIsDirty] = useState(false);
   const toast = useRef<Toast>(null);
 
-  // Auto-save
-  useEffect(() => {
-    if (!autoSave || !isDirty) return;
-
-    const timer = setTimeout(() => {
-      handleAutoSave();
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [formData, isDirty, autoSave]);
-
-  const handleAutoSave = useCallback(() => {
-    if (!isDirty) return;
-
+  // Solo guardar al final (paso 4)
+  const handleFinalSave = useCallback(() => {
     const updateData: UpdatePropertyRequest = {
       name: formData.name,
       address: formData.address,
@@ -74,15 +76,7 @@ export function PropertyStepper({
     };
 
     onSave(updateData);
-    setIsDirty(false);
-
-    toast.current?.show({
-      severity: 'success',
-      summary: 'Guardado automático',
-      detail: 'Los cambios han sido guardados',
-      life: 2000,
-    });
-  }, [formData, isDirty, onSave]);
+  }, [formData, onSave]);
 
   const handleLocationChange = useCallback(
     (data: { name: string; address: PropertyAddress }) => {
@@ -91,7 +85,6 @@ export function PropertyStepper({
         name: data.name,
         address: data.address,
       }));
-      setIsDirty(true);
     },
     []
   );
@@ -102,7 +95,6 @@ export function PropertyStepper({
         ...prev,
         construction: data,
       }));
-      setIsDirty(true);
     },
     []
   );
@@ -113,7 +105,6 @@ export function PropertyStepper({
         ...prev,
         coverages: data,
       }));
-      setIsDirty(true);
     },
     []
   );
@@ -207,10 +198,6 @@ export function PropertyStepper({
     },
     [activeStep, handleNext]
   );
-
-  const handleFinalSave = useCallback(() => {
-    handleAutoSave();
-  }, [handleAutoSave]);
 
   const renderStepContent = () => {
     switch (activeStep) {
@@ -342,29 +329,14 @@ export function PropertyStepper({
             className="bg-transparent border border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
           />
 
-          <div className="flex items-center gap-2">
-            {isDirty && (
-              <span className="text-sm text-yellow-400">
-                <i className="pi pi-exclamation-circle mr-1"></i>
-                Cambios sin guardar
-              </span>
-            )}
-            <Button
-              label="Siguiente"
-              icon="pi pi-arrow-right"
-              iconPos="right"
-              onClick={handleNext}
-              className="bg-[#C9A84C] hover:bg-[#B8983E] text-white border-none"
-            />
-          </div>
+          <Button
+            label="Siguiente"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            onClick={handleNext}
+            className="bg-[#C9A84C] hover:bg-[#B8983E] text-white border-none"
+          />
         </div>
-      )}
-
-      {/* Auto-save indicator */}
-      {autoSave && isDirty && (
-        <p className="text-xs text-gray-500 text-center">
-          Se guardará automáticamente en 3 segundos...
-        </p>
       )}
     </div>
   );
