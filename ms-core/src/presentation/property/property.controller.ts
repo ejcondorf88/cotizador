@@ -24,7 +24,7 @@ import {
 import { ConstructionType } from '../../domain/property/enums/construction-type.enum';
 import { PropertyUsage } from '../../domain/property/enums/property-usage.enum';
 
-@Controller('api/v1')
+@Controller()
 export class PropertyController {
   constructor(
     private readonly createPropertiesBulkUseCase: CreatePropertiesBulkUseCase,

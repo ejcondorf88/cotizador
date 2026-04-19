@@ -29,6 +29,7 @@ export function InsuredPropertiesPage() {
   // Fetch quote data
   const { data: quote, isLoading: isLoadingQuote } = useQuoteByIdQuery(id!);
   const updateMutation = useUpdateQuoteMutation();
+  const createPropertiesMutation = useCreatePropertiesBulkMutation();
 
   // Show error toast from navigation state
   useEffect(() => {
@@ -65,29 +66,34 @@ export function InsuredPropertiesPage() {
     setIsSubmitting(true);
 
     try {
+      // First, save the property count
       await updateMutation.mutateAsync({
         id,
-        data: {
-          propertyCount,
-        },
+        data: { propertyCount },
+      });
+
+      // Then, create the properties in bulk
+      await createPropertiesMutation.mutateAsync({
+        quoteId: id,
+        data: { count: propertyCount },
       });
 
       toast.current?.show({
         severity: 'success',
         summary: 'Éxito',
-        detail: 'Cantidad de inmuebles guardada correctamente',
-        life: 3000,
+        detail: `${propertyCount} inmuebles creados. Redirigiendo...`,
+        life: 2000,
       });
 
-      // Redirect to summary page (placeholder for now)
-      // navigate(`/quote/${id}/summary`);
-      // For now, go back to quotes list
-      navigate('/quotes');
+      // Redirect to properties details page
+      navigate(`/quote/${id}/properties/details`, {
+        state: { fromWizard: true },
+      });
     } catch (err) {
       toast.current?.show({
         severity: 'error',
         summary: 'Error',
-        detail: err instanceof Error ? err.message : 'Error al guardar la cantidad de inmuebles',
+        detail: err instanceof Error ? err.message : 'Error al crear los inmuebles',
         life: 5000,
       });
     } finally {
