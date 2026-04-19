@@ -4,6 +4,7 @@ import { HomePage } from './pages/HomePage';
 import { QuotePage } from './pages/QuotePage';
 import { QuotesListPage } from './pages/QuotesListPage';
 import { InsuredPropertiesPage } from './pages/InsuredPropertiesPage';
+import { PropertyDetailsPage } from './pages/PropertyDetailsPage';
 
 // PrimeReact styles
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -22,6 +23,7 @@ function App() {
           <Route path="/quotes" element={<QuotesListPage />} />
           <Route path="/cotizaciones" element={<QuotesListPage />} />
           <Route path="/quote/:id/properties" element={<InsuredPropertiesPage />} />
+          <Route path="/quote/:id/properties/details" element={<PropertyDetailsPage />} />
         </Routes>
       </BrowserRouter>
     </PrimeReactProvider>

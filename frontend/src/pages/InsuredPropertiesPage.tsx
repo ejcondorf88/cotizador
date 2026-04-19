@@ -7,6 +7,7 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { PropertyCountSelector } from '../components/properties/PropertyCountSelector';
 import { useQuoteByIdQuery } from '../hooks/queries/useQuotesQuery';
 import { useUpdateQuoteMutation } from '../hooks/queries/useUpdateQuoteMutation';
+import { useCreatePropertiesBulkMutation } from '../hooks/queries/usePropertyQueries';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { useRequireWizardCompletion } from '../hooks/useRequireWizardCompletion';
