@@ -7,11 +7,11 @@ import { Message } from 'primereact/message';
 import type {
   Property,
   PropertyAddress,
-  ConstructionType,
-  PropertyUsage,
   UpdatePropertyRequest,
 } from '../../types/property';
 import {
+  ConstructionType,
+  PropertyUsage,
   ConstructionTypeLabels,
   PropertyUsageLabels,
 } from '../../types/property';
