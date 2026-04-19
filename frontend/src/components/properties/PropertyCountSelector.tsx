@@ -74,8 +74,9 @@ export function PropertyCountSelector({
             icon="pi pi-minus"
             onClick={handleDecrement}
             disabled={localValue <= min}
-            className="w-12 h-12 rounded-full bg-[#252540] border border-[#C9A84C]/50 text-[#C9A84C] hover:bg-[#C9A84C] hover:text-white transition-all"
-            disabledClassName="opacity-50 cursor-not-allowed"
+            className={`w-12 h-12 rounded-full bg-[#252540] border border-[#C9A84C]/50 text-[#C9A84C] hover:bg-[#C9A84C] hover:text-white transition-all ${
+              localValue <= min ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           />
 
           {/* Input Number */}
@@ -96,8 +97,9 @@ export function PropertyCountSelector({
             icon="pi pi-plus"
             onClick={handleIncrement}
             disabled={localValue >= max}
-            className="w-12 h-12 rounded-full bg-[#252540] border border-[#C9A84C]/50 text-[#C9A84C] hover:bg-[#C9A84C] hover:text-white transition-all"
-            disabledClassName="opacity-50 cursor-not-allowed"
+            className={`w-12 h-12 rounded-full bg-[#252540] border border-[#C9A84C]/50 text-[#C9A84C] hover:bg-[#C9A84C] hover:text-white transition-all ${
+              localValue >= max ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           />
         </div>
 
