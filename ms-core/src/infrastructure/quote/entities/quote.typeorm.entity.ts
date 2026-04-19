@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { PropertyTypeOrmEntity } from '../../property/entities/property.typeorm.entity';
 
 @Entity('quotes')
 export class QuoteTypeOrmEntity {
@@ -59,4 +60,9 @@ export class QuoteTypeOrmEntity {
   // Inmuebles
   @Column({ name: 'property_count', nullable: true, type: 'int' })
   propertyCount: number;
+
+  @OneToMany(() => PropertyTypeOrmEntity, (property) => property.quote, {
+    cascade: true,
+  })
+  properties: PropertyTypeOrmEntity[];
 }

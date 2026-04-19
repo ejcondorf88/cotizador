@@ -1,0 +1,7 @@
+export enum PropertyUsage {
+  COMERCIAL = 'COMERCIAL',
+  INDUSTRIAL = 'INDUSTRIAL',
+  OFICINA = 'OFICINA',
+  RESIDENCIAL = 'RESIDENCIAL',
+  MIXTO = 'MIXTO',
+}

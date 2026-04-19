@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { QuoteModule } from './presentation/quote/quote.module';
+import { PropertyModule } from './presentation/property/property.module';
 import { StructuredLogger } from './common/logger/logger.service';
 import { CorrelationIdMiddleware } from './common/logger/correlation-id.middleware';
 import { HttpLoggingInterceptor } from './common/interceptors/logging.interceptor';
@@ -29,6 +30,7 @@ import { HttpLoggingInterceptor } from './common/interceptors/logging.intercepto
       inject: [ConfigService],
     }),
     QuoteModule,
+    PropertyModule,
   ],
   providers: [
     StructuredLogger,
