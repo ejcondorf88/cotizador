@@ -7,21 +7,36 @@ spring:
   cloud:
     gateway:
       routes:
-        # ms-core: Backend API service
-        - id: ms-core
-          uri: http://localhost:3000
-          predicates:
-            - Path=/api/v1/**
-          filters:
-            - StripPrefix=1
+      # ms-core: Backend API service (ALWAYS FIRST - more specific paths)
+      - id: ms-core
+        uri: http://localhost:3000
+        predicates:
+        - Path=/api/v1/**
+        filters:
+        - StripPrefix=2
 
-        # ms-frontend: React frontend application
-        - id: ms-frontend
-          uri: http://localhost:5173
-          predicates:
-            - Path=/**
-          filters:
-            - RemoveRequestHeader=Cookie
+      # Static resources: Favicon (avoid routing to frontend)
+      - id: static-favicon
+        uri: http://localhost:3000
+        predicates:
+        - Path=/favicon.ico
+        filters:
+        - SetStatus=204
+
+      # Health and actuator endpoints
+      - id: gateway-actuator
+        uri: http://localhost:8080
+        predicates:
+        - Path=/actuator/**
+
+      # ms-frontend: React frontend application (CATCH-ALL - must be last)
+      - id: ms-frontend
+        uri: http://localhost:5173
+        predicates:
+        - Path=/**
+        - Method=GET,POST,PUT,DELETE,PATCH
+        filters:
+        - RemoveRequestHeader=Cookie
 
       # Global CORS configuration
       globalcors:
