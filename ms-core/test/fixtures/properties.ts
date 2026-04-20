@@ -153,7 +153,7 @@ export const constructionFixtures = {
     activityCode: '5411',
   } as ConstructionDetails,
   minimal: {
-    type: ConstructionType.MIXTA,
+    type: ConstructionType.OTRO,
     usage: PropertyUsage.INDUSTRIAL,
     specificActivity: 'Bodega',
   } as ConstructionDetails,

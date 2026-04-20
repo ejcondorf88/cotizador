@@ -1,13 +1,13 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Quote } from '../../../domain/quote/entities/quote.entity';
-import { QuoteRepositoryPort } from '../../../domain/quote/ports/quote.repository.port';
+import { QuoteRepositoryPort, QUOTE_REPOSITORY_PORT } from '../../../domain/quote/ports/quote.repository.port';
 import { QuoteStatus } from '../../../domain/quote/enums/quote-status.enum';
 import { StructuredLogger } from '../../../common/logger/logger.service';
 
 @Injectable()
 export class GetQuotesUseCase {
   constructor(
-    @Inject('QuoteRepositoryPort')
+    @Inject(QUOTE_REPOSITORY_PORT)
     private readonly quoteRepo: QuoteRepositoryPort,
     private readonly logger: StructuredLogger,
   ) {}

@@ -8,6 +8,7 @@ import { UpdateQuoteUseCase } from '../../application/quote/use-cases/update-quo
 import { QuoteRepositoryAdapter } from '../../infrastructure/quote/adapters/quote-repository.adapter';
 import { QuoteTypeOrmEntity } from '../../infrastructure/quote/entities/quote.typeorm.entity';
 import { StructuredLogger } from '../../common/logger/logger.service';
+import { QUOTE_REPOSITORY_PORT } from '../../domain/quote/ports/quote.repository.port';
 
 @Module({
   imports: [TypeOrmModule.forFeature([QuoteTypeOrmEntity])],
@@ -19,9 +20,10 @@ import { StructuredLogger } from '../../common/logger/logger.service';
     UpdateQuoteUseCase,
     StructuredLogger,
     {
-      provide: 'QuoteRepositoryPort',
+      provide: QUOTE_REPOSITORY_PORT,
       useClass: QuoteRepositoryAdapter,
     },
   ],
+  exports: [QUOTE_REPOSITORY_PORT],
 })
 export class QuoteModule {}

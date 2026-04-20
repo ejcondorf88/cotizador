@@ -1,11 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Quote } from '../../../domain/quote/entities/quote.entity';
-import { QuoteRepositoryPort } from '../../../domain/quote/ports/quote.repository.port';
+import { QuoteRepositoryPort, QUOTE_REPOSITORY_PORT } from '../../../domain/quote/ports/quote.repository.port';
 
 @Injectable()
 export class CreateQuoteUseCase {
   constructor(
-    @Inject('QuoteRepositoryPort')
+    @Inject(QUOTE_REPOSITORY_PORT)
     private readonly quoteRepo: QuoteRepositoryPort,
   ) {}
 

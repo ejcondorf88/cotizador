@@ -1,6 +1,6 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Property } from '../../../domain/property/entities/property.entity';
-import { PropertyRepositoryPort } from '../../../domain/property/ports/property.repository.port';
+import { PropertyRepositoryPort, PROPERTY_REPOSITORY_PORT } from '../../../domain/property/ports/property.repository.port';
 import { ConstructionType } from '../../../domain/property/enums/construction-type.enum';
 import { PropertyUsage } from '../../../domain/property/enums/property-usage.enum';
 import { StructuredLogger } from '../../../common/logger/logger.service';
@@ -32,7 +32,7 @@ interface UpdatePropertyInput {
 @Injectable()
 export class UpdatePropertyUseCase {
   constructor(
-    @Inject('PropertyRepositoryPort')
+    @Inject(PROPERTY_REPOSITORY_PORT)
     private readonly propertyRepo: PropertyRepositoryPort,
     private readonly logger: StructuredLogger,
   ) {}

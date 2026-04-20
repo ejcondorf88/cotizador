@@ -1,6 +1,6 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Quote, QuoteDetails } from '../../../domain/quote/entities/quote.entity';
-import { QuoteRepositoryPort } from '../../../domain/quote/ports/quote.repository.port';
+import { QuoteRepositoryPort, QUOTE_REPOSITORY_PORT } from '../../../domain/quote/ports/quote.repository.port';
 import { QuoteStatus } from '../../../domain/quote/enums/quote-status.enum';
 import { StructuredLogger } from '../../../common/logger/logger.service';
 
@@ -25,7 +25,7 @@ interface UpdateQuoteInput {
 @Injectable()
 export class UpdateQuoteUseCase {
   constructor(
-    @Inject('QuoteRepositoryPort')
+    @Inject(QUOTE_REPOSITORY_PORT)
     private readonly quoteRepo: QuoteRepositoryPort,
     private readonly logger: StructuredLogger,
   ) {}

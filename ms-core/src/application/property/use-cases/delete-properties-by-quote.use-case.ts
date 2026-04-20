@@ -1,6 +1,6 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { PropertyRepositoryPort } from '../../../domain/property/ports/property.repository.port';
-import { QuoteRepositoryPort } from '../../../domain/quote/ports/quote.repository.port';
+import { PropertyRepositoryPort, PROPERTY_REPOSITORY_PORT } from '../../../domain/property/ports/property.repository.port';
+import { QuoteRepositoryPort, QUOTE_REPOSITORY_PORT } from '../../../domain/quote/ports/quote.repository.port';
 import { StructuredLogger } from '../../../common/logger/logger.service';
 
 interface DeletePropertiesByQuoteInput {
@@ -10,9 +10,9 @@ interface DeletePropertiesByQuoteInput {
 @Injectable()
 export class DeletePropertiesByQuoteUseCase {
   constructor(
-    @Inject('PropertyRepositoryPort')
+    @Inject(PROPERTY_REPOSITORY_PORT)
     private readonly propertyRepo: PropertyRepositoryPort,
-    @Inject('QuoteRepositoryPort')
+    @Inject(QUOTE_REPOSITORY_PORT)
     private readonly quoteRepo: QuoteRepositoryPort,
     private readonly logger: StructuredLogger,
   ) {}

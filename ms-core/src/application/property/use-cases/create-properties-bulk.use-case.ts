@@ -1,7 +1,7 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Property } from '../../../domain/property/entities/property.entity';
-import { PropertyRepositoryPort } from '../../../domain/property/ports/property.repository.port';
-import { QuoteRepositoryPort } from '../../../domain/quote/ports/quote.repository.port';
+import { PropertyRepositoryPort, PROPERTY_REPOSITORY_PORT } from '../../../domain/property/ports/property.repository.port';
+import { QuoteRepositoryPort, QUOTE_REPOSITORY_PORT } from '../../../domain/quote/ports/quote.repository.port';
 import { StructuredLogger } from '../../../common/logger/logger.service';
 
 interface CreatePropertiesBulkInput {
@@ -12,9 +12,9 @@ interface CreatePropertiesBulkInput {
 @Injectable()
 export class CreatePropertiesBulkUseCase {
   constructor(
-    @Inject('PropertyRepositoryPort')
+    @Inject(PROPERTY_REPOSITORY_PORT)
     private readonly propertyRepo: PropertyRepositoryPort,
-    @Inject('QuoteRepositoryPort')
+    @Inject(QUOTE_REPOSITORY_PORT)
     private readonly quoteRepo: QuoteRepositoryPort,
     private readonly logger: StructuredLogger,
   ) {}

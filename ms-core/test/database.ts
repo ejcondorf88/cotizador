@@ -21,7 +21,7 @@ export class TestDatabase {
    * @returns DataSource connected to the test container
    */
   async start(entities: any[]): Promise<DataSource> {
-    this.container = await new PostgreSqlContainer()
+    this.container = await new PostgreSqlContainer('postgres:15-alpine')
       .withDatabase('test')
       .withUsername('test')
       .withPassword('test')

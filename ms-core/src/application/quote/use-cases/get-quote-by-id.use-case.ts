@@ -1,12 +1,12 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Quote } from '../../../domain/quote/entities/quote.entity';
-import { QuoteRepositoryPort } from '../../../domain/quote/ports/quote.repository.port';
+import { QuoteRepositoryPort, QUOTE_REPOSITORY_PORT } from '../../../domain/quote/ports/quote.repository.port';
 import { StructuredLogger } from '../../../common/logger/logger.service';
 
 @Injectable()
 export class GetQuoteByIdUseCase {
   constructor(
-    @Inject('QuoteRepositoryPort')
+    @Inject(QUOTE_REPOSITORY_PORT)
     private readonly quoteRepo: QuoteRepositoryPort,
     private readonly logger: StructuredLogger,
   ) {}

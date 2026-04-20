@@ -44,14 +44,92 @@ export class PropertyTypeOrmRepository implements PropertyRepositoryPort {
       throw new NotFoundException(`Property with id ${id} not found`);
     }
 
+    // Build update data - map flat fields from DTO to nested structure
+    const updateData: Parameters<typeof existing.update>[0] = {};
+
+    // Name
+    if (data.name !== undefined) {
+      updateData.name = data.name;
+    }
+
+    // Address
+    if (data.address) {
+      updateData.address = data.address;
+    }
+
+    // Construction - map from flat fields or nested object
+    const constructionUpdate: Partial<typeof existing.construction> = {};
+    
+    // @ts-ignore - Handle legacy flat fields from DTO
+    if (data.constructionType !== undefined) {
+      // @ts-ignore
+      constructionUpdate.type = data.constructionType;
+    }
+    // @ts-ignore - Handle legacy flat fields from DTO
+    if (data.constructionYear !== undefined) {
+      // @ts-ignore
+      constructionUpdate.year = data.constructionYear;
+    }
+    // @ts-ignore - Handle legacy flat fields from DTO
+    if (data.levels !== undefined) {
+      // @ts-ignore
+      constructionUpdate.levels = data.levels;
+    }
+    // @ts-ignore - Handle legacy flat fields from DTO
+    if (data.propertyUsage !== undefined) {
+      // @ts-ignore
+      constructionUpdate.usage = data.propertyUsage;
+    }
+    // @ts-ignore - Handle legacy flat fields from DTO
+    if (data.specificActivity !== undefined) {
+      // @ts-ignore
+      constructionUpdate.specificActivity = data.specificActivity;
+    }
+    // @ts-ignore - Handle legacy flat fields from DTO
+    if (data.activityCode !== undefined) {
+      // @ts-ignore
+      constructionUpdate.activityCode = data.activityCode;
+    }
+
+    if (Object.keys(constructionUpdate).length > 0) {
+      updateData.construction = constructionUpdate;
+    }
+
+    // Coverages - map from flat fields or nested object
+    const coveragesUpdate: Partial<typeof existing.coverages> = {};
+    
+    // @ts-ignore - Handle legacy flat fields from DTO
+    if (data.coverageBuilding !== undefined) {
+      // @ts-ignore
+      coveragesUpdate.building = data.coverageBuilding;
+    }
+    // @ts-ignore - Handle legacy flat fields from DTO
+    if (data.coverageContents !== undefined) {
+      // @ts-ignore
+      coveragesUpdate.contents = data.coverageContents;
+    }
+    // @ts-ignore - Handle legacy flat fields from DTO
+    if (data.coverageElectronic !== undefined) {
+      // @ts-ignore
+      coveragesUpdate.electronicEquipment = data.coverageElectronic;
+    }
+    // @ts-ignore - Handle legacy flat fields from DTO
+    if (data.coverageMachinery !== undefined) {
+      // @ts-ignore
+      coveragesUpdate.machinery = data.coverageMachinery;
+    }
+    // @ts-ignore - Handle legacy flat fields from DTO
+    if (data.coverageStock !== undefined) {
+      // @ts-ignore
+      coveragesUpdate.stock = data.coverageStock;
+    }
+
+    if (Object.keys(coveragesUpdate).length > 0) {
+      updateData.coverages = coveragesUpdate;
+    }
+
     // Update domain entity
-    existing.update({
-      name: data.name,
-      address: data.address,
-      insuredValue: data.insuredValue,
-      constructionType: data.constructionType,
-      usage: data.usage,
-    });
+    existing.update(updateData);
 
     // Save to database
     const entity = PropertyMapper.toEntity(existing);

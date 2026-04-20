@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Property } from '../../../domain/property/entities/property.entity';
-import { PropertyRepositoryPort } from '../../../domain/property/ports/property.repository.port';
+import { PropertyRepositoryPort, PROPERTY_REPOSITORY_PORT } from '../../../domain/property/ports/property.repository.port';
 import { StructuredLogger } from '../../../common/logger/logger.service';
 
 interface GetPropertiesByQuoteInput {
@@ -10,7 +10,7 @@ interface GetPropertiesByQuoteInput {
 @Injectable()
 export class GetPropertiesByQuoteUseCase {
   constructor(
-    @Inject('PropertyRepositoryPort')
+    @Inject(PROPERTY_REPOSITORY_PORT)
     private readonly propertyRepo: PropertyRepositoryPort,
     private readonly logger: StructuredLogger,
   ) {}
