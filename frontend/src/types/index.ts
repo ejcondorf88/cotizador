@@ -22,3 +22,8 @@ export interface NavLink {
   label: string;
   href: string;
 }
+
+// Re-export coverage types for convenience
+export * from './coverage';
+export * from './quote';
+export * from './property';

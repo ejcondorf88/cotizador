@@ -1,23 +1,29 @@
-export enum ConstructionType {
-  CONCRETO = 'CONCRETO',
-  ACERO = 'ACERO',
-  MAMPOSTERIA = 'MAMPOSTERIA',
-  MADERA = 'MADERA',
-  OTRO = 'OTRO',
-}
+export const ConstructionType = {
+  CONCRETO: 'CONCRETO',
+  ACERO: 'ACERO',
+  MAMPOSTERIA: 'MAMPOSTERIA',
+  MADERA: 'MADERA',
+  OTRO: 'OTRO',
+} as const;
 
-export enum PropertyUsage {
-  COMERCIAL = 'COMERCIAL',
-  INDUSTRIAL = 'INDUSTRIAL',
-  OFICINA = 'OFICINA',
-  RESIDENCIAL = 'RESIDENCIAL',
-  MIXTO = 'MIXTO',
-}
+export type ConstructionType = (typeof ConstructionType)[keyof typeof ConstructionType];
 
-export enum PropertyStatus {
-  INCOMPLETE = 'INCOMPLETE',
-  COMPLETE = 'COMPLETE',
-}
+export const PropertyUsage = {
+  COMERCIAL: 'COMERCIAL',
+  INDUSTRIAL: 'INDUSTRIAL',
+  OFICINA: 'OFICINA',
+  RESIDENCIAL: 'RESIDENCIAL',
+  MIXTO: 'MIXTO',
+} as const;
+
+export type PropertyUsage = (typeof PropertyUsage)[keyof typeof PropertyUsage];
+
+export const PropertyStatus = {
+  INCOMPLETE: 'INCOMPLETE',
+  COMPLETE: 'COMPLETE',
+} as const;
+
+export type PropertyStatus = (typeof PropertyStatus)[keyof typeof PropertyStatus];
 
 export const ConstructionTypeLabels: Record<ConstructionType, string> = {
   [ConstructionType.CONCRETO]: 'Concreto',

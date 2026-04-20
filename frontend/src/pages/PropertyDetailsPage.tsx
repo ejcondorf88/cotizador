@@ -129,8 +129,8 @@ export function PropertyDetailsPage() {
         life: 3000,
       });
 
-      // Redirect to summary (placeholder)
-      navigate('/quotes');
+      // Redirect to coverage selection step
+      navigate(`/quote/${id}/coverage`);
     } catch (error) {
       toast.current?.show({
         severity: 'error',

@@ -1,201 +1,147 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="91" failures="0" errors="0" time="7.271">
-  <testsuite name="Domain/Quote - Quote Entity" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:53:30" time="5.791" tests="10">
-    <testcase classname="Domain/Quote - Quote Entity create() should create a quote with provided folio number" name="Domain/Quote - Quote Entity create() should create a quote with provided folio number" time="0.011">
+<testsuites name="jest tests" tests="66" failures="0" errors="0" time="5.864">
+  <testsuite name="Domain/Coverage - Coverage Entity" errors="0" failures="0" skipped="0" timestamp="2026-04-20T19:07:37" time="3.273" tests="12">
+    <testcase classname="Domain/Coverage - Coverage Entity create() should create coverage with all required fields" name="Domain/Coverage - Coverage Entity create() should create coverage with all required fields" time="0.008">
     </testcase>
-    <testcase classname="Domain/Quote - Quote Entity create() should create quotes with unique IDs" name="Domain/Quote - Quote Entity create() should create quotes with unique IDs" time="0">
+    <testcase classname="Domain/Coverage - Coverage Entity create() should create coverage with null baseRate for mandatory" name="Domain/Coverage - Coverage Entity create() should create coverage with null baseRate for mandatory" time="0.001">
     </testcase>
-    <testcase classname="Domain/Quote - Quote Entity updateDetails() should update only provided fields" name="Domain/Quote - Quote Entity updateDetails() should update only provided fields" time="0.001">
+    <testcase classname="Domain/Coverage - Coverage Entity createMandatory() should create mandatory coverage with factory method" name="Domain/Coverage - Coverage Entity createMandatory() should create mandatory coverage with factory method" time="0.001">
     </testcase>
-    <testcase classname="Domain/Quote - Quote Entity updateDetails() should merge new details with existing ones" name="Domain/Quote - Quote Entity updateDetails() should merge new details with existing ones" time="0.001">
+    <testcase classname="Domain/Coverage - Coverage Entity createOptional() should create optional coverage with factory method" name="Domain/Coverage - Coverage Entity createOptional() should create optional coverage with factory method" time="0">
     </testcase>
-    <testcase classname="Domain/Quote - Quote Entity updateDetails() should update all detail fields" name="Domain/Quote - Quote Entity updateDetails() should update all detail fields" time="0.002">
+    <testcase classname="Domain/Coverage - Coverage Entity validate coverage type should validate MANDATORY coverage type" name="Domain/Coverage - Coverage Entity validate coverage type should validate MANDATORY coverage type" time="0">
     </testcase>
-    <testcase classname="Domain/Quote - Quote Entity changeStatus() should change status from DRAFT to IN_PROGRESS" name="Domain/Quote - Quote Entity changeStatus() should change status from DRAFT to IN_PROGRESS" time="0.001">
+    <testcase classname="Domain/Coverage - Coverage Entity validate coverage type should validate OPTIONAL coverage type" name="Domain/Coverage - Coverage Entity validate coverage type should validate OPTIONAL coverage type" time="0.001">
     </testcase>
-    <testcase classname="Domain/Quote - Quote Entity changeStatus() should change status from IN_PROGRESS to COMPLETED" name="Domain/Quote - Quote Entity changeStatus() should change status from IN_PROGRESS to COMPLETED" time="0">
+    <testcase classname="Domain/Coverage - Coverage Entity validate coverage type should validate all coverage code enums" name="Domain/Coverage - Coverage Entity validate coverage type should validate all coverage code enums" time="0.001">
     </testcase>
-    <testcase classname="Domain/Quote - Quote Entity changeStatus() should allow status to be CANCELLED from any state" name="Domain/Quote - Quote Entity changeStatus() should allow status to be CANCELLED from any state" time="0">
+    <testcase classname="Domain/Coverage - Coverage Entity calculate premium contribution should calculate premium for coverage with baseRate" name="Domain/Coverage - Coverage Entity calculate premium contribution should calculate premium for coverage with baseRate" time="0">
     </testcase>
-    <testcase classname="Domain/Quote - Quote Entity setPropertyCount() should set property count" name="Domain/Quote - Quote Entity setPropertyCount() should set property count" time="0.001">
+    <testcase classname="Domain/Coverage - Coverage Entity calculate premium contribution should return 0 premium for mandatory coverage with null baseRate" name="Domain/Coverage - Coverage Entity calculate premium contribution should return 0 premium for mandatory coverage with null baseRate" time="0.001">
     </testcase>
-    <testcase classname="Domain/Quote - Quote Entity setPropertyCount() should update timestamp when setting property count" name="Domain/Quote - Quote Entity setPropertyCount() should update timestamp when setting property count" time="0">
+    <testcase classname="Domain/Coverage - Coverage Entity calculate premium contribution should calculate combined premium for multiple coverages" name="Domain/Coverage - Coverage Entity calculate premium contribution should calculate combined premium for multiple coverages" time="0">
     </testcase>
-  </testsuite>
-  <testsuite name="Domain/Property - Property Entity" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:53:30" time="5.796" tests="19">
-    <testcase classname="Domain/Property - Property Entity create() should create a property with all required fields" name="Domain/Property - Property Entity create() should create a property with all required fields" time="0.01">
+    <testcase classname="Domain/Coverage - Coverage Entity activate() and deactivate() should deactivate coverage" name="Domain/Coverage - Coverage Entity activate() and deactivate() should deactivate coverage" time="0">
     </testcase>
-    <testcase classname="Domain/Property - Property Entity create() should recalculate status on creation" name="Domain/Property - Property Entity create() should recalculate status on creation" time="0">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity createEmpty() should create an empty property with default values" name="Domain/Property - Property Entity createEmpty() should create an empty property with default values" time="0.002">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity recalculateStatus() should set COMPLETE status when all fields are filled" name="Domain/Property - Property Entity recalculateStatus() should set COMPLETE status when all fields are filled" time="0">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity recalculateStatus() should set INCOMPLETE status when required fields are missing" name="Domain/Property - Property Entity recalculateStatus() should set INCOMPLETE status when required fields are missing" time="0">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity recalculateStatus() should set INCOMPLETE status when zip code is invalid" name="Domain/Property - Property Entity recalculateStatus() should set INCOMPLETE status when zip code is invalid" time="0.001">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity recalculateStatus() should set INCOMPLETE status when no coverage is set" name="Domain/Property - Property Entity recalculateStatus() should set INCOMPLETE status when no coverage is set" time="0">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity recalculateStatus() should recalculate percentage correctly with partial fields" name="Domain/Property - Property Entity recalculateStatus() should recalculate percentage correctly with partial fields" time="0.001">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity getTotalCoverage() should sum all coverage values correctly" name="Domain/Property - Property Entity getTotalCoverage() should sum all coverage values correctly" time="0">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity getTotalCoverage() should handle zero coverages" name="Domain/Property - Property Entity getTotalCoverage() should handle zero coverages" time="0">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity getTotalCoverage() should handle undefined/null values in coverages" name="Domain/Property - Property Entity getTotalCoverage() should handle undefined/null values in coverages" time="0">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity update() should update only provided address fields" name="Domain/Property - Property Entity update() should update only provided address fields" time="0.001">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity update() should update only provided construction fields" name="Domain/Property - Property Entity update() should update only provided construction fields" time="0">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity update() should update only provided coverage fields" name="Domain/Property - Property Entity update() should update only provided coverage fields" time="0.001">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity update() should update name independently" name="Domain/Property - Property Entity update() should update name independently" time="0">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity update() should recalculate status after update" name="Domain/Property - Property Entity update() should recalculate status after update" time="0">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity update() should update timestamp after modification" name="Domain/Property - Property Entity update() should update timestamp after modification" time="0">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity isComplete() should return true for complete property" name="Domain/Property - Property Entity isComplete() should return true for complete property" time="0">
-    </testcase>
-    <testcase classname="Domain/Property - Property Entity isComplete() should return false for incomplete property" name="Domain/Property - Property Entity isComplete() should return false for incomplete property" time="0">
+    <testcase classname="Domain/Coverage - Coverage Entity activate() and deactivate() should reactivate coverage" name="Domain/Coverage - Coverage Entity activate() and deactivate() should reactivate coverage" time="0.001">
     </testcase>
   </testsuite>
-  <testsuite name="Application/Quote - CreateQuoteUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:53:30" time="6.327" tests="3">
-    <testcase classname="Application/Quote - CreateQuoteUseCase execute() should create quote with auto-generated folio" name="Application/Quote - CreateQuoteUseCase execute() should create quote with auto-generated folio" time="0.009">
+  <testsuite name="Application/Coverage - GetCoveragesUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-20T19:07:37" time="3.59" tests="10">
+    <testcase classname="Application/Coverage - GetCoveragesUseCase execute() should return all coverages grouped by type" name="Application/Coverage - GetCoveragesUseCase execute() should return all coverages grouped by type" time="0.01">
     </testcase>
-    <testcase classname="Application/Quote - CreateQuoteUseCase execute() should throw error when repository fails" name="Application/Quote - CreateQuoteUseCase execute() should throw error when repository fails" time="0.011">
+    <testcase classname="Application/Coverage - GetCoveragesUseCase execute() should return mandatory coverages first" name="Application/Coverage - GetCoveragesUseCase execute() should return mandatory coverages first" time="0.002">
     </testcase>
-    <testcase classname="Application/Quote - CreateQuoteUseCase execute() should propagate repository errors" name="Application/Quote - CreateQuoteUseCase execute() should propagate repository errors" time="0.001">
+    <testcase classname="Application/Coverage - GetCoveragesUseCase execute() should return optional coverages second" name="Application/Coverage - GetCoveragesUseCase execute() should return optional coverages second" time="0">
     </testcase>
-  </testsuite>
-  <testsuite name="Application/Quote - UpdateQuoteUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:53:30" time="6.361" tests="10">
-    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update quote with company details" name="Application/Quote - UpdateQuoteUseCase execute() should update quote with company details" time="0.01">
+    <testcase classname="Application/Coverage - GetCoveragesUseCase execute() should include all 8 coverages from repository" name="Application/Coverage - GetCoveragesUseCase execute() should include all 8 coverages from repository" time="0.001">
     </testcase>
-    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update quote status" name="Application/Quote - UpdateQuoteUseCase execute() should update quote status" time="0.001">
+    <testcase classname="Application/Coverage - GetCoveragesUseCase execute() should handle repository errors gracefully" name="Application/Coverage - GetCoveragesUseCase execute() should handle repository errors gracefully" time="0.013">
     </testcase>
-    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update validity dates" name="Application/Quote - UpdateQuoteUseCase execute() should update validity dates" time="0.001">
+    <testcase classname="Application/Coverage - GetCoveragesUseCase execute() should return empty arrays when no coverages exist" name="Application/Coverage - GetCoveragesUseCase execute() should return empty arrays when no coverages exist" time="0.001">
     </testcase>
-    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should throw NotFoundException when quote does not exist" name="Application/Quote - UpdateQuoteUseCase execute() should throw NotFoundException when quote does not exist" time="0.025">
+    <testcase classname="Application/Coverage - GetCoveragesUseCase execute() should return only mandatory when no optional exist" name="Application/Coverage - GetCoveragesUseCase execute() should return only mandatory when no optional exist" time="0.001">
     </testcase>
-    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should throw BadRequestException when validityEnd is before validityStart" name="Application/Quote - UpdateQuoteUseCase execute() should throw BadRequestException when validityEnd is before validityStart" time="0.001">
+    <testcase classname="Application/Coverage - GetCoveragesUseCase execute() should return only optional when no mandatory exist" name="Application/Coverage - GetCoveragesUseCase execute() should return only optional when no mandatory exist" time="0">
     </testcase>
-    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update only provided fields (partial update)" name="Application/Quote - UpdateQuoteUseCase execute() should update only provided fields (partial update)" time="0.001">
+    <testcase classname="Application/Coverage - GetCoveragesUseCase execute() should map coverage properties correctly to DTO" name="Application/Coverage - GetCoveragesUseCase execute() should map coverage properties correctly to DTO" time="0.001">
     </testcase>
-    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update agent information" name="Application/Quote - UpdateQuoteUseCase execute() should update agent information" time="0.001">
-    </testcase>
-    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update currency and payment type" name="Application/Quote - UpdateQuoteUseCase execute() should update currency and payment type" time="0">
-    </testcase>
-    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should log error on repository failure" name="Application/Quote - UpdateQuoteUseCase execute() should log error on repository failure" time="0.003">
-    </testcase>
-    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update property count" name="Application/Quote - UpdateQuoteUseCase execute() should update property count" time="0">
+    <testcase classname="Application/Coverage - GetCoveragesUseCase execute() should handle inactive coverages" name="Application/Coverage - GetCoveragesUseCase execute() should handle inactive coverages" time="0.001">
     </testcase>
   </testsuite>
-  <testsuite name="Application/Property - CreatePropertiesBulkUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:53:30" time="6.375" tests="11">
-    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should create N empty properties for existing quote" name="Application/Property - CreatePropertiesBulkUseCase execute() should create N empty properties for existing quote" time="0.018">
+  <testsuite name="Infrastructure/Coverage - CoverageMapper" errors="0" failures="0" skipped="0" timestamp="2026-04-20T19:07:37" time="3.749" tests="14">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper toDomain() should map TypeORM entity to domain coverage" name="Infrastructure/Coverage - CoverageMapper toDomain() should map TypeORM entity to domain coverage" time="0.007">
     </testcase>
-    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should create exactly N properties with correct quoteId" name="Application/Property - CreatePropertiesBulkUseCase execute() should create exactly N properties with correct quoteId" time="0.002">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper toDomain() should map optional coverage with baseRate" name="Infrastructure/Coverage - CoverageMapper toDomain() should map optional coverage with baseRate" time="0.001">
     </testcase>
-    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should throw NotFoundException when quote does not exist" name="Application/Property - CreatePropertiesBulkUseCase execute() should throw NotFoundException when quote does not exist" time="0.016">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper toDomain() should map all coverage codes" name="Infrastructure/Coverage - CoverageMapper toDomain() should map all coverage codes" time="0.001">
     </testcase>
-    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should throw BadRequestException when count is less than 1" name="Application/Property - CreatePropertiesBulkUseCase execute() should throw BadRequestException when count is less than 1" time="0.002">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper toTypeOrm() should map domain coverage to TypeORM entity" name="Infrastructure/Coverage - CoverageMapper toTypeOrm() should map domain coverage to TypeORM entity" time="0.001">
     </testcase>
-    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should throw BadRequestException when count is greater than 100" name="Application/Property - CreatePropertiesBulkUseCase execute() should throw BadRequestException when count is greater than 100" time="0.001">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper toTypeOrm() should map optional coverage to TypeORM entity" name="Infrastructure/Coverage - CoverageMapper toTypeOrm() should map optional coverage to TypeORM entity" time="0.001">
     </testcase>
-    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should throw BadRequestException when quote already has properties" name="Application/Property - CreatePropertiesBulkUseCase execute() should throw BadRequestException when quote already has properties" time="0.001">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper toTypeOrm() should map deactivated coverage" name="Infrastructure/Coverage - CoverageMapper toTypeOrm() should map deactivated coverage" time="0">
     </testcase>
-    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should create properties with INCOMPLETE status" name="Application/Property - CreatePropertiesBulkUseCase execute() should create properties with INCOMPLETE status" time="0.001">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper toDomainList() should map list of TypeORM entities to domain coverages" name="Infrastructure/Coverage - CoverageMapper toDomainList() should map list of TypeORM entities to domain coverages" time="0.001">
     </testcase>
-    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should log error on repository failure" name="Application/Property - CreatePropertiesBulkUseCase execute() should log error on repository failure" time="0.007">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper toDomainList() should handle empty list" name="Infrastructure/Coverage - CoverageMapper toDomainList() should handle empty list" time="0.001">
     </testcase>
-    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should handle count of 1 (minimum valid)" name="Application/Property - CreatePropertiesBulkUseCase execute() should handle count of 1 (minimum valid)" time="0.001">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper toDomainList() should handle single item list" name="Infrastructure/Coverage - CoverageMapper toDomainList() should handle single item list" time="0">
     </testcase>
-    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should handle count of 100 (maximum valid)" name="Application/Property - CreatePropertiesBulkUseCase execute() should handle count of 100 (maximum valid)" time="0.001">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper toTypeOrmList() should map list of domain coverages to TypeORM entities" name="Infrastructure/Coverage - CoverageMapper toTypeOrmList() should map list of domain coverages to TypeORM entities" time="0">
     </testcase>
-    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should log use case start" name="Application/Property - CreatePropertiesBulkUseCase execute() should log use case start" time="0">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper toTypeOrmList() should handle empty list" name="Infrastructure/Coverage - CoverageMapper toTypeOrmList() should handle empty list" time="0.001">
     </testcase>
-  </testsuite>
-  <testsuite name="Application/Property - UpdatePropertyUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:53:30" time="6.394" tests="16">
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should update property name and address" name="Application/Property - UpdatePropertyUseCase execute() should update property name and address" time="0.017">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper handle null/undefined values should handle null baseRate in toDomain" name="Infrastructure/Coverage - CoverageMapper handle null/undefined values should handle null baseRate in toDomain" time="0">
     </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should update construction details" name="Application/Property - UpdatePropertyUseCase execute() should update construction details" time="0.002">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper handle null/undefined values should preserve all fields during bidirectional mapping" name="Infrastructure/Coverage - CoverageMapper handle null/undefined values should preserve all fields during bidirectional mapping" time="0.001">
     </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should update coverage values" name="Application/Property - UpdatePropertyUseCase execute() should update coverage values" time="0.001">
-    </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw NotFoundException when property does not exist" name="Application/Property - UpdatePropertyUseCase execute() should throw NotFoundException when property does not exist" time="0.018">
-    </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when zip code is invalid" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when zip code is invalid" time="0.001">
-    </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when zip code has letters" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when zip code has letters" time="0.001">
-    </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when construction year is before 1900" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when construction year is before 1900" time="0.001">
-    </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when construction year is in the future" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when construction year is in the future" time="0.001">
-    </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when coverage building is negative" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when coverage building is negative" time="0.001">
-    </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when coverage exceeds maximum" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when coverage exceeds maximum" time="0.011">
-    </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when contents coverage exceeds maximum" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when contents coverage exceeds maximum" time="0.008">
-    </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when electronic coverage exceeds maximum" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when electronic coverage exceeds maximum" time="0">
-    </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should log success after update" name="Application/Property - UpdatePropertyUseCase execute() should log success after update" time="0.001">
-    </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should log error on repository failure" name="Application/Property - UpdatePropertyUseCase execute() should log error on repository failure" time="0.002">
-    </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should pass correct data to repository update" name="Application/Property - UpdatePropertyUseCase execute() should pass correct data to repository update" time="0.001">
-    </testcase>
-    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should handle partial updates" name="Application/Property - UpdatePropertyUseCase execute() should handle partial updates" time="0">
+    <testcase classname="Infrastructure/Coverage - CoverageMapper handle null/undefined values should handle all coverage types in list mapping" name="Infrastructure/Coverage - CoverageMapper handle null/undefined values should handle all coverage types in list mapping" time="0.001">
     </testcase>
   </testsuite>
-  <testsuite name="Infrastructure/Property - PropertyMapper" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:53:30" time="6.506" tests="9">
-    <testcase classname="Infrastructure/Property - PropertyMapper toDomain() should map TypeORM entity to domain Property" name="Infrastructure/Property - PropertyMapper toDomain() should map TypeORM entity to domain Property" time="0.008">
+  <testsuite name="Presentation/Coverage - CoverageController" errors="0" failures="0" skipped="0" timestamp="2026-04-20T19:07:37" time="4.067" tests="11">
+    <testcase classname="Presentation/Coverage - CoverageController GET /api/v1/coverages should return grouped coverages" name="Presentation/Coverage - CoverageController GET /api/v1/coverages should return grouped coverages" time="0.027">
     </testcase>
-    <testcase classname="Infrastructure/Property - PropertyMapper toDomain() should handle null construction year and levels" name="Infrastructure/Property - PropertyMapper toDomain() should handle null construction year and levels" time="0.001">
+    <testcase classname="Presentation/Coverage - CoverageController GET /api/v1/coverages should handle errors when fetching coverages" name="Presentation/Coverage - CoverageController GET /api/v1/coverages should handle errors when fetching coverages" time="0.014">
     </testcase>
-    <testcase classname="Infrastructure/Property - PropertyMapper toDomain() should convert decimal coverage values to numbers" name="Infrastructure/Property - PropertyMapper toDomain() should convert decimal coverage values to numbers" time="0">
+    <testcase classname="Presentation/Coverage - CoverageController GET /api/v1/quotes/:id/coverages should return selected coverages for a quote" name="Presentation/Coverage - CoverageController GET /api/v1/quotes/:id/coverages should return selected coverages for a quote" time="0.002">
     </testcase>
-    <testcase classname="Infrastructure/Property - PropertyMapper toEntity() should map domain Property to TypeORM entity" name="Infrastructure/Property - PropertyMapper toEntity() should map domain Property to TypeORM entity" time="0.001">
+    <testcase classname="Presentation/Coverage - CoverageController GET /api/v1/quotes/:id/coverages should return 404 if quote not found" name="Presentation/Coverage - CoverageController GET /api/v1/quotes/:id/coverages should return 404 if quote not found" time="0.001">
     </testcase>
-    <testcase classname="Infrastructure/Property - PropertyMapper toEntity() should handle undefined construction year and activity code" name="Infrastructure/Property - PropertyMapper toEntity() should handle undefined construction year and activity code" time="0.001">
+    <testcase classname="Presentation/Coverage - CoverageController GET /api/v1/quotes/:id/coverages should handle empty coverages for quote" name="Presentation/Coverage - CoverageController GET /api/v1/quotes/:id/coverages should handle empty coverages for quote" time="0.002">
     </testcase>
-    <testcase classname="Infrastructure/Property - PropertyMapper toDomainList() should map array of TypeORM entities to array of domain Properties" name="Infrastructure/Property - PropertyMapper toDomainList() should map array of TypeORM entities to array of domain Properties" time="0">
+    <testcase classname="Presentation/Coverage - CoverageController PATCH /api/v1/quotes/:id/coverages should update selection and return 200 with updated data and calculated premium" name="Presentation/Coverage - CoverageController PATCH /api/v1/quotes/:id/coverages should update selection and return 200 with updated data and calculated premium" time="0.002">
     </testcase>
-    <testcase classname="Infrastructure/Property - PropertyMapper toDomainList() should return empty array for empty input" name="Infrastructure/Property - PropertyMapper toDomainList() should return empty array for empty input" time="0.001">
+    <testcase classname="Presentation/Coverage - CoverageController PATCH /api/v1/quotes/:id/coverages should return 404 if quote not found on update" name="Presentation/Coverage - CoverageController PATCH /api/v1/quotes/:id/coverages should return 404 if quote not found on update" time="0.001">
     </testcase>
-    <testcase classname="Infrastructure/Property - PropertyMapper bidirectional mapping should preserve data integrity through toDomain -&gt; toEntity cycle" name="Infrastructure/Property - PropertyMapper bidirectional mapping should preserve data integrity through toDomain -&gt; toEntity cycle" time="0.001">
+    <testcase classname="Presentation/Coverage - CoverageController PATCH /api/v1/quotes/:id/coverages should return 400 for invalid coverage codes" name="Presentation/Coverage - CoverageController PATCH /api/v1/quotes/:id/coverages should return 400 for invalid coverage codes" time="0.002">
     </testcase>
-    <testcase classname="Infrastructure/Property - PropertyMapper bidirectional mapping should preserve data integrity through toEntity -&gt; toDomain cycle" name="Infrastructure/Property - PropertyMapper bidirectional mapping should preserve data integrity through toEntity -&gt; toDomain cycle" time="0.001">
+    <testcase classname="Presentation/Coverage - CoverageController PATCH /api/v1/quotes/:id/coverages should handle update with only mandatory coverages" name="Presentation/Coverage - CoverageController PATCH /api/v1/quotes/:id/coverages should handle update with only mandatory coverages" time="0.002">
+    </testcase>
+    <testcase classname="Presentation/Coverage - CoverageController PATCH /api/v1/quotes/:id/coverages should handle update with all optional coverages selected" name="Presentation/Coverage - CoverageController PATCH /api/v1/quotes/:id/coverages should handle update with all optional coverages selected" time="0.002">
+    </testcase>
+    <testcase classname="Presentation/Coverage - CoverageController PATCH /api/v1/quotes/:id/coverages should log operations via StructuredLogger" name="Presentation/Coverage - CoverageController PATCH /api/v1/quotes/:id/coverages should log operations via StructuredLogger" time="0.002">
     </testcase>
   </testsuite>
-  <testsuite name="Infrastructure/Quote - QuoteMapper" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:53:30" time="6.511" tests="13">
-    <testcase classname="Infrastructure/Quote - QuoteMapper toDomain() should map TypeORM entity to domain Quote" name="Infrastructure/Quote - QuoteMapper toDomain() should map TypeORM entity to domain Quote" time="0.006">
+  <testsuite name="Application/Coverage - UpdateQuoteCoveragesUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-20T19:07:37" time="4.997" tests="10">
+    <testcase classname="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should update selected coverages for a quote" name="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should update selected coverages for a quote" time="0.008">
     </testcase>
-    <testcase classname="Infrastructure/Quote - QuoteMapper toDomain() should map details when present" name="Infrastructure/Quote - QuoteMapper toDomain() should map details when present" time="0.001">
+    <testcase classname="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should always include mandatory coverages even if not in request" name="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should always include mandatory coverages even if not in request" time="0.002">
     </testcase>
-    <testcase classname="Infrastructure/Quote - QuoteMapper toDomain() should handle null companyName (no details)" name="Infrastructure/Quote - QuoteMapper toDomain() should handle null companyName (no details)" time="0.001">
+    <testcase classname="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should validate coverage codes exist" name="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should validate coverage codes exist" time="0.018">
     </testcase>
-    <testcase classname="Infrastructure/Quote - QuoteMapper toDomain() should map different statuses correctly" name="Infrastructure/Quote - QuoteMapper toDomain() should map different statuses correctly" time="0">
+    <testcase classname="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should throw NotFoundException if quote does not exist" name="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should throw NotFoundException if quote does not exist" time="0.001">
     </testcase>
-    <testcase classname="Infrastructure/Quote - QuoteMapper toEntity() should map domain Quote to TypeORM entity" name="Infrastructure/Quote - QuoteMapper toEntity() should map domain Quote to TypeORM entity" time="0">
+    <testcase classname="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should throw BadRequestException for invalid coverage codes" name="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should throw BadRequestException for invalid coverage codes" time="0.001">
     </testcase>
-    <testcase classname="Infrastructure/Quote - QuoteMapper toEntity() should map details to TypeORM entity" name="Infrastructure/Quote - QuoteMapper toEntity() should map details to TypeORM entity" time="0.001">
+    <testcase classname="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should throw BadRequestException if mandatory coverages are missing" name="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should throw BadRequestException if mandatory coverages are missing" time="0.001">
     </testcase>
-    <testcase classname="Infrastructure/Quote - QuoteMapper toEntity() should handle undefined details" name="Infrastructure/Quote - QuoteMapper toEntity() should handle undefined details" time="0">
+    <testcase classname="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should calculate premium after update" name="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should calculate premium after update" time="0.002">
     </testcase>
-    <testcase classname="Infrastructure/Quote - QuoteMapper toEntity() should handle partial details" name="Infrastructure/Quote - QuoteMapper toEntity() should handle partial details" time="0.001">
+    <testcase classname="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should handle selecting all optional coverages" name="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should handle selecting all optional coverages" time="0.001">
     </testcase>
-    <testcase classname="Infrastructure/Quote - QuoteMapper toResponseDto() should map Quote to response DTO" name="Infrastructure/Quote - QuoteMapper toResponseDto() should map Quote to response DTO" time="0">
+    <testcase classname="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should handle empty optional selection (only mandatory)" name="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should handle empty optional selection (only mandatory)" time="0.001">
     </testcase>
-    <testcase classname="Infrastructure/Quote - QuoteMapper toResponseDto() should include details in response DTO when present" name="Infrastructure/Quote - QuoteMapper toResponseDto() should include details in response DTO when present" time="0.001">
+    <testcase classname="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should call updateQuoteCoverages with correct coverage IDs" name="Application/Coverage - UpdateQuoteCoveragesUseCase execute() should call updateQuoteCoverages with correct coverage IDs" time="0.001">
     </testcase>
-    <testcase classname="Infrastructure/Quote - QuoteMapper toResponseDto() should handle undefined details in response DTO" name="Infrastructure/Quote - QuoteMapper toResponseDto() should handle undefined details in response DTO" time="0">
+  </testsuite>
+  <testsuite name="Application/Coverage - CalculatePremiumUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-20T19:07:37" time="5.074" tests="9">
+    <testcase classname="Application/Coverage - CalculatePremiumUseCase execute() should calculate premium for mandatory coverages only" name="Application/Coverage - CalculatePremiumUseCase execute() should calculate premium for mandatory coverages only" time="0.005">
     </testcase>
-    <testcase classname="Infrastructure/Quote - QuoteMapper bidirectional mapping should preserve data integrity through toDomain -&gt; toEntity cycle" name="Infrastructure/Quote - QuoteMapper bidirectional mapping should preserve data integrity through toDomain -&gt; toEntity cycle" time="0.001">
+    <testcase classname="Application/Coverage - CalculatePremiumUseCase execute() should calculate premium including optional coverages" name="Application/Coverage - CalculatePremiumUseCase execute() should calculate premium including optional coverages" time="0">
     </testcase>
-    <testcase classname="Infrastructure/Quote - QuoteMapper bidirectional mapping should preserve data integrity through toEntity -&gt; toDomain cycle" name="Infrastructure/Quote - QuoteMapper bidirectional mapping should preserve data integrity through toEntity -&gt; toDomain cycle" time="0">
+    <testcase classname="Application/Coverage - CalculatePremiumUseCase execute() should use baseRate * sum(property values) formula" name="Application/Coverage - CalculatePremiumUseCase execute() should use baseRate * sum(property values) formula" time="0">
+    </testcase>
+    <testcase classname="Application/Coverage - CalculatePremiumUseCase execute() should return 0 breakdown if no coverages selected" name="Application/Coverage - CalculatePremiumUseCase execute() should return 0 breakdown if no coverages selected" time="0.001">
+    </testcase>
+    <testcase classname="Application/Coverage - CalculatePremiumUseCase execute() should handle multiple properties" name="Application/Coverage - CalculatePremiumUseCase execute() should handle multiple properties" time="0.001">
+    </testcase>
+    <testcase classname="Application/Coverage - CalculatePremiumUseCase execute() should calculate correct premium: FIRE (0.002) + CAT (0.0015) on $1,000,000 = $3,500" name="Application/Coverage - CalculatePremiumUseCase execute() should calculate correct premium: FIRE (0.002) + CAT (0.0015) on $1,000,000 = $3,500" time="0">
+    </testcase>
+    <testcase classname="Application/Coverage - CalculatePremiumUseCase execute() should throw NotFoundException if no properties found for quote" name="Application/Coverage - CalculatePremiumUseCase execute() should throw NotFoundException if no properties found for quote" time="0.013">
+    </testcase>
+    <testcase classname="Application/Coverage - CalculatePremiumUseCase execute() should handle properties with zero insured values" name="Application/Coverage - CalculatePremiumUseCase execute() should handle properties with zero insured values" time="0.001">
+    </testcase>
+    <testcase classname="Application/Coverage - CalculatePremiumUseCase execute() should calculate breakdown for each optional coverage" name="Application/Coverage - CalculatePremiumUseCase execute() should calculate breakdown for each optional coverage" time="0">
     </testcase>
   </testsuite>
 </testsuites>

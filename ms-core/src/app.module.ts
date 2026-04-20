@@ -5,6 +5,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { QuoteModule } from './presentation/quote/quote.module';
 import { PropertyModule } from './presentation/property/property.module';
 import { HealthModule } from './presentation/health/health.module';
+import { CoverageModule } from './presentation/coverage/coverage.module';
 import { StructuredLogger } from './common/logger/logger.service';
 import { CorrelationIdMiddleware } from './common/logger/correlation-id.middleware';
 import { HttpLoggingInterceptor } from './common/interceptors/logging.interceptor';
@@ -32,6 +33,7 @@ import { HttpLoggingInterceptor } from './common/interceptors/logging.intercepto
     }),
     QuoteModule,
     PropertyModule,
+    CoverageModule,
     HealthModule,
   ],
   providers: [
