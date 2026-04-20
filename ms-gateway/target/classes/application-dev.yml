@@ -1,0 +1,43 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        # ms-core: Backend API service (development)
+        - id: ms-core
+          uri: http://localhost:3000
+          predicates:
+            - Path=/api/v1/**
+          filters:
+            - StripPrefix=1
+
+        # ms-frontend: React frontend development server
+        - id: ms-frontend
+          uri: http://localhost:5173
+          predicates:
+            - Path=/**
+          filters:
+            - RemoveRequestHeader=Cookie
+
+      # Global CORS configuration for development
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+              - "http://localhost:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    com.segurax.gateway: DEBUG
+    reactor.netty: INFO

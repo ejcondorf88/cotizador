@@ -1,0 +1,62 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ms-gateway
+  cloud:
+    gateway:
+      routes:
+        # ms-core: Backend API service
+        - id: ms-core
+          uri: http://localhost:3000
+          predicates:
+            - Path=/api/v1/**
+          filters:
+            - StripPrefix=1
+
+        # ms-frontend: React frontend application
+        - id: ms-frontend
+          uri: http://localhost:5173
+          predicates:
+            - Path=/**
+          filters:
+            - RemoveRequestHeader=Cookie
+
+      # Global CORS configuration
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+# Actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
+
+# Logging configuration
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    com.segurax.gateway: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

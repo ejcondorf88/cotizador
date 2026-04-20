@@ -1,0 +1,3 @@
+com\segurax\gateway\config\CORSConfig.class
+com\segurax\gateway\filters\LoggingFilter.class
+com\segurax\gateway\MsGatewayApplication.class
