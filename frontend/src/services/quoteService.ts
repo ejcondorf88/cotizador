@@ -1,13 +1,13 @@
 import axios from 'axios';
 import type { Quote, QuoteStatus, UpdateQuoteRequest, PaymentType } from '../types/quote';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
 
 export const quoteService = {
   async createQuote(): Promise<Quote> {
     try {
       const response = await axios.post<Quote>(
-        `${API_URL}/api/v1/quotes`,
+        `${API_URL}/quotes`,
         {},
         {
           headers: {
@@ -32,7 +32,7 @@ export const quoteService = {
 
   async getQuotes(): Promise<Quote[]> {
     try {
-      const response = await axios.get<Quote[]>(`${API_URL}/api/v1/quotes`);
+      const response = await axios.get<Quote[]>(`${API_URL}/quotes`);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -44,7 +44,7 @@ export const quoteService = {
 
   async getQuotesByStatus(status: QuoteStatus): Promise<Quote[]> {
     try {
-      const response = await axios.get<Quote[]>(`${API_URL}/api/v1/quotes`, {
+      const response = await axios.get<Quote[]>(`${API_URL}/quotes`, {
         params: { status },
       });
       return response.data;
@@ -58,7 +58,7 @@ export const quoteService = {
 
   async getQuoteById(id: string): Promise<Quote> {
     try {
-      const response = await axios.get<Quote>(`${API_URL}/api/v1/quotes/${id}`);
+      const response = await axios.get<Quote>(`${API_URL}/quotes/${id}`);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -70,7 +70,7 @@ export const quoteService = {
 
   async updateQuote(id: string, data: UpdateQuoteRequest): Promise<Quote> {
     try {
-      const response = await axios.patch<Quote>(`${API_URL}/api/v1/quotes/${id}`, data, {
+      const response = await axios.patch<Quote>(`${API_URL}/quotes/${id}`, data, {
         headers: {
           'Content-Type': 'application/json',
         },

@@ -7,7 +7,7 @@ import type {
   ActivityOption,
 } from '../types/property';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
 
 export const propertyService = {
   async createPropertiesBulk(
@@ -15,7 +15,7 @@ export const propertyService = {
     request: BulkCreatePropertiesRequest,
   ): Promise<BulkCreatePropertiesResponse> {
     const response = await fetch(
-      `${API_BASE_URL}/api/v1/quotes/${quoteId}/properties/bulk`,
+      `${API_BASE_URL}/quotes/${quoteId}/properties/bulk`,
       {
         method: 'POST',
         headers: {
@@ -35,7 +35,7 @@ export const propertyService = {
 
   async getPropertiesByQuote(quoteId: string): Promise<GetPropertiesByQuoteResponse> {
     const response = await fetch(
-      `${API_BASE_URL}/api/v1/quotes/${quoteId}/properties`,
+      `${API_BASE_URL}/quotes/${quoteId}/properties`,
       {
         method: 'GET',
         headers: {
@@ -57,7 +57,7 @@ export const propertyService = {
     request: UpdatePropertyRequest,
   ): Promise<Property> {
     const response = await fetch(
-      `${API_BASE_URL}/api/v1/properties/${propertyId}`,
+      `${API_BASE_URL}/properties/${propertyId}`,
       {
         method: 'PATCH',
         headers: {
@@ -77,7 +77,7 @@ export const propertyService = {
 
   async deletePropertiesByQuote(quoteId: string): Promise<void> {
     const response = await fetch(
-      `${API_BASE_URL}/api/v1/quotes/${quoteId}/properties`,
+      `${API_BASE_URL}/quotes/${quoteId}/properties`,
       {
         method: 'DELETE',
         headers: {
@@ -94,7 +94,7 @@ export const propertyService = {
 
   async validateZipCode(cp: string): Promise<{ valid: boolean; message: string }> {
     const response = await fetch(
-      `${API_BASE_URL}/api/v1/cp/${cp}/validate`,
+      `${API_BASE_URL}/cp/${cp}/validate`,
       {
         method: 'GET',
         headers: {
@@ -112,7 +112,7 @@ export const propertyService = {
 
   async searchActivities(query: string): Promise<ActivityOption[]> {
     const response = await fetch(
-      `${API_BASE_URL}/api/v1/activities/search?query=${encodeURIComponent(query)}`,
+      `${API_BASE_URL}/activities/search?query=${encodeURIComponent(query)}`,
       {
         method: 'GET',
         headers: {

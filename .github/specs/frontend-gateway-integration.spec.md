@@ -1,6 +1,6 @@
 ---
 id: SPEC-017
-status: DRAFT
+status: APPROVED
 feature: frontend-gateway-integration
 created: 2026-04-20
 updated: 2026-04-20
