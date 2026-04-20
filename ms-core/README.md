@@ -1,98 +1,219 @@
-# Backend SeguraX - Cotizador API
+# ms-core - Backend API SeguraX
 
-Backend API para el cotizador de SeguraX. Implementado con **NestJS**, **Arquitectura Hexagonal**, **TypeORM** y **PostgreSQL**.
+Microservicio backend para Cotizador SeguraX. Maneja cotizaciones, propiedades, coberturas y cálculo de primas.
 
-## 🏗 Arquitectura Hexagonal
+## Stack Tecnológico
+
+| Tecnología | Versión | Propósito |
+|------------|---------|-----------|
+| NestJS | 10.x | Framework backend |
+| TypeScript | 5.x | Lenguaje tipado |
+| TypeORM | 0.3.x | ORM para PostgreSQL |
+| PostgreSQL | 16 | Base de datos relacional |
+| Jest | 29.x | Testing framework |
+| Winston | 3.x | Logging estructurado |
+
+## Arquitectura Hexagonal (Ports & Adapters)
 
 ```
 src/
-├── domain/              # Entidades puras, contratos (puertos)
-├── application/         # Casos de uso, DTOs
-├── infrastructure/      # Adaptadores, entidades TypeORM, mappers
-└── presentation/        # Controllers HTTP, módulos NestJS
+├── domain/              # Entidades, enums, value objects (sin dependencias externas)
+│   ├── quote/          # Entidad Quote, enums, value objects
+│   └── property/       # Entidad Property, enums, value objects
+├── application/         # Use cases, DTOs, ports (solo depende de domain)
+│   ├── quote/          # Casos de uso de cotizaciones
+│   └── property/       # Casos de uso de propiedades
+├── infrastructure/      # Repositories, mappers, TypeORM entities
+│   ├── quote/          # Implementación repositorio Quote
+│   ├── property/       # Implementación repositorio Property
+│   └── database/       # Configuración TypeORM, migraciones
+├── presentation/        # Controllers, DTOs HTTP, exception filters
+│   ├── quote/          # QuoteController
+│   ├── property/       # PropertyController
+│   └── health/         # Health checks
+└── common/              # Utilidades compartidas (logger, interceptors)
 ```
 
-## 🚀 Instalación
+### Principios Hexagonales
+
+| Principio | Implementación |
+|-----------|---------------|
+| **Independencia de frameworks** | Domain no depende de NestJS |
+| **Testabilidad** | Use cases con mocks fáciles |
+| **Independencia de UI** | Domain no sabe del frontend |
+| **Independencia de BD** | Repository ports permiten cambiar PostgreSQL |
+
+## Instalación
 
 ```bash
+# Clonar y entrar al directorio
+cd ms-core
+
 # Instalar dependencias
 npm install
 
 # Configurar variables de entorno
 cp .env.example .env
-# Editar .env con tus credenciales de PostgreSQL
+# Editar .env con credenciales PostgreSQL
 
 # Ejecutar migraciones
 npm run migration:run
+```
 
-# Iniciar en modo desarrollo
+## Comandos Disponibles
+
+```bash
+# Desarrollo con hot reload
 npm run start:dev
-```
 
-## 📚 API Endpoints
+# Producción
+npm run build
+npm run start:prod
 
-### Crear Cotización
-```bash
-POST /api/v1/cotizaciones
-```
+# Testing
+npm run test              # Tests unitarios
+npm run test:cov          # Coverage report
+npm run test:e2e          # Tests end-to-end
+npm run test:watch        # Watch mode
 
-**Request:** Vacío (no requiere body)
+# Calidad de código
+npm run lint            # ESLint con auto-fix
+npm run format          # Prettier formatting
 
-**Response 201:**
-```json
-{
-  "id": "123e4567-e89b-12d3-a456-426614174000",
-  "numeroFolio": "COT-2024-00001",
-  "estado": "BORRADOR",
-  "fechaCreacion": "2024-01-18T10:30:00.000Z",
-  "fechaActualizacion": "2024-01-18T10:30:00.000Z"
-}
-```
-
-## 🗄 Base de Datos
-
-### Tabla: cotizaciones
-
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| id | UUID | PK, auto-generado |
-| numero_folio | VARCHAR(20) | Único, formato COT-YYYY-NNNNN |
-| estado | VARCHAR(20) | DEFAULT 'BORRADOR' |
-| fecha_creacion | TIMESTAMP | Auto |
-| fecha_actualizacion | TIMESTAMP | Auto |
-
-## 🧪 Testing
-
-```bash
-# Tests unitarios
-npm test
-
-# Tests con coverage
-npm run test:cov
-
-# Tests e2e
-npm run test:e2e
-```
-
-## 📝 Migraciones
-
-```bash
-# Generar migración desde entidades
-npm run migration:generate -- -n NombreMigracion
-
-# Ejecutar migraciones
+# Migraciones TypeORM
+npm run migration:generate -- -n NombreMigration
 npm run migration:run
-
-# Revertir última migración
 npm run migration:revert
 ```
 
-## 📦 Scripts
+## Variables de Entorno
 
-| Comando | Descripción |
-|---------|-------------|
-| `npm run start:dev` | Modo desarrollo con watch |
-| `npm run build` | Build para producción |
-| `npm run start:prod` | Iniciar en producción |
-| `npm test` | Tests unitarios |
-| `npm run lint` | Lint con ESLint |
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `DB_HOST` | Host PostgreSQL | `localhost` |
+| `DB_PORT` | Puerto PostgreSQL | `5432` |
+| `DB_USERNAME` | Usuario PostgreSQL | `postgres` |
+| `DB_PASSWORD` | Contraseña PostgreSQL | `password` |
+| `DB_NAME` | Nombre de la base de datos | `segurax` |
+| `PORT` | Puerto del servidor API | `3000` |
+| `NODE_ENV` | Entorno (development/production) | `development` |
+
+## API Endpoints
+
+### Cotizaciones (`/quotes`)
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/quotes` | Listar todas las cotizaciones (con filtros opcionales) |
+| `GET` | `/quotes/:id` | Obtener cotización por ID |
+| `POST` | `/quotes` | Crear nueva cotización (genera folio automático) |
+| `PATCH` | `/quotes/:id` | Actualizar datos de la cotización |
+
+### Propiedades
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/quotes/:quoteId/properties` | Listar propiedades de una cotización |
+| `POST` | `/quotes/:quoteId/properties/bulk` | Crear múltiples propiedades |
+| `PATCH` | `/properties/:id` | Actualizar una propiedad |
+| `DELETE` | `/quotes/:quoteId/properties` | Eliminar todas las propiedades de una cotización |
+
+### Utilidades
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/cp/:cp/validate` | Validar código postal (formato) |
+| `GET` | `/activities/search` | Buscar clave de giro SAT |
+| `GET` | `/health` | Health check del servicio |
+
+## Estructura de Respuestas
+
+### QuoteResponseDto
+```json
+{
+  "id": "uuid",
+  "folioNumber": "COT-20250120-ABC123",
+  "status": "draft",
+  "companyName": "Empresa Ejemplo",
+  "rfc": "RFC123456789",
+  "businessLine": "Comercio",
+  "propertyCount": 3,
+  "createdAt": "2025-01-20T10:00:00Z",
+  "updatedAt": "2025-01-20T10:00:00Z"
+}
+```
+
+### PropertyResponseDto
+```json
+{
+  "id": "uuid",
+  "quoteId": "uuid",
+  "name": "Sucursal Centro",
+  "address": { "street": "", "city": "", "state": "", "zipCode": "" },
+  "construction": { "type": "", "year": 2020, "levels": 1 },
+  "coverages": { "building": 1000000, "contents": 500000 },
+  "status": "incomplete",
+  "completionPercentage": 65,
+  "createdAt": "2025-01-20T10:00:00Z",
+  "updatedAt": "2025-01-20T10:00:00Z"
+}
+```
+
+## Docker
+
+```bash
+# Build
+docker build -t ms-core .
+
+# Run
+docker run -p 3000:3000 --env-file .env ms-core
+
+# Development con Docker Compose (desde raíz)
+docker-compose up ms-core
+```
+
+## Testing
+
+El proyecto usa **Jest** con configuración para testing de arquitectura hexagonal:
+
+```bash
+# Tests unitarios (use cases, domain)
+npm run test
+
+# Coverage report
+npm run test:cov
+
+# Tests de integración (repositorios, controllers)
+npm run test:e2e
+```
+
+### Estrategia de Testing
+
+| Capa | Tipo de Test | Ejemplo |
+|------|--------------|---------|
+| Domain | Unit test puro | `quote.entity.spec.ts` |
+| Application | Unit con mocks | `create-quote.use-case.spec.ts` |
+| Infrastructure | Integration | `quote.typeorm.repository.spec.ts` |
+| Presentation | E2E | `quote.controller.e2e-spec.ts` |
+
+## Logging
+
+Sistema de logging estructurado con Winston:
+
+```typescript
+// Cada request incluye correlation ID
+{
+  "timestamp": "2025-01-20T10:00:00.000Z",
+  "level": "info",
+  "correlationId": "uuid",
+  "layer": "presentation",
+  "class": "QuoteController",
+  "event": "QUOTE_CREATE_SUCCESS",
+  "message": "Quote created successfully",
+  "meta": { "quoteId": "uuid", "folioNumber": "COT-..." }
+}
+```
+
+## Licencia
+
+MIT License

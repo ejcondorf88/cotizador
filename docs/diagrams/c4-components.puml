@@ -1,0 +1,172 @@
+@startuml C4_Components_ms-core_Hexagonal
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Component Diagram - ms-core (Arquitectura Hexagonal)
+
+' Capa de Presentación
+Container_Boundary(presentation, "Capa de Presentación") {
+    Component(quoteCtrl, "QuoteController", "NestJS Controller", "Endpoints HTTP para cotizaciones")
+    Component(propertyCtrl, "PropertyController", "NestJS Controller", "Endpoints HTTP para propiedades")
+    Component(healthCtrl, "HealthController", "NestJS Controller", "Health checks")
+    Component(httpFilter, "HttpExceptionFilter", "NestJS Filter", "Manejo global de errores HTTP")
+}
+
+' Capa de Aplicación
+Container_Boundary(application, "Capa de Aplicación") {
+    
+    ' Use Cases
+    Component_Boundary(useCases, "Use Cases") {
+        Component(createQuoteUC, "CreateQuoteUseCase", "Application Service", "Crear nueva cotización")
+        Component(updateQuoteUC, "UpdateQuoteUseCase", "Application Service", "Actualizar cotización")
+        Component(getQuotesUC, "GetQuotesUseCase", "Application Service", "Obtener lista de cotizaciones")
+        Component(getQuoteByIdUC, "GetQuoteByIdUseCase", "Application Service", "Obtener cotización por ID")
+        
+        Component(createPropUC, "CreatePropertiesBulkUseCase", "Application Service", "Crear propiedades en lote")
+        Component(updatePropUC, "UpdatePropertyUseCase", "Application Service", "Actualizar propiedad")
+        Component(getPropsUC, "GetPropertiesByQuoteUseCase", "Application Service", "Obtener propiedades de quote")
+    }
+    
+    ' Ports (Interfaces)
+    Component_Boundary(ports, "Ports (Interfaces)") {
+        Component(quoteRepoPort, "QuoteRepositoryPort", "Interface", "Contrato para persistencia de cotizaciones")
+        Component(propRepoPort, "PropertyRepositoryPort", "Interface", "Contrato para persistencia de propiedades")
+    }
+    
+    ' DTOs
+    Component_Boundary(dtos, "DTOs") {
+        Component(quoteDto, "QuoteResponseDto, UpdateQuoteDto", "DTOs", "Transferencia de datos cotizaciones")
+        Component(propDto, "PropertyResponseDto, UpdatePropertyDto", "DTOs", "Transferencia de datos propiedades")
+    }
+}
+
+' Capa de Dominio
+Container_Boundary(domain, "Capa de Dominio") {
+    Component(quoteEntity, "Quote", "Domain Entity", "Entidad pura: id, folio, estado, cálculos de negocio")
+    Component(propertyEntity, "Property", "Domain Entity", "Entidad pura: id, quoteId, dirección, construcción")
+    Component(coverageEntity, "Coverage", "Domain Entity", "Entidad pura: id, name, baseRate")
+    
+    Component(quoteStatus, "QuoteStatus", "Enum", "draft, active, expired, cancelled")
+    Component(propStatus, "PropertyStatus", "Enum", "incomplete, complete")
+    
+    Component(valueObjects, "Value Objects", "VOs", "Address, Construction, Coverages")
+}
+
+' Capa de Infraestructura
+Container_Boundary(infrastructure, "Capa de Infraestructura") {
+    
+    ' Repositorios
+    Component_Boundary(repos, "Repositories (Adapters)") {
+        Component(quoteRepoImpl, "QuoteTypeOrmRepository", "Repository", "Implementación con TypeORM")
+        Component(propRepoImpl, "PropertyTypeOrmRepository", "Repository", "Implementación con TypeORM")
+    }
+    
+    ' Mappers
+    Component_Boundary(mappers, "Mappers") {
+        Component(quoteMapper, "QuoteMapper", "Mapper", "toDomain(), toEntity(), toResponseDto()")
+        Component(propMapper, "PropertyMapper", "Mapper", "toDomain(), toEntity(), toResponseDto()")
+    }
+    
+    ' Entidades TypeORM
+    Component_Boundary(typeormEntities, "TypeORM Entities") {
+        Component(quoteTypeOrm, "QuoteTypeOrmEntity", "Entity", "@Entity(), @Column(), @PrimaryGeneratedColumn()")
+        Component(propTypeOrm, "PropertyTypeOrmEntity", "Entity", "@Entity(), relaciones @OneToMany()")
+    }
+    
+    ' Database
+    ContainerDb(postgres, "PostgreSQL", "PostgreSQL 16", "Base de datos relacional")
+}
+
+' Common
+Container_Boundary(common, "Common") {
+    Component(logger, "StructuredLogger", "Logger Service", "Logging estructurado con Winston")
+    Component(corrId, "CorrelationIdMiddleware", "Middleware", "Inyección de correlation ID")
+}
+
+' Relaciones - Presentación a Aplicación
+Rel(quoteCtrl, createQuoteUC, "usa")
+Rel(quoteCtrl, updateQuoteUC, "usa")
+Rel(quoteCtrl, getQuotesUC, "usa")
+Rel(quoteCtrl, getQuoteByIdUC, "usa")
+Rel(quoteCtrl, httpFilter, "maneja errores con")
+
+Rel(propertyCtrl, createPropUC, "usa")
+Rel(propertyCtrl, updatePropUC, "usa")
+Rel(propertyCtrl, getPropsUC, "usa")
+Rel(propertyCtrl, httpFilter, "maneja errores con")
+
+' Relaciones - Use Cases a Domain
+Rel(createQuoteUC, quoteEntity, "crea/usa")
+Rel(updateQuoteUC, quoteEntity, "actualiza")
+Rel(getQuotesUC, quoteEntity, "retorna")
+
+Rel(createPropUC, propertyEntity, "crea")
+Rel(updatePropUC, propertyEntity, "actualiza")
+Rel(getPropsUC, propertyEntity, "retorna")
+
+' Relaciones - Use Cases a Ports
+Rel(createQuoteUC, quoteRepoPort, "usa interface")
+Rel(updateQuoteUC, quoteRepoPort, "usa interface")
+Rel(getQuotesUC, quoteRepoPort, "usa interface")
+Rel(getQuoteByIdUC, quoteRepoPort, "usa interface")
+
+Rel(createPropUC, propRepoPort, "usa interface")
+Rel(updatePropUC, propRepoPort, "usa interface")
+Rel(getPropsUC, propRepoPort, "usa interface")
+
+' Relaciones - Ports a Implementaciones (Inversión de Dependencias)
+Rel(quoteRepoPort, quoteRepoImpl, "implementa", "<<implements>>")
+Rel(propRepoPort, propRepoImpl, "implementa", "<<implements>>")
+
+' Relaciones - Repositorios a Mappers y Entities
+Rel(quoteRepoImpl, quoteMapper, "usa")
+Rel(quoteRepoImpl, quoteTypeOrm, "usa")
+Rel(propRepoImpl, propMapper, "usa")
+Rel(propRepoImpl, propTypeOrm, "usa")
+
+' Relaciones - Mappers bidireccionales
+Rel(quoteMapper, quoteEntity, "toDomain()/toEntity()")
+Rel(quoteMapper, quoteTypeOrm, "toEntity()/toDomain()")
+Rel(propMapper, propertyEntity, "toDomain()/toEntity()")
+Rel(propMapper, propTypeOrm, "toEntity()/toDomain()")
+
+' Relaciones a Base de Datos
+Rel(quoteTypeOrm, postgres, "persiste", "TypeORM")
+Rel(propTypeOrm, postgres, "persiste", "TypeORM")
+
+' Relaciones con Common
+Rel_U(quoteCtrl, logger, "usa")
+Rel_U(propertyCtrl, logger, "usa")
+Rel_U(createQuoteUC, logger, "usa")
+
+' Leyendas
+note right of presentation
+  **Controllers HTTP**
+  - Manejan requests/responses
+  - Delegan a Use Cases
+  - No lógica de negocio
+end note
+
+note right of application
+  **Application Layer**
+  - Orquesta flujo de datos
+  - Define contratos (Ports)
+  - Contiene DTOs
+end note
+
+note right of domain
+  **Domain Layer**
+  - Entidades puras
+  - Reglas de negocio
+  - Sin dependencias externas
+end note
+
+note right of infrastructure
+  **Infrastructure Layer**
+  - Implementa Ports
+  - Acceso a datos
+  - Frameworks externos
+end note
+
+@enduml

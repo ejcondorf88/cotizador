@@ -1,0 +1,27 @@
+@startuml C4_Context_Cotizador_SeguraX
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+' Actores
+Person(agente, "Agente de Seguros", "Crea cotizaciones para clientes empresariales")
+Person(admin, "Administrador", "Gestiona usuarios y configuración del sistema")
+
+' Sistema Principal
+System_Boundary(c1, "Cotizador SeguraX") {
+    System(cotizador, "Cotizador SeguraX", "Sistema de cotización de seguros de daños. Permite crear cotizaciones con múltiples ubicaciones y coberturas.")
+}
+
+' Sistemas Externos
+System_Ext(email, "Servicio Email", "Envío de cotizaciones por correo electrónico")
+System_Ext(pdf, "Generador PDF", "Generación de documentos de pólizas")
+System_Ext(sat, "Catálogo SAT", "Catálogo de actividades económicas y códigos postales")
+
+' Relaciones
+Rel(agente, cotizador, "Crea y gestiona cotizaciones", "HTTPS")
+Rel(admin, cotizador, "Administración de configuraciones", "HTTPS")
+Rel(cotizador, email, "Envía cotizaciones generadas", "SMTP/HTTPS")
+Rel(cotizador, pdf, "Genera documentos de pólizas", "HTTP/REST")
+Rel(cotizador, sat, "Consulta actividades y valida CP", "HTTP/REST")
+
+@enduml

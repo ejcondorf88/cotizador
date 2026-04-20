@@ -1,0 +1,65 @@
+@startuml C4_Containers_Cotizador_SeguraX
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+' Actor
+Person(agente, "Agente de Seguros", "Crea cotizaciones para empresas")
+
+' Sistema Boundary
+System_Boundary(cotizador, "Cotizador SeguraX") {
+
+    Container(frontend, "Frontend", "React 19 + TypeScript + Vite", "Interfaz de usuario con wizard de 6 pasos. Estado con Zustand + React Query.")
+    
+    Container(gateway, "API Gateway", "Spring Cloud Gateway (WebFlux)", "Enrutamiento de peticiones, CORS centralizado, logging de requests/responses")
+    
+    Container(backend, "Backend API", "NestJS + TypeScript + TypeORM", "Lógica de negocio, cálculo de primas, arquitectura hexagonal")
+    
+    ContainerDb(database, "Base de Datos", "PostgreSQL 16", "Cotizaciones, propiedades, coberturas, usuarios")
+
+}
+
+' Sistemas Externos
+System_Ext(email, "Email Service", "SMTP")
+
+' Relaciones
+Rel(agente, frontend, "Usa", "HTTPS")
+Rel(frontend, gateway, "API Calls", "HTTP/REST")
+Rel(gateway, backend, "Enruta peticiones", "HTTP/REST")
+Rel(backend, database, "Lee/Escribe", "PostgreSQL Protocol")
+Rel(backend, email, "Envía emails", "SMTP")
+
+' Notas
+note right of frontend
+  **Puerto:** 5173
+  **Stack:** React 19, Tailwind CSS, 
+  PrimeReact, Zustand
+end note
+
+note right of gateway
+  **Puerto:** 8080
+  **Features:**
+  - Routing: /api/v1/** → Backend
+  - CORS global
+  - Request/Response logging
+end note
+
+note right of backend
+  **Puerto:** 3000
+  **Arquitectura Hexagonal:**
+  - Domain (Entities)
+  - Application (Use Cases)
+  - Infrastructure (TypeORM)
+  - Presentation (Controllers)
+end note
+
+note right of database
+  **Puerto:** 5432
+  **Tablas:**
+  - quotes
+  - properties
+  - coverages
+  - quote_coverages
+end note
+
+@enduml
