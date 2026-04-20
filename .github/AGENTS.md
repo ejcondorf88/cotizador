@@ -53,6 +53,7 @@ Skills are portable instruction sets invokable as `/command` in Copilot Chat. Th
 | risk-identifier | `/risk-identifier` | Clasifica riesgos con Regla ASD (Alto/Medio/Bajo) |
 | automation-flow-proposer | `/automation-flow-proposer` | Propone flujos a automatizar y framework |
 | performance-analyzer | `/performance-analyzer` | Planifica y analiza pruebas de performance |
+| asdd-serenity-bdd | `/asdd-serenity-bdd` | Genera tests E2E Serenity BDD desde escenarios Gherkin |
 
 ## Lineamientos y Contexto
 

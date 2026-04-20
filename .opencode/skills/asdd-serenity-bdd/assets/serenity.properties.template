@@ -1,0 +1,40 @@
+# Serenity BDD Configuration
+# Generated from ASDD QA Phase
+
+# WebDriver Configuration
+webdriver.driver=chrome
+webdriver.chrome.driver=src/test/resources/drivers/chromedriver
+webdriver.timeouts.implicitlywait=5000
+webdriver.timeouts.fluentwait=10000
+
+# Application URLs
+webdriver.base.url=http://localhost:5173
+api.base.url=http://localhost:3000/api/v1
+
+# Project Configuration
+serenity.project.name=Cotizador SeguraX - E2E Acceptance Tests
+serenity.test.root=com.segurax.features
+serenity.requirements.dir=src/test/resources/features
+
+# Reporting Configuration
+serenity.console.colors=true
+serenity.logging=VERBOSE
+serenity.verbose.steps=true
+serenity.report.show.manual.tests=false
+serenity.report.show.releases=true
+
+# Screenshot Configuration
+serenity.take.screenshots=AFTER_EACH_STEP
+serenity.full.page.screenshot.strategy=true
+
+# Feature Coverage
+serenity.requirement.types=feature, capability
+
+# Browser Configuration
+serenity.browser.width=1920
+serenity.browser.height=1080
+serenity.restart.browser.for.each=feature
+
+# Timeout Configuration
+serenity.timeout=10
+webdriver.wait.for.timeout=10000

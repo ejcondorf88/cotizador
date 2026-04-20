@@ -1,0 +1,52 @@
+package com.segurax.stepdefinitions;
+
+import io.cucumber.java.Before;
+import io.cucumber.java.es.Cuando;
+import io.cucumber.java.es.Dado;
+import io.cucumber.java.es.Entonces;
+import net.serenitybdd.screenplay.Actor;
+import net.serenitybdd.screenplay.actors.OnStage;
+import net.serenitybdd.screenplay.actors.OnlineCast;
+
+import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
+
+/**
+ * Step Definitions for {{FEATURE_NAME}}
+ * Generated from Gherkin scenarios in ASDD QA Phase
+ */
+public class {{FEATURE_NAME}}StepDefinitions {
+
+    private Actor elActor;
+
+    @Before
+    public void setTheStage() {
+        OnStage.setTheStage(new OnlineCast());
+        elActor = OnStage.theActorCalled("Usuario");
+    }
+
+    // GIVEN - Preconditions
+    @Dado("que {{GIVEN_STEP}}")
+    public void givenStep() {
+        elActor.attemptsTo(
+            // TODO: Implement precondition task
+        );
+    }
+
+    // WHEN - Actions
+    @Cuando("{{WHEN_STEP}}")
+    public void whenStep() {
+        elActor.attemptsTo(
+            // TODO: Implement action task
+        );
+    }
+
+    // THEN - Assertions
+    @Entonces("{{THEN_STEP}}")
+    public void thenStep() {
+        elActor.should(
+            seeThat(
+                // TODO: Implement question
+            )
+        );
+    }
+}
