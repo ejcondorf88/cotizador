@@ -1,6 +1,6 @@
 ---
 id: SPEC-015
-status: DRAFT
+status: IMPLEMENTED
 feature: serenity-bdd-template
 created: 2026-04-20
 updated: 2026-04-20

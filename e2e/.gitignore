@@ -1,0 +1,42 @@
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Maven target directory
+target/
+!**/src/test/**/target/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test outputs
+/test-output/
+/cucumber-report/
+
+# Serenity reports
+/target/site/serenity/
+
+# Driver binaries (should be downloaded or configured externally)
+*.exe
+chromedriver
+geckodriver
+msedgedriver
+
+# Environment files
+.env
+*.properties.local
+
+# Temporary files
+*.tmp
+*.temp
