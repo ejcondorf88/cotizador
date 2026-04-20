@@ -1,0 +1,27 @@
+package com.segurax.gateway;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+
+/**
+ * API Gateway para Cotizador SeguraX.
+ * 
+ * Responsabilidades:
+ * - Enrutamiento de requests a microservicios
+ * - Filtros globales (logging, auth, rate limiting)
+ * - Circuit breaker para resiliencia
+ * - CORS configuration
+ * 
+ * @author SeguraX Team
+ * @version 1.0.0
+ */
+@SpringBootApplication
+@EnableDiscoveryClient
+public class MsGatewayApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(MsGatewayApplication.class, args);
+    }
+
+}

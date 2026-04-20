@@ -55,6 +55,11 @@ Skills are portable instruction sets invokable as `/command` in Copilot Chat. Th
 | performance-analyzer | `/performance-analyzer` | Planifica y analiza pruebas de performance |
 | asdd-serenity-bdd | `/asdd-serenity-bdd` | Genera tests E2E Serenity BDD desde escenarios Gherkin |
 
+### Backend / Microservicios
+| Skill | Slash Command | Descripción |
+|-------|---------------|-------------|
+| asdd-spring-gateway | `/asdd-spring-gateway` | Implementa API Gateway con Spring Cloud Gateway y arquitectura hexagonal |
+
 ## Lineamientos y Contexto
 
 Los agentes deben cargar estos archivos como **primer paso** antes de generar cualquier código:

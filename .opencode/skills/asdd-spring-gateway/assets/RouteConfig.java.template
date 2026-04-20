@@ -1,0 +1,70 @@
+package com.segurax.gateway.config;
+
+import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * Configuración de rutas usando Java DSL.
+ * 
+ * Alternativa a application.yml para configuración programática.
+ * Permite lógica dinámica en la definición de rutas.
+ * 
+ * @author SeguraX Team
+ * @since 1.0.0
+ */
+@Configuration
+public class RouteConfig {
+
+    /**
+     * Configuración de rutas del Gateway.
+     * 
+     * Rutas definidas:
+     * - /api/v1/quotes/** → ms-core
+     * - /api/v1/properties/** → ms-core
+     * - /** → ms-frontend (SPA)
+     * 
+     * @param builder RouteLocatorBuilder
+     * @return RouteLocator con todas las rutas configuradas
+     */
+    @Bean
+    public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
+        return builder.routes()
+            // ms-core: Servicio de cotizaciones
+            .route("ms-core-quotes", r -> r
+                .path("/api/v1/quotes/**")
+                .and().method("GET", "POST", "PUT", "DELETE", "PATCH")
+                .filters(f -> f
+                    .stripPrefix(2)
+                    .addRequestHeader("X-Gateway-Time", String.valueOf(System.currentTimeMillis()))
+                    .addRequestHeader("X-Service-Name", "ms-core")
+                    .circuitBreaker(config -> config
+                        .setName("ms-core-quotes-cb")
+                        .setFallbackUri("forward:/fallback/core")))
+                .uri("lb://ms-core"))
+            
+            // ms-core: Servicio de propiedades
+            .route("ms-core-properties", r -> r
+                .path("/api/v1/properties/**")
+                .and().method("GET", "POST", "PUT", "DELETE", "PATCH")
+                .filters(f -> f
+                    .stripPrefix(2)
+                    .addRequestHeader("X-Gateway-Time", String.valueOf(System.currentTimeMillis()))
+                    .circuitBreaker(config -> config
+                        .setName("ms-core-properties-cb")
+                        .setFallbackUri("forward:/fallback/core")))
+                .uri("lb://ms-core"))
+            
+            // ms-frontend: Aplicación React
+            .route("ms-frontend", r -> r
+                .path("/**")
+                .filters(f -> f
+                    .removeRequestHeader("Cookie")
+                    .addResponseHeader("X-Frame-Options", "DENY")
+                    .addResponseHeader("X-Content-Type-Options", "nosniff"))
+                .uri("http://localhost:5173"))
+            
+            .build();
+    }
+}

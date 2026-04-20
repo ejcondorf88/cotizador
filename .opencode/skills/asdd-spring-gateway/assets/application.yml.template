@@ -1,0 +1,116 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ms-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      
+      # Rutas configuradas
+      routes:
+        # ms-core - Servicio de cotizaciones
+        - id: ms-core
+          uri: lb://ms-core
+          predicates:
+            - Path=/api/v1/quotes/**
+            - Path=/api/v1/properties/**
+            - Method=GET,POST,PUT,DELETE,PATCH
+          filters:
+            - StripPrefix=2
+            - AddRequestHeader=X-Gateway-Time, ${now}
+            - name: CircuitBreaker
+              args:
+                name: ms-core-cb
+                fallbackUri: forward:/fallback/core
+        
+        # ms-frontend - Aplicación React (estático)
+        - id: ms-frontend
+          uri: http://localhost:5173
+          predicates:
+            - Path=/**
+          filters:
+            - RemoveRequestHeader=Cookie
+      
+      # Filtros globales
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      
+      # CORS Global
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: GET,POST,PUT,DELETE,PATCH,OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+
+# Circuit Breaker
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+    instances:
+      ms-core-cb:
+        baseConfig: default
+        slidingWindowSize: 5
+
+# Management / Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,metrics
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+# Logging
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    com.segurax.gateway: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+---
+# Profile: dev
+spring:
+  config:
+    activate:
+      on-profile: dev
+  cloud:
+    gateway:
+      routes:
+        - id: ms-core-dev
+          uri: http://localhost:3000
+          predicates:
+            - Path=/api/v1/**
+          filters:
+            - StripPrefix=2
+
+---
+# Profile: prod
+spring:
+  config:
+    activate:
+      on-profile: prod
+  cloud:
+    gateway:
+      routes:
+        - id: ms-core-prod
+          uri: lb://ms-core
+          predicates:
+            - Path=/api/v1/**
