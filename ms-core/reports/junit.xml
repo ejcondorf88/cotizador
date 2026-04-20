@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="91" failures="0" errors="0" time="7.866">
+  <testsuite name="Domain/Property - Property Entity" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:26:08" time="5.314" tests="19">
+    <testcase classname="Domain/Property - Property Entity create() should create a property with all required fields" name="Domain/Property - Property Entity create() should create a property with all required fields" time="0.011">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity create() should recalculate status on creation" name="Domain/Property - Property Entity create() should recalculate status on creation" time="0.001">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity createEmpty() should create an empty property with default values" name="Domain/Property - Property Entity createEmpty() should create an empty property with default values" time="0.002">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity recalculateStatus() should set COMPLETE status when all fields are filled" name="Domain/Property - Property Entity recalculateStatus() should set COMPLETE status when all fields are filled" time="0.001">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity recalculateStatus() should set INCOMPLETE status when required fields are missing" name="Domain/Property - Property Entity recalculateStatus() should set INCOMPLETE status when required fields are missing" time="0">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity recalculateStatus() should set INCOMPLETE status when zip code is invalid" name="Domain/Property - Property Entity recalculateStatus() should set INCOMPLETE status when zip code is invalid" time="0">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity recalculateStatus() should set INCOMPLETE status when no coverage is set" name="Domain/Property - Property Entity recalculateStatus() should set INCOMPLETE status when no coverage is set" time="0">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity recalculateStatus() should recalculate percentage correctly with partial fields" name="Domain/Property - Property Entity recalculateStatus() should recalculate percentage correctly with partial fields" time="0.001">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity getTotalCoverage() should sum all coverage values correctly" name="Domain/Property - Property Entity getTotalCoverage() should sum all coverage values correctly" time="0">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity getTotalCoverage() should handle zero coverages" name="Domain/Property - Property Entity getTotalCoverage() should handle zero coverages" time="0">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity getTotalCoverage() should handle undefined/null values in coverages" name="Domain/Property - Property Entity getTotalCoverage() should handle undefined/null values in coverages" time="0">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity update() should update only provided address fields" name="Domain/Property - Property Entity update() should update only provided address fields" time="0">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity update() should update only provided construction fields" name="Domain/Property - Property Entity update() should update only provided construction fields" time="0.001">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity update() should update only provided coverage fields" name="Domain/Property - Property Entity update() should update only provided coverage fields" time="0">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity update() should update name independently" name="Domain/Property - Property Entity update() should update name independently" time="0.001">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity update() should recalculate status after update" name="Domain/Property - Property Entity update() should recalculate status after update" time="0">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity update() should update timestamp after modification" name="Domain/Property - Property Entity update() should update timestamp after modification" time="0.001">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity isComplete() should return true for complete property" name="Domain/Property - Property Entity isComplete() should return true for complete property" time="0">
+    </testcase>
+    <testcase classname="Domain/Property - Property Entity isComplete() should return false for incomplete property" name="Domain/Property - Property Entity isComplete() should return false for incomplete property" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="Domain/Quote - Quote Entity" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:26:08" time="5.355" tests="10">
+    <testcase classname="Domain/Quote - Quote Entity create() should create a quote with provided folio number" name="Domain/Quote - Quote Entity create() should create a quote with provided folio number" time="0.009">
+    </testcase>
+    <testcase classname="Domain/Quote - Quote Entity create() should create quotes with unique IDs" name="Domain/Quote - Quote Entity create() should create quotes with unique IDs" time="0">
+    </testcase>
+    <testcase classname="Domain/Quote - Quote Entity updateDetails() should update only provided fields" name="Domain/Quote - Quote Entity updateDetails() should update only provided fields" time="0.001">
+    </testcase>
+    <testcase classname="Domain/Quote - Quote Entity updateDetails() should merge new details with existing ones" name="Domain/Quote - Quote Entity updateDetails() should merge new details with existing ones" time="0.001">
+    </testcase>
+    <testcase classname="Domain/Quote - Quote Entity updateDetails() should update all detail fields" name="Domain/Quote - Quote Entity updateDetails() should update all detail fields" time="0.001">
+    </testcase>
+    <testcase classname="Domain/Quote - Quote Entity changeStatus() should change status from DRAFT to IN_PROGRESS" name="Domain/Quote - Quote Entity changeStatus() should change status from DRAFT to IN_PROGRESS" time="0">
+    </testcase>
+    <testcase classname="Domain/Quote - Quote Entity changeStatus() should change status from IN_PROGRESS to COMPLETED" name="Domain/Quote - Quote Entity changeStatus() should change status from IN_PROGRESS to COMPLETED" time="0">
+    </testcase>
+    <testcase classname="Domain/Quote - Quote Entity changeStatus() should allow status to be CANCELLED from any state" name="Domain/Quote - Quote Entity changeStatus() should allow status to be CANCELLED from any state" time="0.001">
+    </testcase>
+    <testcase classname="Domain/Quote - Quote Entity setPropertyCount() should set property count" name="Domain/Quote - Quote Entity setPropertyCount() should set property count" time="0.001">
+    </testcase>
+    <testcase classname="Domain/Quote - Quote Entity setPropertyCount() should update timestamp when setting property count" name="Domain/Quote - Quote Entity setPropertyCount() should update timestamp when setting property count" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Application/Quote - CreateQuoteUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:26:08" time="5.812" tests="3">
+    <testcase classname="Application/Quote - CreateQuoteUseCase execute() should create quote with auto-generated folio" name="Application/Quote - CreateQuoteUseCase execute() should create quote with auto-generated folio" time="0.008">
+    </testcase>
+    <testcase classname="Application/Quote - CreateQuoteUseCase execute() should throw error when repository fails" name="Application/Quote - CreateQuoteUseCase execute() should throw error when repository fails" time="0.008">
+    </testcase>
+    <testcase classname="Application/Quote - CreateQuoteUseCase execute() should propagate repository errors" name="Application/Quote - CreateQuoteUseCase execute() should propagate repository errors" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Application/Quote - UpdateQuoteUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:26:08" time="5.841" tests="10">
+    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update quote with company details" name="Application/Quote - UpdateQuoteUseCase execute() should update quote with company details" time="0.009">
+    </testcase>
+    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update quote status" name="Application/Quote - UpdateQuoteUseCase execute() should update quote status" time="0">
+    </testcase>
+    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update validity dates" name="Application/Quote - UpdateQuoteUseCase execute() should update validity dates" time="0.001">
+    </testcase>
+    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should throw NotFoundException when quote does not exist" name="Application/Quote - UpdateQuoteUseCase execute() should throw NotFoundException when quote does not exist" time="0.017">
+    </testcase>
+    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should throw BadRequestException when validityEnd is before validityStart" name="Application/Quote - UpdateQuoteUseCase execute() should throw BadRequestException when validityEnd is before validityStart" time="0.001">
+    </testcase>
+    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update only provided fields (partial update)" name="Application/Quote - UpdateQuoteUseCase execute() should update only provided fields (partial update)" time="0.001">
+    </testcase>
+    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update agent information" name="Application/Quote - UpdateQuoteUseCase execute() should update agent information" time="0.001">
+    </testcase>
+    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update currency and payment type" name="Application/Quote - UpdateQuoteUseCase execute() should update currency and payment type" time="0.001">
+    </testcase>
+    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should log error on repository failure" name="Application/Quote - UpdateQuoteUseCase execute() should log error on repository failure" time="0.003">
+    </testcase>
+    <testcase classname="Application/Quote - UpdateQuoteUseCase execute() should update property count" name="Application/Quote - UpdateQuoteUseCase execute() should update property count" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="Application/Property - CreatePropertiesBulkUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:26:08" time="5.847" tests="11">
+    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should create N empty properties for existing quote" name="Application/Property - CreatePropertiesBulkUseCase execute() should create N empty properties for existing quote" time="0.024">
+    </testcase>
+    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should create exactly N properties with correct quoteId" name="Application/Property - CreatePropertiesBulkUseCase execute() should create exactly N properties with correct quoteId" time="0.001">
+    </testcase>
+    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should throw NotFoundException when quote does not exist" name="Application/Property - CreatePropertiesBulkUseCase execute() should throw NotFoundException when quote does not exist" time="0.012">
+    </testcase>
+    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should throw BadRequestException when count is less than 1" name="Application/Property - CreatePropertiesBulkUseCase execute() should throw BadRequestException when count is less than 1" time="0.002">
+    </testcase>
+    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should throw BadRequestException when count is greater than 100" name="Application/Property - CreatePropertiesBulkUseCase execute() should throw BadRequestException when count is greater than 100" time="0.001">
+    </testcase>
+    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should throw BadRequestException when quote already has properties" name="Application/Property - CreatePropertiesBulkUseCase execute() should throw BadRequestException when quote already has properties" time="0.001">
+    </testcase>
+    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should create properties with INCOMPLETE status" name="Application/Property - CreatePropertiesBulkUseCase execute() should create properties with INCOMPLETE status" time="0.001">
+    </testcase>
+    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should log error on repository failure" name="Application/Property - CreatePropertiesBulkUseCase execute() should log error on repository failure" time="0.003">
+    </testcase>
+    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should handle count of 1 (minimum valid)" name="Application/Property - CreatePropertiesBulkUseCase execute() should handle count of 1 (minimum valid)" time="0.001">
+    </testcase>
+    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should handle count of 100 (maximum valid)" name="Application/Property - CreatePropertiesBulkUseCase execute() should handle count of 100 (maximum valid)" time="0.002">
+    </testcase>
+    <testcase classname="Application/Property - CreatePropertiesBulkUseCase execute() should log use case start" name="Application/Property - CreatePropertiesBulkUseCase execute() should log use case start" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Infrastructure/Quote - QuoteMapper" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:26:08" time="5.994" tests="13">
+    <testcase classname="Infrastructure/Quote - QuoteMapper toDomain() should map TypeORM entity to domain Quote" name="Infrastructure/Quote - QuoteMapper toDomain() should map TypeORM entity to domain Quote" time="0.01">
+    </testcase>
+    <testcase classname="Infrastructure/Quote - QuoteMapper toDomain() should map details when present" name="Infrastructure/Quote - QuoteMapper toDomain() should map details when present" time="0.002">
+    </testcase>
+    <testcase classname="Infrastructure/Quote - QuoteMapper toDomain() should handle null companyName (no details)" name="Infrastructure/Quote - QuoteMapper toDomain() should handle null companyName (no details)" time="0.001">
+    </testcase>
+    <testcase classname="Infrastructure/Quote - QuoteMapper toDomain() should map different statuses correctly" name="Infrastructure/Quote - QuoteMapper toDomain() should map different statuses correctly" time="0.001">
+    </testcase>
+    <testcase classname="Infrastructure/Quote - QuoteMapper toEntity() should map domain Quote to TypeORM entity" name="Infrastructure/Quote - QuoteMapper toEntity() should map domain Quote to TypeORM entity" time="0.001">
+    </testcase>
+    <testcase classname="Infrastructure/Quote - QuoteMapper toEntity() should map details to TypeORM entity" name="Infrastructure/Quote - QuoteMapper toEntity() should map details to TypeORM entity" time="0.002">
+    </testcase>
+    <testcase classname="Infrastructure/Quote - QuoteMapper toEntity() should handle undefined details" name="Infrastructure/Quote - QuoteMapper toEntity() should handle undefined details" time="0">
+    </testcase>
+    <testcase classname="Infrastructure/Quote - QuoteMapper toEntity() should handle partial details" name="Infrastructure/Quote - QuoteMapper toEntity() should handle partial details" time="0.001">
+    </testcase>
+    <testcase classname="Infrastructure/Quote - QuoteMapper toResponseDto() should map Quote to response DTO" name="Infrastructure/Quote - QuoteMapper toResponseDto() should map Quote to response DTO" time="0.001">
+    </testcase>
+    <testcase classname="Infrastructure/Quote - QuoteMapper toResponseDto() should include details in response DTO when present" name="Infrastructure/Quote - QuoteMapper toResponseDto() should include details in response DTO when present" time="0.001">
+    </testcase>
+    <testcase classname="Infrastructure/Quote - QuoteMapper toResponseDto() should handle undefined details in response DTO" name="Infrastructure/Quote - QuoteMapper toResponseDto() should handle undefined details in response DTO" time="0">
+    </testcase>
+    <testcase classname="Infrastructure/Quote - QuoteMapper bidirectional mapping should preserve data integrity through toDomain -&gt; toEntity cycle" name="Infrastructure/Quote - QuoteMapper bidirectional mapping should preserve data integrity through toDomain -&gt; toEntity cycle" time="0">
+    </testcase>
+    <testcase classname="Infrastructure/Quote - QuoteMapper bidirectional mapping should preserve data integrity through toEntity -&gt; toDomain cycle" name="Infrastructure/Quote - QuoteMapper bidirectional mapping should preserve data integrity through toEntity -&gt; toDomain cycle" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Infrastructure/Property - PropertyMapper" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:26:08" time="5.968" tests="9">
+    <testcase classname="Infrastructure/Property - PropertyMapper toDomain() should map TypeORM entity to domain Property" name="Infrastructure/Property - PropertyMapper toDomain() should map TypeORM entity to domain Property" time="0.011">
+    </testcase>
+    <testcase classname="Infrastructure/Property - PropertyMapper toDomain() should handle null construction year and levels" name="Infrastructure/Property - PropertyMapper toDomain() should handle null construction year and levels" time="0">
+    </testcase>
+    <testcase classname="Infrastructure/Property - PropertyMapper toDomain() should convert decimal coverage values to numbers" name="Infrastructure/Property - PropertyMapper toDomain() should convert decimal coverage values to numbers" time="0">
+    </testcase>
+    <testcase classname="Infrastructure/Property - PropertyMapper toEntity() should map domain Property to TypeORM entity" name="Infrastructure/Property - PropertyMapper toEntity() should map domain Property to TypeORM entity" time="0.004">
+    </testcase>
+    <testcase classname="Infrastructure/Property - PropertyMapper toEntity() should handle undefined construction year and activity code" name="Infrastructure/Property - PropertyMapper toEntity() should handle undefined construction year and activity code" time="0.001">
+    </testcase>
+    <testcase classname="Infrastructure/Property - PropertyMapper toDomainList() should map array of TypeORM entities to array of domain Properties" name="Infrastructure/Property - PropertyMapper toDomainList() should map array of TypeORM entities to array of domain Properties" time="0.002">
+    </testcase>
+    <testcase classname="Infrastructure/Property - PropertyMapper toDomainList() should return empty array for empty input" name="Infrastructure/Property - PropertyMapper toDomainList() should return empty array for empty input" time="0">
+    </testcase>
+    <testcase classname="Infrastructure/Property - PropertyMapper bidirectional mapping should preserve data integrity through toDomain -&gt; toEntity cycle" name="Infrastructure/Property - PropertyMapper bidirectional mapping should preserve data integrity through toDomain -&gt; toEntity cycle" time="0.002">
+    </testcase>
+    <testcase classname="Infrastructure/Property - PropertyMapper bidirectional mapping should preserve data integrity through toEntity -&gt; toDomain cycle" name="Infrastructure/Property - PropertyMapper bidirectional mapping should preserve data integrity through toEntity -&gt; toDomain cycle" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Application/Property - UpdatePropertyUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-20T00:26:08" time="7.118" tests="16">
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should update property name and address" name="Application/Property - UpdatePropertyUseCase execute() should update property name and address" time="0.01">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should update construction details" name="Application/Property - UpdatePropertyUseCase execute() should update construction details" time="0.002">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should update coverage values" name="Application/Property - UpdatePropertyUseCase execute() should update coverage values" time="0.001">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw NotFoundException when property does not exist" name="Application/Property - UpdatePropertyUseCase execute() should throw NotFoundException when property does not exist" time="0.016">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when zip code is invalid" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when zip code is invalid" time="0.001">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when zip code has letters" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when zip code has letters" time="0.001">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when construction year is before 1900" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when construction year is before 1900" time="0">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when construction year is in the future" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when construction year is in the future" time="0">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when coverage building is negative" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when coverage building is negative" time="0.001">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when coverage exceeds maximum" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when coverage exceeds maximum" time="0.004">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when contents coverage exceeds maximum" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when contents coverage exceeds maximum" time="0.001">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when electronic coverage exceeds maximum" name="Application/Property - UpdatePropertyUseCase execute() should throw BadRequestException when electronic coverage exceeds maximum" time="0">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should log success after update" name="Application/Property - UpdatePropertyUseCase execute() should log success after update" time="0.001">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should log error on repository failure" name="Application/Property - UpdatePropertyUseCase execute() should log error on repository failure" time="0.002">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should pass correct data to repository update" name="Application/Property - UpdatePropertyUseCase execute() should pass correct data to repository update" time="0">
+    </testcase>
+    <testcase classname="Application/Property - UpdatePropertyUseCase execute() should handle partial updates" name="Application/Property - UpdatePropertyUseCase execute() should handle partial updates" time="0.001">
+    </testcase>
+  </testsuite>
+</testsuites>

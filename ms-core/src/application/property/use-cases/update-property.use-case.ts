@@ -95,21 +95,22 @@ export class UpdatePropertyUseCase {
         }
       }
 
-      // Build update data
-      const updateData: Partial<Property> = {};
-      
-      // Ubicación
-      if (input.name !== undefined || input.street !== undefined || 
-          input.neighborhood !== undefined || input.city !== undefined || 
-          input.state !== undefined || input.zipCode !== undefined) {
-        updateData.address = {
-          street: input.street ?? existing.address.street,
-          neighborhood: input.neighborhood ?? existing.address.neighborhood,
-          city: input.city ?? existing.address.city,
-          state: input.state ?? existing.address.state,
-          zipCode: input.zipCode ?? existing.address.zipCode,
-        };
-      }
+// Build update data
+const updateData: Partial<Property> = {};
+
+// Ubicación
+if (input.name !== undefined || input.street !== undefined ||
+    input.neighborhood !== undefined || input.city !== undefined ||
+    input.state !== undefined || input.zipCode !== undefined) {
+  updateData.name = input.name ?? existing.name;
+  updateData.address = {
+    street: input.street ?? existing.address.street,
+    neighborhood: input.neighborhood ?? existing.address.neighborhood,
+    city: input.city ?? existing.address.city,
+    state: input.state ?? existing.address.state,
+    zipCode: input.zipCode ?? existing.address.zipCode,
+  };
+}
 
       // Construcción
       if (input.constructionType !== undefined || input.constructionYear !== undefined ||
