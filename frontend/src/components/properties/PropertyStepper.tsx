@@ -45,6 +45,8 @@ export function PropertyStepper({
       type: ConstructionType.CONCRETO,
       usage: PropertyUsage.COMERCIAL,
       specificActivity: '',
+      year: undefined,
+      levels: 1, // Default: 1 nivel
     },
     coverages: property.coverages || {
       building: 0,
@@ -102,7 +104,7 @@ export function PropertyStepper({
       // Construcción
       constructionType: formData.construction.type,
       constructionYear: formData.construction.year,
-      levels: formData.construction.levels,
+      levels: formData.construction.levels ?? 1, // Default: 1 nivel si no especificado
       propertyUsage: formData.construction.usage,
       specificActivity: formData.construction.specificActivity,
       activityCode: formData.construction.activityCode,

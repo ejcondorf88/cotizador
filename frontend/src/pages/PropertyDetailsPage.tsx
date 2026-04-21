@@ -28,6 +28,7 @@ export function PropertyDetailsPage() {
   // Local state
   const [expandedIndex, setExpandedIndex] = useState<number>(0);
   const [isFinalizing, setIsFinalizing] = useState(false);
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   // Fetch quote and properties
   const { data: quote, isLoading: isLoadingQuote } = useQuoteByIdQuery(id!);
@@ -72,6 +73,9 @@ export function PropertyDetailsPage() {
           detail: 'Inmueble actualizado correctamente',
           life: 2000,
         });
+
+        // Refetch properties to check completion status
+        await refetchProperties();
       } catch (error) {
         toast.current?.show({
           severity: 'error',
@@ -81,7 +85,7 @@ export function PropertyDetailsPage() {
         });
       }
     },
-    [id, updatePropertyMutation]
+    [id, updatePropertyMutation, refetchProperties]
   );
 
   const handleCancel = useCallback(() => {
@@ -111,7 +115,8 @@ export function PropertyDetailsPage() {
   }, [id, deletePropertiesMutation, navigate]);
 
   const handleFinalize = useCallback(async () => {
-    if (!id || !allComplete) return;
+    // Múltiples guards para prevenir doble submit
+    if (!id || !allComplete || isFinalizing || hasNavigated) return;
 
     setIsFinalizing(true);
 
@@ -122,16 +127,23 @@ export function PropertyDetailsPage() {
         data: { status: 'IN_PROGRESS' },
       });
 
+      // Marcar que ya navegamos para prevenir dobles
+      setHasNavigated(true);
+
       toast.current?.show({
         severity: 'success',
         summary: '¡Éxito!',
-        detail: 'Todos los inmuebles han sido guardados',
-        life: 3000,
+        detail: 'Redirigiendo a selección de coberturas...',
+        life: 2000,
       });
 
-      // Redirect to coverage selection step
-      navigate(`/quote/${id}/coverage`);
+      // Redirección con delay para UX y replace para no volver atrás
+      setTimeout(() => {
+        navigate(`/quote/${id}/coverage`, { replace: true });
+      }, 500);
     } catch (error) {
+      // Reset estado para permitir reintentar
+      setHasNavigated(false);
       toast.current?.show({
         severity: 'error',
         summary: 'Error',
@@ -141,7 +153,7 @@ export function PropertyDetailsPage() {
     } finally {
       setIsFinalizing(false);
     }
-  }, [id, allComplete, updateQuoteMutation, navigate]);
+  }, [id, allComplete, isFinalizing, hasNavigated, updateQuoteMutation, navigate]);
 
   // If not valid (redirected), don't render
   if (!isValid) {
@@ -287,18 +299,18 @@ export function PropertyDetailsPage() {
                     Complete todos los inmuebles antes de finalizar
                   </p>
                 )}
-                <Button
-                  label={isFinalizing ? 'Finalizando...' : 'Finalizar'}
-                  icon={isFinalizing ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
-                  onClick={handleFinalize}
-                  loading={isFinalizing}
-                  disabled={isFinalizing || !allComplete}
-                  className={`w-full sm:w-auto px-8 py-3 border-none ${
-                    allComplete
-                      ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white'
-                      : 'bg-gray-600 text-gray-300 cursor-not-allowed'
-                  }`}
-                />
+              <Button
+                label={isFinalizing ? 'Finalizando...' : 'Finalizar'}
+                icon={isFinalizing ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
+                onClick={handleFinalize}
+                loading={isFinalizing}
+                disabled={isFinalizing || !allComplete || hasNavigated}
+                className={`w-full sm:w-auto px-8 py-3 border-none ${
+                  allComplete
+                    ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white'
+                    : 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                }`}
+              />
               </div>
             </div>
           )}

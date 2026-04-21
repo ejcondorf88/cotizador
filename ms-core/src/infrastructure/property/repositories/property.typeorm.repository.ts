@@ -60,69 +60,69 @@ export class PropertyTypeOrmRepository implements PropertyRepositoryPort {
     // Construction - map from flat fields or nested object
     const constructionUpdate: Partial<typeof existing.construction> = {};
     
-    // @ts-ignore - Handle legacy flat fields from DTO
-    if (data.constructionType !== undefined) {
-      // @ts-ignore
-      constructionUpdate.type = data.constructionType;
-    }
-    // @ts-ignore - Handle legacy flat fields from DTO
-    if (data.constructionYear !== undefined) {
-      // @ts-ignore
-      constructionUpdate.year = data.constructionYear;
-    }
-    // @ts-ignore - Handle legacy flat fields from DTO
-    if (data.levels !== undefined) {
-      // @ts-ignore
-      constructionUpdate.levels = data.levels;
-    }
-    // @ts-ignore - Handle legacy flat fields from DTO
-    if (data.propertyUsage !== undefined) {
-      // @ts-ignore
-      constructionUpdate.usage = data.propertyUsage;
-    }
-    // @ts-ignore - Handle legacy flat fields from DTO
-    if (data.specificActivity !== undefined) {
-      // @ts-ignore
-      constructionUpdate.specificActivity = data.specificActivity;
-    }
-    // @ts-ignore - Handle legacy flat fields from DTO
-    if (data.activityCode !== undefined) {
-      // @ts-ignore
-      constructionUpdate.activityCode = data.activityCode;
-    }
+// @ts-ignore - Handle legacy flat fields from DTO or nested object
+if (data.constructionType !== undefined || data.construction?.type !== undefined) {
+  // @ts-ignore
+  constructionUpdate.type = data.constructionType ?? data.construction?.type;
+}
+// @ts-ignore - Handle legacy flat fields from DTO or nested object
+if (data.constructionYear !== undefined || data.construction?.year !== undefined) {
+  // @ts-ignore
+  constructionUpdate.year = data.constructionYear ?? data.construction?.year;
+}
+// @ts-ignore - Handle legacy flat fields from DTO or nested object
+if (data.levels !== undefined || data.construction?.levels !== undefined) {
+  // @ts-ignore
+  constructionUpdate.levels = data.levels ?? data.construction?.levels;
+}
+// @ts-ignore - Handle legacy flat fields from DTO or nested object
+if (data.propertyUsage !== undefined || data.construction?.usage !== undefined) {
+  // @ts-ignore
+  constructionUpdate.usage = data.propertyUsage ?? data.construction?.usage;
+}
+// @ts-ignore - Handle legacy flat fields from DTO or nested object
+if (data.specificActivity !== undefined || data.construction?.specificActivity !== undefined) {
+  // @ts-ignore
+  constructionUpdate.specificActivity = data.specificActivity ?? data.construction?.specificActivity;
+}
+// @ts-ignore - Handle legacy flat fields from DTO or nested object
+if (data.activityCode !== undefined || data.construction?.activityCode !== undefined) {
+  // @ts-ignore
+  constructionUpdate.activityCode = data.activityCode ?? data.construction?.activityCode;
+}
 
     if (Object.keys(constructionUpdate).length > 0) {
       updateData.construction = constructionUpdate;
     }
 
-    // Coverages - map from flat fields or nested object
-    const coveragesUpdate: Partial<typeof existing.coverages> = {};
-    
-    // @ts-ignore - Handle legacy flat fields from DTO
-    if (data.coverageBuilding !== undefined) {
-      // @ts-ignore
-      coveragesUpdate.building = data.coverageBuilding;
-    }
-    // @ts-ignore - Handle legacy flat fields from DTO
-    if (data.coverageContents !== undefined) {
-      // @ts-ignore
-      coveragesUpdate.contents = data.coverageContents;
-    }
-    // @ts-ignore - Handle legacy flat fields from DTO
-    if (data.coverageElectronic !== undefined) {
-      // @ts-ignore
-      coveragesUpdate.electronicEquipment = data.coverageElectronic;
-    }
-    // @ts-ignore - Handle legacy flat fields from DTO
-    if (data.coverageMachinery !== undefined) {
-      // @ts-ignore
-      coveragesUpdate.machinery = data.coverageMachinery;
-    }
-    // @ts-ignore - Handle legacy flat fields from DTO
-    if (data.coverageStock !== undefined) {
-      // @ts-ignore
-      coveragesUpdate.stock = data.coverageStock;
-    }
+// Coverages - map from flat fields or nested object
+const coveragesUpdate: Partial<typeof existing.coverages> = {};
+
+// @ts-ignore - Handle legacy flat fields from DTO or nested object
+if (data.coverageBuilding !== undefined || data.coverages?.building !== undefined) {
+  // @ts-ignore
+  coveragesUpdate.building = data.coverageBuilding ?? data.coverages?.building;
+}
+// @ts-ignore - Handle legacy flat fields from DTO or nested object
+if (data.coverageContents !== undefined || data.coverages?.contents !== undefined) {
+  // @ts-ignore
+  coveragesUpdate.contents = data.coverageContents ?? data.coverages?.contents;
+}
+// @ts-ignore - Handle legacy flat fields from DTO or nested object
+if (data.coverageElectronic !== undefined || data.coverages?.electronicEquipment !== undefined) {
+  // @ts-ignore
+  coveragesUpdate.electronicEquipment = data.coverageElectronic ?? data.coverages?.electronicEquipment;
+}
+// @ts-ignore - Handle legacy flat fields from DTO or nested object
+if (data.coverageMachinery !== undefined || data.coverages?.machinery !== undefined) {
+  // @ts-ignore
+  coveragesUpdate.machinery = data.coverageMachinery ?? data.coverages?.machinery;
+}
+// @ts-ignore - Handle legacy flat fields from DTO or nested object
+if (data.coverageStock !== undefined || data.coverages?.stock !== undefined) {
+  // @ts-ignore
+  coveragesUpdate.stock = data.coverageStock ?? data.coverages?.stock;
+}
 
     if (Object.keys(coveragesUpdate).length > 0) {
       updateData.coverages = coveragesUpdate;
