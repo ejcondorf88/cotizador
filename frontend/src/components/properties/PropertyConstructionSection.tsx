@@ -2,10 +2,9 @@ import { useState, useCallback, useEffect } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { InputNumber } from 'primereact/inputnumber';
-import { AutoComplete } from 'primereact/autocomplete';
 import { Message } from 'primereact/message';
-import { propertyService } from '../../services/propertyService';
-import type { ConstructionDetails, ActivityOption } from '../../types/property';
+import { GiroAutocomplete } from '../catalogos/GiroAutocomplete';
+import type { ConstructionDetails } from '../../types/property';
 import { ConstructionType, PropertyUsage, ConstructionTypeLabels, PropertyUsageLabels } from '../../types/property';
 
 interface PropertyConstructionSectionProps {
@@ -30,8 +29,6 @@ export function PropertyConstructionSection({
   errors = {},
 }: PropertyConstructionSectionProps) {
   const [localData, setLocalData] = useState<ConstructionDetails>(construction);
-  const [activitySuggestions, setActivitySuggestions] = useState<ActivityOption[]>([]);
-  const [isSearchingActivities, setIsSearchingActivities] = useState(false);
   const currentYear = new Date().getFullYear();
 
   // Sync with parent
@@ -48,32 +45,10 @@ export function PropertyConstructionSection({
     [localData, onChange]
   );
 
-  const searchActivities = useCallback(
-    async (query: string) => {
-      if (query.length < 3) {
-        setActivitySuggestions([]);
-        return;
-      }
-
-      setIsSearchingActivities(true);
-      try {
-        const results = await propertyService.searchActivities(query);
-        setActivitySuggestions(results);
-      } catch {
-        setActivitySuggestions([]);
-      } finally {
-        setIsSearchingActivities(false);
-      }
-    },
-    []
-  );
-
-  const handleActivitySelect = useCallback(
-    (e: { value: ActivityOption }) => {
-      if (e.value) {
-        handleFieldChange('specificActivity', e.value.description);
-        handleFieldChange('activityCode', e.value.code);
-      }
+  const handleGiroChange = useCallback(
+    (value: { code: string; description: string }) => {
+      handleFieldChange('specificActivity', value.description);
+      handleFieldChange('activityCode', value.code);
     },
     [handleFieldChange]
   );
@@ -165,29 +140,17 @@ export function PropertyConstructionSection({
         </div>
       </div>
 
-      {/* Activity with Autocomplete */}
+      {/* Activity with Autocomplete - Using ms-catalogos */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-300">
           Giro específico <span className="text-red-400">*</span>
         </label>
-        <AutoComplete
+        <GiroAutocomplete
           value={localData.specificActivity}
-          suggestions={activitySuggestions}
-          completeMethod={(e) => searchActivities(e.query)}
-          onChange={(e) => handleFieldChange('specificActivity', e.value)}
-          onSelect={handleActivitySelect}
-          field="description"
+          onChange={handleGiroChange}
+          error={errors.specificActivity}
           placeholder="Ej. Restaurante, Tienda de ropa, Oficinas..."
-          className="w-full"
-          inputClassName="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
-          panelClassName="bg-[#1A1A2E] border border-gray-600"
-          delay={300}
-          minLength={3}
         />
-        {isSearchingActivities && (
-          <p className="text-xs text-gray-400">Buscando actividades...</p>
-        )}
-        {errors.specificActivity && <Message severity="error" text={errors.specificActivity} className="text-xs" />}
       </div>
 
       {/* Activity Code */}
