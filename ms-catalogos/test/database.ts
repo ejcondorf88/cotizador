@@ -1,8 +1,7 @@
-import { PostgreSqlContainer } from '@testcontainers/postgresql';
-import { StartedTestContainer } from 'testcontainers';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 
 export class TestDatabase {
-  private container: StartedTestContainer | null = null;
+  private container: StartedPostgreSqlContainer | null = null;
 
   async start(): Promise<{
     host: string;
@@ -11,7 +10,7 @@ export class TestDatabase {
     password: string;
     database: string;
   }> {
-    this.container = await new PostgreSqlContainer()
+    this.container = await new PostgreSqlContainer('postgres:15-alpine')
       .withDatabase('test_catalogos')
       .withUsername('test')
       .withPassword('test')
