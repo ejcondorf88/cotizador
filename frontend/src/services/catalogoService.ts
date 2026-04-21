@@ -6,7 +6,6 @@ import type {
   Oficina,
   AgenteSearchResponse,
   SuscriptorSearchResponse,
-  OficinaResponse,
 } from '../types/catalogo';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
@@ -146,15 +145,23 @@ export const getAgenteById = async (id: string): Promise<Agente> => {
 
 // ========== SUSCRIPTORES ==========
 
+// Mapea respuesta del backend a formato esperado por el frontend
+const mapSuscriptorResponse = (suscriptor: BackendSuscriptor): SuscriptorSearchResponse => ({
+  id: suscriptor.id,
+  codigo: suscriptor.codigo,
+  nombre: suscriptor.nombre,
+  tipo: suscriptor.tipo,
+});
+
 export const searchSuscriptores = async (query: string): Promise<SuscriptorSearchResponse[]> => {
   try {
-    const response = await axios.get<{ data: SuscriptorSearchResponse[] }>(
+    const response = await axios.get<BackendResponse<BackendSuscriptor>>(
       `${API_URL}/catalogos/suscriptores/buscar`,
       {
         params: { q: query },
       }
     );
-    return response.data.data || [];
+    return (response.data.items || []).map(mapSuscriptorResponse);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error searching suscriptores:', error.response?.data);
@@ -166,10 +173,16 @@ export const searchSuscriptores = async (query: string): Promise<SuscriptorSearc
 
 export const getSuscriptorById = async (id: string): Promise<Suscriptor> => {
   try {
-    const response = await axios.get<{ data: Suscriptor }>(
+    const response = await axios.get<BackendSuscriptor>(
       `${API_URL}/catalogos/suscriptores/${id}`
     );
-    return response.data.data;
+    return {
+      id: response.data.id,
+      codigo: response.data.codigo,
+      nombre: response.data.nombre,
+      tipo: response.data.tipo,
+      activo: response.data.activo,
+    };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error fetching suscriptor:', error.response?.data);
@@ -179,14 +192,24 @@ export const getSuscriptorById = async (id: string): Promise<Suscriptor> => {
   }
 };
 
+// Mapea respuesta del backend a formato esperado por el frontend
+const mapOficinaResponse = (oficina: BackendOficina): Oficina => ({
+  id: oficina.id,
+  codigo: oficina.codigo,
+  nombre: oficina.nombre,
+  ciudad: oficina.ciudad,
+  estado: oficina.estado,
+  activo: oficina.activo,
+});
+
 // ========== OFICINAS ==========
 
 export const getOficinas = async (): Promise<Oficina[]> => {
   try {
-    const response = await axios.get<{ data: Oficina[] }>(
+    const response = await axios.get<BackendResponse<BackendOficina>>(
       `${API_URL}/catalogos/oficinas`
     );
-    return response.data.data || [];
+    return (response.data.items || []).map(mapOficinaResponse);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error fetching oficinas:', error.response?.data);
@@ -198,10 +221,10 @@ export const getOficinas = async (): Promise<Oficina[]> => {
 
 export const getOficinaById = async (id: string): Promise<Oficina> => {
   try {
-    const response = await axios.get<{ data: Oficina }>(
+    const response = await axios.get<BackendOficina>(
       `${API_URL}/catalogos/oficinas/${id}`
     );
-    return response.data.data;
+    return mapOficinaResponse(response.data);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error fetching oficina:', error.response?.data);

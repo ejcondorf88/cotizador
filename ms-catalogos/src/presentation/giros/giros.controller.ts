@@ -34,12 +34,20 @@ export class GirosController {
   @Get('buscar')
   @ApiOperation({ summary: 'Buscar giros por descripción o clave' })
   @ApiQuery({ name: 'q', description: 'Término de búsqueda', required: true })
+  @ApiQuery({ name: 'page', description: 'Número de página', required: false })
+  @ApiQuery({ name: 'limit', description: 'Elementos por página', required: false })
   @ApiResponse({ status: 200, description: 'Resultados de búsqueda', type: PaginatedGiroResponseDto })
   async search(
-    @Query() searchDto: SearchDto,
-    @Query() pagination: PaginationDto,
+    @Query('q') query: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
   ): Promise<PaginatedGiroResponseDto> {
-    return this.searchGirosUseCase.execute(searchDto, pagination);
+    const searchDto = { q: query } as SearchDto;
+    const paginationDto = {
+      page: page ? parseInt(page, 10) : 1,
+      limit: limit ? parseInt(limit, 10) : 20
+    } as PaginationDto;
+    return this.searchGirosUseCase.execute(searchDto, paginationDto);
   }
 
   @Get(':id')
