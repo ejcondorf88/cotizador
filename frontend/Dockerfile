@@ -19,6 +19,13 @@ RUN npm ci && npm cache clean --force
 # Copiar código fuente
 COPY . .
 
+# VITE_API_URL se inyecta en build-time.
+# Valor por defecto: /api/v1 (URL relativa al mismo host).
+# El browser pide /api/v1/... al mismo host → el gateway lo intercepta.
+# Así el frontend NO depende de la IP pública de la EC2.
+ARG VITE_API_URL=/api/v1
+ENV VITE_API_URL=${VITE_API_URL}
+
 # Build de la aplicación
 RUN npm run build
 

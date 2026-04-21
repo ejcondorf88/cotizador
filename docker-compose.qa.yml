@@ -1,0 +1,116 @@
+version: '3.8'
+
+# ============================================================
+# Docker Compose — Entorno QA / Pre-Producción
+# Base de datos: Supabase (externa, no corre en Docker)
+#
+# Uso:
+#   docker compose -f docker-compose.qa.yml --env-file .env.qa up -d --build
+#   docker compose -f docker-compose.qa.yml --env-file .env.qa down
+# ============================================================
+
+services:
+
+  # ──────────────────────────────────────────────────────────
+  # GATEWAY — Único punto de entrada público (puerto 8080)
+  # Spring Cloud Gateway enruta todo el tráfico internamente.
+  # AWS Security Group: abrir SOLO el puerto 8080.
+  # ──────────────────────────────────────────────────────────
+  ms-gateway:
+    build:
+      context: ./ms-gateway
+      dockerfile: Dockerfile
+      target: production
+    container_name: cotizador-gateway-qa
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      # Nombres de servicio Docker — resuelven IP interna automáticamente
+      - MS_CORE_URL=http://ms-core:3000
+      - MS_CATALOGOS_URL=http://ms-catalogos:3001
+      - MS_FRONTEND_URL=http://frontend:8080
+      # QA sin auth: '*' es aceptable
+      - FRONTEND_ORIGIN=${FRONTEND_ORIGIN:-*}
+    depends_on:
+      - ms-core
+      - ms-catalogos
+      - frontend
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────────────────
+  # FRONTEND — React build estático servido por Nginx
+  # ──────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+      args:
+        # URL relativa: el browser pide /api/v1 al mismo host (IP de la EC2)
+        # El gateway intercepta /api/v1/** y lo redirige internamente
+        # → No depende de la IP pública de la EC2 (resuelve el problema de IPs dinámicas)
+        VITE_API_URL: /api/v1
+    container_name: cotizador-frontend-qa
+    expose:
+      - "8080"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────────────────
+  # MS-CORE — API principal (NestJS)
+  # Se conecta a Supabase directamente (no hay postgres en Docker).
+  # Solo accesible dentro de la red Docker.
+  # ──────────────────────────────────────────────────────────
+  ms-core:
+    build:
+      context: ./ms-core
+      dockerfile: Dockerfile
+      target: production
+    container_name: cotizador-core-qa
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Supabase connection — usa Transaction Pooler (puerto 6543) o Direct (5432)
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME_CORE}
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────────────────
+  # MS-CATALOGOS — Microservicio de catálogos (NestJS)
+  # Schema separado en Supabase (DB_NAME_CATALOGOS).
+  # Solo accesible dentro de la red Docker.
+  # ──────────────────────────────────────────────────────────
+  ms-catalogos:
+    build:
+      context: ./ms-catalogos
+      dockerfile: Dockerfile
+      target: production
+    container_name: cotizador-catalogos-qa
+    expose:
+      - "3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME_CATALOGOS}
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge

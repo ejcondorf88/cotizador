@@ -1,0 +1,11 @@
+# ─── Variables de entorno con credenciales reales ─────────
+.env.qa
+.env.prod
+.env.staging
+
+# El .example sí se commitea (no tiene credenciales)
+# !.env.qa.example
+# !.env.prod.example
+
+# ─── Scripts de init DB (no necesarios con Supabase) ──────
+scripts/init-db.sh

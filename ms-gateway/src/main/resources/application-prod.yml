@@ -2,28 +2,37 @@ spring:
   cloud:
     gateway:
       routes:
-        # ms-core: Backend API service (production)
+        # ── ms-catalogos: más específico — DEBE ir primero ──
+        - id: ms-catalogos
+          uri: ${MS_CATALOGOS_URL:http://ms-catalogos:3001}
+          predicates:
+            - Path=/api/v1/catalogos/**
+          filters:
+            - StripPrefix=2
+
+        # ── ms-core: catch-all para el resto de /api/v1/** ──
         - id: ms-core
           uri: ${MS_CORE_URL:http://ms-core:3000}
           predicates:
             - Path=/api/v1/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=2
 
-        # ms-frontend: React frontend (production build)
+        # ── Frontend: catch-all final (DEBE ir último) ──────
         - id: ms-frontend
-          uri: ${MS_FRONTEND_URL:http://frontend:80}
+          uri: ${MS_FRONTEND_URL:http://frontend:8080}
           predicates:
             - Path=/**
           filters:
             - RemoveRequestHeader=Cookie
 
-      # Global CORS configuration for production
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins:
-              - "${FRONTEND_ORIGIN:https://segurax.com}"
+            allowedOriginPatterns:
+              # Con IP dinámica de EC2 o sin auth: '*' es aceptable en QA
+              # En producción real: cambiar a 'https://tu-dominio.com'
+              - "${FRONTEND_ORIGIN:*}"
             allowedMethods:
               - GET
               - POST
@@ -32,14 +41,11 @@ spring:
               - PATCH
               - OPTIONS
             allowedHeaders:
-              - Authorization
-              - Content-Type
-              - X-Requested-With
-              - Accept
-              - Origin
-            allowCredentials: true
+              - "*"
+            # false cuando allowedOrigins es '*' — son incompatibles
+            allowCredentials: false
 
-# Production logging
+# Logging reducido en producción
 logging:
   level:
     org.springframework.cloud.gateway: WARN
