@@ -7,7 +7,15 @@ spring:
   cloud:
     gateway:
       routes:
-      # ms-core: Backend API service (ALWAYS FIRST - more specific paths)
+      # ms-catalogos: Catalogos microservice (MORE SPECIFIC - must come first)
+      - id: ms-catalogos
+        uri: http://localhost:3001
+        predicates:
+        - Path=/api/v1/catalogos/**
+        filters:
+        - StripPrefix=2
+
+      # ms-core: Backend API service (CATCH-ALL for remaining /api/v1/** - must be after catalogos)
       - id: ms-core
         uri: http://localhost:3000
         predicates:

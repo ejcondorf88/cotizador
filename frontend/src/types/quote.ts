@@ -27,8 +27,11 @@ export interface QuoteDetail {
   // Paso 2: Conducción
   agentKey: string;
   agentName: string;
+  agentId?: string;
   subscriber: string;
+  subscriberId?: string;
   office: string;
+  officeId?: string;
 
   // Paso 3: Vigencia
   validityStart: string;
@@ -69,8 +72,11 @@ export interface UpdateQuoteRequest {
   // Paso 2: Conducción
   agentKey?: string;
   agentName?: string;
+  agentId?: string;
   subscriber?: string;
+  subscriberId?: string;
   office?: string;
+  officeId?: string;
 
   // Paso 3: Vigencia
   validityStart?: string;
