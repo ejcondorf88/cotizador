@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { AutoComplete } from 'primereact/autocomplete';
-import { useSuscriptoresAutocomplete } from '../../hooks/useCatalogos';
+import { searchSuscriptores } from '../../services/catalogoService';
 import type { SuscriptorSearchResponse } from '../../types/catalogo';
 
 interface SuscriptorAutocompleteProps {
@@ -24,63 +24,79 @@ export function SuscriptorAutocomplete({
   disabled = false,
 }: SuscriptorAutocompleteProps) {
   const [inputValue, setInputValue] = useState(value || '');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<SuscriptorSearchResponse[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Sync with parent value
   useEffect(() => {
-    if (value !== undefined) {
+    if (value !== undefined && value !== inputValue) {
       setInputValue(value);
     }
   }, [value]);
 
-  // Debounce search query (300ms)
+  // Cleanup timeout on unmount
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(inputValue);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [inputValue]);
-
-  const { data: suscriptores = [], isLoading } = useSuscriptoresAutocomplete(debouncedQuery);
-
-  const handleChange = useCallback(
-    (e: { value: unknown }) => {
-      const newValue = e.value;
-      if (typeof newValue === 'string') {
-        setInputValue(newValue.toUpperCase());
-      } else if (newValue && typeof newValue === 'object') {
-        const suscriptor = newValue as SuscriptorSearchResponse;
-        setInputValue(suscriptor.codigo);
-        onChange({
-          suscriptorId: suscriptor.id,
-          codigo: suscriptor.codigo,
-          nombre: suscriptor.nombre,
-          tipo: suscriptor.tipo,
-        });
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
       }
-    },
-    [onChange]
-  );
+    };
+  }, []);
+
+  const handleSearch = useCallback(async (query: string) => {
+    if (query.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const results = await searchSuscriptores(query);
+      console.log('Suscriptor search results:', results);
+      setSuggestions(results);
+    } catch (err) {
+      console.error('Error searching suscriptores:', err);
+      setSuggestions([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  const handleComplete = useCallback((event: { query: string }) => {
+    const query = event.query.toUpperCase();
+    
+    // Update input value
+    setInputValue(query);
+    
+    // Clear existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Debounce search
+    searchTimeoutRef.current = setTimeout(() => {
+      handleSearch(query);
+    }, 200);
+  }, [handleSearch]);
 
   const handleSelect = useCallback(
-    (e: { value: unknown }) => {
-      if (e.value && typeof e.value === 'object') {
-        const suscriptor = e.value as SuscriptorSearchResponse;
-        setInputValue(suscriptor.codigo);
-        onChange({
-          suscriptorId: suscriptor.id,
-          codigo: suscriptor.codigo,
-          nombre: suscriptor.nombre,
-          tipo: suscriptor.tipo,
-        });
-      }
+    (e: { value: SuscriptorSearchResponse }) => {
+      const suscriptor = e.value;
+      setInputValue(suscriptor.codigo);
+      onChange({
+        suscriptorId: suscriptor.id,
+        codigo: suscriptor.codigo,
+        nombre: suscriptor.nombre,
+        tipo: suscriptor.tipo,
+      });
     },
     [onChange]
   );
 
   const itemTemplate = (suscriptor: SuscriptorSearchResponse) => {
     return (
-      <div className="flex flex-col p-2">
+      <div className="flex flex-col p-2 hover:bg-[#1A1A2E] cursor-pointer">
         <div className="flex items-center justify-between">
           <span className="font-medium text-white">{suscriptor.nombre}</span>
           <span className="text-xs text-[#C9A84C] font-mono">{suscriptor.codigo}</span>
@@ -97,9 +113,8 @@ export function SuscriptorAutocomplete({
       <div className="relative">
         <AutoComplete
           value={inputValue}
-          suggestions={suscriptores}
-          completeMethod={handleChange}
-          onChange={(e) => setInputValue(String(e.value))}
+          suggestions={suggestions}
+          completeMethod={handleComplete}
           onSelect={handleSelect}
           itemTemplate={itemTemplate}
           field="codigo"
@@ -107,18 +122,18 @@ export function SuscriptorAutocomplete({
           disabled={disabled}
           className={`w-full ${error ? 'p-invalid' : ''}`}
           inputClassName="w-full bg-[#1A1A2E] border border-gray-600 text-white placeholder-gray-500 focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C] uppercase"
-          panelClassName="bg-[#252540] border-gray-600"
-          delay={300}
+          panelClassName="bg-[#252540] border border-gray-600 shadow-xl"
+          delay={0}
           minLength={2}
         />
-        {isLoading && (
+        {isSearching && (
           <i className="pi pi-spin pi-spinner text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
         )}
-        {!isLoading && (
+        {!isSearching && (
           <i className="pi pi-search text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
         )}
       </div>
-      {isLoading && <p className="text-xs text-gray-400">Buscando suscriptores...</p>}
+      {isSearching && <p className="text-xs text-gray-400">Buscando suscriptores...</p>}
       {error && <p className="text-red-500 text-xs">{error}</p>}
       <p className="text-gray-500 text-xs">
         Escribe al menos 2 caracteres para buscar suscriptores
