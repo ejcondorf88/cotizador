@@ -1,6 +1,6 @@
 ---
 id: SPEC-024
-status: IN_PROGRESS
+status: IMPLEMENTED
 feature: update-all-readmes
 created: 2026-04-21
 updated: 2026-04-21

@@ -466,19 +466,22 @@ docker inspect frontend --format='{{.Config.Labels}}'
 
 ## 🧪 Testing
 
-### Estado Actual
+### Tests Unitarios
 
-> **Nota:** Los tests automatizados están planificados para futuras fases del proyecto.
+> **Nota:** Los tests unitarios del frontend están en desarrollo. Actualmente el proyecto cuenta con tests E2E automatizados.
 
 ```bash
-# Tests unitarios (planificado - no disponible aún)
+# Ejecutar tests unitarios (cuando estén disponibles)
 # npm run test
 
-# Tests E2E (planificado - no disponible aún)
-# npm run test:e2e
+# Ejecutar tests con modo watch
+# npm run test:watch
+
+# Ejecutar tests con cobertura
+# npm run test:cov
 ```
 
-### Integración con Tests E2E
+### Tests E2E (Disponibles ✅)
 
 El frontend es el objetivo de las pruebas E2E ubicadas en el directorio `../e2e/`:
 
