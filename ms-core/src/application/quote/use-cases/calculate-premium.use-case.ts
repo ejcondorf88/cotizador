@@ -101,7 +101,8 @@ export class CalculatePremiumUseCase {
         where: { quoteId, propertyId: prop.id },
       });
 
-      if (prop.status === PropertyCalculationStatus.CALCULATED) {
+      // Una propiedad está calculada si tiene netPremium (no null/undefined)
+      if (prop.netPremium != null) {
         calculatedCount++;
         propertyResults.push({
           propertyId: prop.id,
@@ -341,12 +342,13 @@ export class CalculatePremiumUseCase {
     }
 
     // Validar que tenga al menos un coverage > 0
+    // Convertir a número explícitamente (los campos decimal vienen como string)
     const totalCoverage =
-      (prop.coverageBuilding || 0) +
-      (prop.coverageContents || 0) +
-      (prop.coverageElectronic || 0) +
-      (prop.coverageMachinery || 0) +
-      (prop.coverageStock || 0);
+      (Number(prop.coverageBuilding) || 0) +
+      (Number(prop.coverageContents) || 0) +
+      (Number(prop.coverageElectronic) || 0) +
+      (Number(prop.coverageMachinery) || 0) +
+      (Number(prop.coverageStock) || 0);
 
     if (totalCoverage <= 0) {
       validationErrors.push('No tiene valores asegurados configurados');
