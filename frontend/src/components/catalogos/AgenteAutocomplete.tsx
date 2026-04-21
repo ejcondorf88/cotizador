@@ -11,8 +11,6 @@ interface AgenteAutocompleteProps {
     nombre: string;
     email?: string;
     telefono?: string;
-    oficinaId?: string;
-    oficinaNombre?: string;
   }) => void;
   error?: string;
   placeholder?: string;
@@ -46,62 +44,58 @@ export function AgenteAutocomplete({
 
   const { data: agentes = [], isLoading } = useAgentesAutocomplete(debouncedQuery);
 
-  const handleChange = useCallback(
-    (e: { value: unknown }) => {
-      const newValue = e.value;
-      if (typeof newValue === 'string') {
-        setInputValue(newValue.toUpperCase());
-      } else if (newValue && typeof newValue === 'object') {
-        const agente = newValue as AgenteSearchResponse;
-        setInputValue(agente.codigo);
-        onChange({
-          agenteId: agente.id,
-          codigo: agente.codigo,
-          nombre: agente.nombre,
-          email: agente.email,
-          telefono: agente.telefono,
-          oficinaId: agente.oficina?.id,
-          oficinaNombre: agente.oficina?.nombre,
-        });
-      }
-    },
-    [onChange]
-  );
+const handleChange = useCallback(
+  (e: { value: unknown }) => {
+    const newValue = e.value;
+    if (typeof newValue === 'string') {
+      setInputValue(newValue.toUpperCase());
+    } else if (newValue && typeof newValue === 'object') {
+      const agente = newValue as AgenteSearchResponse;
+      setInputValue(agente.codigo);
+      onChange({
+        agenteId: agente.id,
+        codigo: agente.codigo,
+        nombre: agente.nombre,
+        email: agente.email,
+        telefono: agente.telefono,
+      });
+    }
+  },
+  [onChange]
+);
 
-  const handleSelect = useCallback(
-    (e: { value: unknown }) => {
-      if (e.value && typeof e.value === 'object') {
-        const agente = e.value as AgenteSearchResponse;
-        setInputValue(agente.codigo);
-        onChange({
-          agenteId: agente.id,
-          codigo: agente.codigo,
-          nombre: agente.nombre,
-          email: agente.email,
-          telefono: agente.telefono,
-          oficinaId: agente.oficina?.id,
-          oficinaNombre: agente.oficina?.nombre,
-        });
-      }
-    },
-    [onChange]
-  );
+const handleSelect = useCallback(
+  (e: { value: unknown }) => {
+    if (e.value && typeof e.value === 'object') {
+      const agente = e.value as AgenteSearchResponse;
+      setInputValue(agente.codigo);
+      onChange({
+        agenteId: agente.id,
+        codigo: agente.codigo,
+        nombre: agente.nombre,
+        email: agente.email,
+        telefono: agente.telefono,
+      });
+    }
+  },
+  [onChange]
+);
 
-  const itemTemplate = (agente: AgenteSearchResponse) => {
-    return (
-      <div className="flex flex-col p-2">
-        <div className="flex items-center justify-between">
-          <span className="font-medium text-white">{agente.nombre}</span>
-          <span className="text-xs text-[#C9A84C] font-mono">{agente.codigo}</span>
-        </div>
-        {agente.oficina && (
-          <span className="text-xs text-gray-400 mt-0.5">
-            Oficina: {agente.oficina.nombre} ({agente.oficina.ciudad})
-          </span>
-        )}
+const itemTemplate = (agente: AgenteSearchResponse) => {
+  return (
+    <div className="flex flex-col p-2">
+      <div className="flex items-center justify-between">
+        <span className="font-medium text-white">{agente.nombre}</span>
+        <span className="text-xs text-[#C9A84C] font-mono">{agente.codigo}</span>
       </div>
-    );
-  };
+      {agente.email && (
+        <span className="text-xs text-gray-400 mt-0.5">
+          {agente.email}
+        </span>
+      )}
+    </div>
+  );
+};
 
   return (
     <div className="space-y-2">

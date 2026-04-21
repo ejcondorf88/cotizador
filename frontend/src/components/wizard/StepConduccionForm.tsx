@@ -75,24 +75,11 @@ export function StepConduccionForm({ data, onChange, errors }: StepConduccionFor
     nombre: string;
     email?: string;
     telefono?: string;
-    oficinaId?: string;
-    oficinaNombre?: string;
   }) => {
     setSelectedAgente(value);
     onChange('agentId', value.agenteId);
     onChange('agentKey', value.codigo);
     onChange('agentName', value.nombre);
-    
-    // If agent has an office, update it too
-    if (value.oficinaId && value.oficinaNombre) {
-      setSelectedOficina({
-        oficinaId: value.oficinaId,
-        codigo: value.codigo,
-        nombre: value.oficinaNombre,
-      });
-      onChange('officeId', value.oficinaId);
-      onChange('office', value.oficinaNombre);
-    }
   };
 
   const handleSuscriptorChange = (value: {

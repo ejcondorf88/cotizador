@@ -6,21 +6,67 @@ import type {
   Oficina,
   AgenteSearchResponse,
   SuscriptorSearchResponse,
+  OficinaResponse,
 } from '../types/catalogo';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
+
+// ========== TIPOS DE RESPUESTA DEL BACKEND ==========
+
+interface BackendResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+interface BackendAgente {
+  id: string;
+  codigo: string;
+  nombre: string;
+  email?: string;
+  telefono?: string;
+  oficinaId?: string;
+  activo?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface BackendSuscriptor {
+  id: string;
+  codigo: string;
+  nombre: string;
+  tipo?: string;
+  activo?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface BackendOficina {
+  id: string;
+  codigo: string;
+  nombre: string;
+  ciudad?: string;
+  estado?: string;
+  pais?: string;
+  direccion?: string;
+  telefono?: string;
+  activo?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 // ========== GIROS ==========
 
 export const searchGiros = async (query: string, limit = 20): Promise<Giro[]> => {
   try {
-    const response = await axios.get<{ data: Giro[] }>(
+    const response = await axios.get<BackendResponse<Giro>>(
       `${API_URL}/catalogos/giros/buscar`,
       {
         params: { q: query, limit },
       }
     );
-    return response.data.data || [];
+    return response.data.items || [];
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error searching giros:', error.response?.data);
@@ -32,8 +78,8 @@ export const searchGiros = async (query: string, limit = 20): Promise<Giro[]> =>
 
 export const getGiros = async (): Promise<Giro[]> => {
   try {
-    const response = await axios.get<{ data: Giro[] }>(`${API_URL}/catalogos/giros`);
-    return response.data.data || [];
+    const response = await axios.get<BackendResponse<Giro>>(`${API_URL}/catalogos/giros`);
+    return response.data.items || [];
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error fetching giros:', error.response?.data);
@@ -45,15 +91,24 @@ export const getGiros = async (): Promise<Giro[]> => {
 
 // ========== AGENTES ==========
 
+// Mapea respuesta del backend a formato esperado por el frontend
+const mapAgenteResponse = (agente: BackendAgente): AgenteSearchResponse => ({
+  id: agente.id,
+  codigo: agente.codigo,
+  nombre: agente.nombre,
+  email: agente.email,
+  telefono: agente.telefono,
+});
+
 export const searchAgentes = async (query: string): Promise<AgenteSearchResponse[]> => {
   try {
-    const response = await axios.get<{ data: AgenteSearchResponse[] }>(
+    const response = await axios.get<BackendResponse<BackendAgente>>(
       `${API_URL}/catalogos/agentes/buscar`,
       {
         params: { q: query },
       }
     );
-    return response.data.data || [];
+    return (response.data.items || []).map(mapAgenteResponse);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error searching agentes:', error.response?.data);
@@ -65,10 +120,21 @@ export const searchAgentes = async (query: string): Promise<AgenteSearchResponse
 
 export const getAgenteById = async (id: string): Promise<Agente> => {
   try {
-    const response = await axios.get<{ data: Agente }>(
+    const response = await axios.get<BackendResponse<BackendAgente>>(
       `${API_URL}/catalogos/agentes/${id}`
     );
-    return response.data.data;
+    const agente = response.data.items?.[0];
+    if (!agente) {
+      throw new Error('Agente no encontrado');
+    }
+    return {
+      id: agente.id,
+      codigo: agente.codigo,
+      nombre: agente.nombre,
+      email: agente.email,
+      telefono: agente.telefono,
+      oficinaId: agente.oficinaId,
+    };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error fetching agente:', error.response?.data);

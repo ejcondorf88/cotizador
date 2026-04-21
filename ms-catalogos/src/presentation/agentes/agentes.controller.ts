@@ -34,12 +34,20 @@ export class AgentesController {
   @Get('buscar')
   @ApiOperation({ summary: 'Buscar agentes por nombre o código' })
   @ApiQuery({ name: 'q', description: 'Término de búsqueda', required: true })
+  @ApiQuery({ name: 'page', description: 'Número de página', required: false })
+  @ApiQuery({ name: 'limit', description: 'Elementos por página', required: false })
   @ApiResponse({ status: 200, description: 'Resultados de búsqueda', type: PaginatedAgenteResponseDto })
   async search(
-    @Query() searchDto: SearchDto,
-    @Query() pagination: PaginationDto,
+    @Query('q') query: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
   ): Promise<PaginatedAgenteResponseDto> {
-    return this.searchAgentesUseCase.execute(searchDto, pagination);
+    const searchDto = { q: query } as SearchDto;
+    const paginationDto = { 
+      page: page ? parseInt(page, 10) : 1, 
+      limit: limit ? parseInt(limit, 10) : 20 
+    } as PaginationDto;
+    return this.searchAgentesUseCase.execute(searchDto, paginationDto);
   }
 
   @Get(':id')

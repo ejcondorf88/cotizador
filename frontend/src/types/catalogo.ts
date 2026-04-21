@@ -59,12 +59,6 @@ export interface AgenteSearchResponse {
   nombre: string;
   email?: string;
   telefono?: string;
-  oficina?: {
-    id: string;
-    codigo: string;
-    nombre: string;
-    ciudad: string;
-  };
 }
 
 export interface SuscriptorSearchResponse {
