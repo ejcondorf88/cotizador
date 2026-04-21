@@ -1,3 +1,8 @@
+/**
+ * @deprecated Este componente ya no se usa en el flujo actual.
+ * El wizard de inmuebles usa PropertyStepper + usePropertyForm.
+ * Mantener aquí hasta confirmar que no hay referencias activas.
+ */
 import { useState, useCallback, useEffect } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';

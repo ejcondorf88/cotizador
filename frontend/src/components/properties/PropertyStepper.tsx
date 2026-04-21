@@ -1,12 +1,13 @@
 import { useState, useCallback, useRef } from 'react';
+import { useWatch } from 'react-hook-form';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { PropertyLocationSection } from './PropertyLocationSection';
 import { PropertyConstructionSection } from './PropertyConstructionSection';
 import { PropertyCoverageSection } from './PropertyCoverageSection';
 import { PropertySummarySection } from './PropertySummarySection';
-import type { Property, PropertyAddress, ConstructionDetails, PropertyCoverages, UpdatePropertyRequest } from '../../types/property';
-import { ConstructionType, PropertyUsage } from '../../types/property';
+import { usePropertyForm } from '../../hooks/usePropertyForm';
+import type { Property, UpdatePropertyRequest } from '../../types/property';
 
 interface PropertyStepperProps {
   property: Property;
@@ -15,205 +16,38 @@ interface PropertyStepperProps {
 }
 
 const steps = [
-  { label: 'Ubicación', icon: '📍', description: 'Dirección del inmueble' },
+  { label: 'Ubicación',    icon: '📍', description: 'Dirección del inmueble' },
   { label: 'Construcción', icon: '🏗️', description: 'Características' },
-  { label: 'Garantías', icon: '🛡️', description: 'Coberturas' },
-  { label: 'Resumen', icon: '✅', description: 'Verificación' },
+  { label: 'Garantías',   icon: '🛡️', description: 'Coberturas' },
+  { label: 'Resumen',     icon: '✅', description: 'Verificación' },
 ];
 
-export function PropertyStepper({
-  property,
-  onSave,
-  isSaving,
-}: PropertyStepperProps) {
+/**
+ * Contenedor del stepper de inmueble.
+ * Responsabilidades:
+ *   - UI state: activeStep, toast
+ *   - Instanciar usePropertyForm y pasar control + errors a las secciones
+ *
+ * Lo que NO hace:
+ *   - No maneja formData ni errors manualmente
+ *   - No tiene lógica de validación inline
+ *   - No tiene adapters (toUpdatePropertyRequest) — están en el hook
+ */
+export function PropertyStepper({ property, onSave, isSaving }: PropertyStepperProps) {
   const [activeStep, setActiveStep] = useState(0);
-  const [formData, setFormData] = useState<{
-    name: string;
-    address: PropertyAddress;
-    construction: ConstructionDetails;
-    coverages: PropertyCoverages;
-  }>({
-    name: property.name || '',
-    address: property.address || {
-      street: '',
-      neighborhood: '',
-      city: '',
-      state: '',
-      zipCode: '',
-    },
-    construction: property.construction || {
-      type: ConstructionType.CONCRETO,
-      usage: PropertyUsage.COMERCIAL,
-      specificActivity: '',
-      year: undefined,
-      levels: 1, // Default: 1 nivel
-    },
-    coverages: property.coverages || {
-      building: 0,
-      contents: 0,
-      electronicEquipment: 0,
-      machinery: 0,
-      stock: 0,
-    },
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const toast = useRef<Toast>(null);
 
-  // Solo guardar al final (paso 4)
-  const handleFinalSave = useCallback(() => {
-    // Validar año de construcción antes de enviar
-    const year = formData.construction.year;
-    if (year && (year < 1900 || year > new Date().getFullYear())) {
-      toast.current?.show({
-        severity: 'error',
-        summary: 'Año de construcción inválido',
-        detail: `El año debe estar entre 1900 y ${new Date().getFullYear()}`,
-        life: 5000,
-      });
-      return;
-    }
+  // Hook que encapsula TODO el estado del formulario
+  const { form, validateStep, submit } = usePropertyForm({ property, onSave });
+  const { control, formState: { errors }, setValue } = form;
 
-    // Validar ciudad antes de enviar
-    if (!formData.address?.city?.trim()) {
-      toast.current?.show({
-        severity: 'error',
-        summary: 'Campo requerido',
-        detail: 'La ciudad es obligatoria',
-        life: 5000,
-      });
-      return;
-    }
-    if (/^\d+$/.test(formData.address.city)) {
-      toast.current?.show({
-        severity: 'error',
-        summary: 'Ciudad inválida',
-        detail: 'La ciudad no puede contener solo números',
-        life: 5000,
-      });
-      return;
-    }
+  // Leer valores del form para construir el resumen (paso 4)
+  // useWatch se suscribe solo a los campos necesarios
+  const formValues = useWatch({ control });
 
-    const updateData: UpdatePropertyRequest = {
-      // Ubicación - campos planos (no anidados)
-      name: formData.name,
-      street: formData.address.street,
-      neighborhood: formData.address.neighborhood,
-      city: formData.address.city,
-      state: formData.address.state,
-      zipCode: formData.address.zipCode,
-      // Construcción
-      constructionType: formData.construction.type,
-      constructionYear: formData.construction.year,
-      levels: formData.construction.levels ?? 1, // Default: 1 nivel si no especificado
-      propertyUsage: formData.construction.usage,
-      specificActivity: formData.construction.specificActivity,
-      activityCode: formData.construction.activityCode,
-      // Garantías
-      coverageBuilding: formData.coverages.building,
-      coverageContents: formData.coverages.contents,
-      coverageElectronic: formData.coverages.electronicEquipment,
-      coverageMachinery: formData.coverages.machinery,
-      coverageStock: formData.coverages.stock,
-    };
-
-    onSave(updateData);
-  }, [formData, onSave]);
-
-  const handleLocationChange = useCallback(
-    (data: { name: string; address: PropertyAddress }) => {
-      setFormData((prev) => ({
-        ...prev,
-        name: data.name,
-        address: data.address,
-      }));
-    },
-    []
-  );
-
-  const handleConstructionChange = useCallback(
-    (data: ConstructionDetails) => {
-      setFormData((prev) => ({
-        ...prev,
-        construction: data,
-      }));
-    },
-    []
-  );
-
-  const handleCoverageChange = useCallback(
-    (data: PropertyCoverages) => {
-      setFormData((prev) => ({
-        ...prev,
-        coverages: data,
-      }));
-    },
-    []
-  );
-
-  const validateStep = useCallback((step: number): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    switch (step) {
-      case 0: // Location
-        if (!formData.name?.trim()) {
-          newErrors.name = 'El nombre es obligatorio';
-        }
-        if (!formData.address?.street?.trim()) {
-          newErrors.street = 'La calle es obligatoria';
-        }
-        if (!/^\d{5}$/.test(formData.address?.zipCode || '')) {
-          newErrors.zipCode = 'El código postal debe tener 5 dígitos';
-        }
-        if (!formData.address?.state?.trim()) {
-          newErrors.state = 'El estado es obligatorio';
-        }
-      if (!formData.address?.city?.trim()) {
-        newErrors.city = 'La ciudad es obligatoria';
-      } else if (/^\d+$/.test(formData.address.city)) {
-        newErrors.city = 'La ciudad no puede ser solo números';
-      } else if (formData.address.city.length > 100) {
-        newErrors.city = 'La ciudad es demasiado larga (máx 100 caracteres)';
-      }
-      if (!formData.address?.neighborhood?.trim()) {
-        newErrors.neighborhood = 'La colonia es obligatoria';
-      } else if (/^\d+$/.test(formData.address.neighborhood)) {
-        newErrors.neighborhood = 'La colonia no puede ser solo números';
-      }
-        break;
-
-      case 1: // Construction
-        if (!formData.construction?.type) {
-          newErrors.type = 'El tipo constructivo es obligatorio';
-        }
-        if (!formData.construction?.usage) {
-          newErrors.usage = 'El uso es obligatorio';
-        }
-        if (!formData.construction?.specificActivity?.trim()) {
-          newErrors.specificActivity = 'El giro específico es obligatorio';
-        }
-        // Validar año de construcción si está presente
-        if (formData.construction?.year) {
-          const currentYear = new Date().getFullYear();
-          if (formData.construction.year < 1900 || formData.construction.year > currentYear) {
-            newErrors.year = `El año debe estar entre 1900 y ${currentYear}`;
-          }
-        }
-        break;
-
-      case 2: // Coverage
-        const hasAtLeastOne = Object.values(formData.coverages).some((v) => (v || 0) > 0);
-        if (!hasAtLeastOne) {
-          newErrors.coverages = 'Debe especificar al menos una garantía con valor mayor a 0';
-        }
-        break;
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, [formData]);
-
-  const handleNext = useCallback(() => {
-    if (!validateStep(activeStep)) {
+  const handleNext = useCallback(async () => {
+    const isValid = await validateStep(activeStep);
+    if (!isValid) {
       toast.current?.show({
         severity: 'warn',
         summary: 'Campos incompletos',
@@ -222,21 +56,17 @@ export function PropertyStepper({
       });
       return;
     }
-
     if (activeStep < steps.length - 1) {
       setActiveStep((prev) => prev + 1);
     }
   }, [activeStep, validateStep]);
 
   const handlePrevious = useCallback(() => {
-    if (activeStep > 0) {
-      setActiveStep((prev) => prev - 1);
-    }
+    if (activeStep > 0) setActiveStep((prev) => prev - 1);
   }, [activeStep]);
 
   const handleStepClick = useCallback(
     (index: number) => {
-      // Allow going to previous steps or validate current before going next
       if (index < activeStep) {
         setActiveStep(index);
       } else if (index === activeStep + 1) {
@@ -253,44 +83,57 @@ export function PropertyStepper({
     [activeStep, handleNext]
   );
 
-  const renderStepContent = () => {
+  /**
+   * Construye un objeto Property "enriquecido" con los valores actuales del form
+   * para pasarlo a PropertySummarySection (que espera la forma nested de Property).
+   * Solo se crea en el step 3 (resumen).
+   */
+  const buildSummaryProperty = (): Property => ({
+    ...property,
+    name: formValues.name || '',
+    address: {
+      street:       formValues.street       || '',
+      neighborhood: formValues.neighborhood || '',
+      city:         formValues.city         || '',
+      state:        formValues.state        || '',
+      zipCode:      formValues.zipCode      || '',
+    },
+    construction: {
+      type:             formValues.constructionType ?? property.construction?.type,
+      year:             formValues.constructionYear,
+      levels:           formValues.levels ?? 1,
+      usage:            formValues.propertyUsage ?? property.construction?.usage,
+      specificActivity: formValues.specificActivity || '',
+      activityCode:     formValues.activityCode,
+    },
+    coverages: {
+      building:          formValues.coverageBuilding   ?? 0,
+      contents:          formValues.coverageContents   ?? 0,
+      electronicEquipment: formValues.coverageElectronic ?? 0,
+      machinery:         formValues.coverageMachinery  ?? 0,
+      stock:             formValues.coverageStock       ?? 0,
+    },
+  });
+
+  const renderStep = () => {
     switch (activeStep) {
       case 0:
-        return (
-          <PropertyLocationSection
-            address={formData.address}
-            propertyName={formData.name}
-            onChange={handleLocationChange}
-            errors={errors}
-          />
-        );
+        return <PropertyLocationSection control={control} errors={errors} />;
       case 1:
         return (
           <PropertyConstructionSection
-            construction={formData.construction}
-            onChange={handleConstructionChange}
+            control={control}
             errors={errors}
+            setValue={setValue}
           />
         );
       case 2:
-        return (
-          <PropertyCoverageSection
-            coverages={formData.coverages}
-            onChange={handleCoverageChange}
-            errors={errors}
-          />
-        );
+        return <PropertyCoverageSection control={control} errors={errors} />;
       case 3:
         return (
           <PropertySummarySection
-            property={{
-              ...property,
-              name: formData.name,
-              address: formData.address,
-              construction: formData.construction,
-              coverages: formData.coverages,
-            }}
-            onSave={handleFinalSave}
+            property={buildSummaryProperty()}
+            onSave={submit}
             isSaving={isSaving}
           />
         );
@@ -303,30 +146,29 @@ export function PropertyStepper({
     <div className="space-y-6">
       <Toast ref={toast} position="top-center" />
 
-      {/* Stepper Header - Custom like QuoteOnboardingWizard */}
+      {/* Stepper Header */}
       <div className="bg-[#252540] rounded-lg p-4 border border-gray-700">
         <div className="w-full py-4">
           <div className="flex items-center justify-between relative">
-            {/* Connection line */}
+            {/* Línea de fondo */}
             <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-700 -translate-y-1/2" />
+            {/* Línea de progreso */}
             <div
               className="absolute top-1/2 left-0 h-0.5 bg-[#C9A84C] -translate-y-1/2 transition-all duration-500"
-              style={{
-                width: `${(activeStep / (steps.length - 1)) * 100}%`
-              }}
+              style={{ width: `${(activeStep / (steps.length - 1)) * 100}%` }}
             />
 
             {steps.map((step, index) => {
-              const isActive = index === activeStep;
+              const isActive    = index === activeStep;
               const isCompleted = index < activeStep;
 
               return (
                 <button
                   key={index}
+                  type="button"
                   onClick={() => handleStepClick(index)}
                   className="relative z-10 flex flex-col items-center cursor-pointer"
                 >
-                  {/* Step circle */}
                   <div
                     className={`
                       w-12 h-12 rounded-full flex items-center justify-center text-lg
@@ -339,26 +181,16 @@ export function PropertyStepper({
                       }
                     `}
                   >
-                    {isCompleted ? (
-                      <i className="pi pi-check" />
-                    ) : (
-                      <span>{step.icon}</span>
-                    )}
+                    {isCompleted ? <i className="pi pi-check" /> : <span>{step.icon}</span>}
                   </div>
-
-                  {/* Step label */}
                   <div className="mt-3 text-center">
-                    <p
-                      className={`
-                        text-xs font-medium transition-colors duration-300
-                        ${isActive ? 'text-[#C9A84C]' : isCompleted ? 'text-green-500' : 'text-gray-500'}
-                      `}
-                    >
+                    <p className={`
+                      text-xs font-medium transition-colors duration-300
+                      ${isActive ? 'text-[#C9A84C]' : isCompleted ? 'text-green-500' : 'text-gray-500'}
+                    `}>
                       {step.label}
                     </p>
-                    <p className="text-[10px] text-gray-600 mt-1">
-                      {step.description}
-                    </p>
+                    <p className="text-[10px] text-gray-600 mt-1">{step.description}</p>
                   </div>
                 </button>
               );
@@ -367,12 +199,12 @@ export function PropertyStepper({
         </div>
       </div>
 
-      {/* Step Content */}
+      {/* Contenido del step */}
       <div className="bg-[#252540] rounded-lg p-6 border border-gray-700">
-        {renderStepContent()}
+        {renderStep()}
       </div>
 
-      {/* Navigation Buttons */}
+      {/* Botones de navegación (ocultos en el paso de resumen — tiene su propio botón de guardar) */}
       {activeStep < steps.length - 1 && (
         <div className="flex justify-between pt-4 border-t border-gray-700">
           <Button
@@ -382,7 +214,6 @@ export function PropertyStepper({
             disabled={activeStep === 0}
             className="bg-transparent border border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
           />
-
           <Button
             label="Siguiente"
             icon="pi pi-arrow-right"

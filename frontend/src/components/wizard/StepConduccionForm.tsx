@@ -1,152 +1,72 @@
-import { useState, useEffect } from 'react';
+import { Controller, type Control, type FieldErrors, type UseFormSetValue } from 'react-hook-form';
 import { InputText } from 'primereact/inputtext';
 import { AgenteAutocomplete } from '../catalogos/AgenteAutocomplete';
 import { SuscriptorAutocomplete } from '../catalogos/SuscriptorAutocomplete';
 import { OficinaDropdown } from '../catalogos/OficinaDropdown';
+import type { WizardFormData } from '../../schemas/wizard.schema';
 
 interface StepConduccionFormProps {
-  data: {
-    agentKey: string;
-    agentName: string;
-    agentId?: string;
-    subscriber: string;
-    subscriberId?: string;
-    office: string;
-    officeId?: string;
-  };
-  onChange: (field: string, value: string) => void;
-  errors: Record<string, string>;
+  control: Control<WizardFormData>;
+  errors: FieldErrors<WizardFormData>;
+  setValue: UseFormSetValue<WizardFormData>;
 }
 
-export function StepConduccionForm({ data, onChange, errors }: StepConduccionFormProps) {
-  const [selectedAgente, setSelectedAgente] = useState<{
-    agenteId?: string;
-    codigo?: string;
-    nombre?: string;
-    email?: string;
-    telefono?: string;
-    oficinaId?: string;
-    oficinaNombre?: string;
-  } | null>(null);
-
-  const [selectedSuscriptor, setSelectedSuscriptor] = useState<{
-    suscriptorId?: string;
-    codigo?: string;
-    nombre?: string;
-    tipo?: string;
-  } | null>(null);
-
-  const [selectedOficina, setSelectedOficina] = useState<{
-    oficinaId?: string;
-    codigo?: string;
-    nombre?: string;
-  } | null>(null);
-
-  // Sync with parent data on mount
-  useEffect(() => {
-    if (data.agentId) {
-      setSelectedAgente({
-        agenteId: data.agentId,
-        codigo: data.agentKey,
-        nombre: data.agentName,
-        oficinaId: data.officeId,
-        oficinaNombre: data.office,
-      });
-    }
-    if (data.subscriberId) {
-      setSelectedSuscriptor({
-        suscriptorId: data.subscriberId,
-        codigo: data.subscriber,
-        nombre: data.subscriber,
-      });
-    }
-    if (data.officeId) {
-      setSelectedOficina({
-        oficinaId: data.officeId,
-        codigo: data.agentKey?.startsWith('AGT-') ? undefined : data.office,
-        nombre: data.office,
-      });
-    }
-  }, [data.agentId, data.subscriberId, data.officeId]);
-
-  const handleAgenteChange = (value: {
-    agenteId: string;
-    codigo: string;
-    nombre: string;
-    email?: string;
-    telefono?: string;
-    oficinaId?: string;
-  }) => {
-    setSelectedAgente(value);
-    onChange('agentId', value.agenteId);
-    onChange('agentKey', value.codigo);
-    onChange('agentName', value.nombre);
-
-    // Auto-select office if agent has one
-    if (value.oficinaId) {
-      onChange('officeId', value.oficinaId);
-      // The office name will be set by the OficinaDropdown when it loads
-    }
-  };
-
-  const handleSuscriptorChange = (value: {
-    suscriptorId: string;
-    codigo: string;
-    nombre: string;
-    tipo?: string;
-  }) => {
-    setSelectedSuscriptor(value);
-    onChange('subscriberId', value.suscriptorId);
-    onChange('subscriber', value.nombre);
-  };
-
-  const handleOficinaChange = (value: {
-    oficinaId: string;
-    codigo: string;
-    nombre: string;
-  }) => {
-    setSelectedOficina(value);
-    onChange('officeId', value.oficinaId);
-    onChange('office', value.nombre);
-  };
-
+/**
+ * Componente presentacional puro.
+ * Sin useState locales (selectedAgente, selectedSuscriptor, selectedOficina eliminados).
+ * Los autocompletes actualizan el form directamente vía setValue.
+ */
+export function StepConduccionForm({ control, errors, setValue }: StepConduccionFormProps) {
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-white font-heading mb-2">
-          🧑‍💼 Conducción
-        </h2>
+        <h2 className="text-2xl font-bold text-white font-heading mb-2">🧑‍💼 Conducción</h2>
         <p className="text-gray-400">
           Selecciona el agente, suscriptor y oficina para la cotización
         </p>
       </div>
 
-      {/* Clave del agente */}
+      {/* Agente */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-300">
           Agente <span className="text-red-500">*</span>
         </label>
-        <AgenteAutocomplete
-          value={data.agentKey}
-          onChange={handleAgenteChange}
-          error={errors.agentKey}
-          placeholder="Ej: AGT-001234 o nombre del agente"
+        <Controller
+          name="agentKey"
+          control={control}
+          render={({ field }) => (
+            <AgenteAutocomplete
+              value={field.value}
+              onChange={(agente) => {
+                setValue('agentKey', agente.codigo, { shouldValidate: true });
+                setValue('agentName', agente.nombre);
+                setValue('agentId', agente.agenteId);
+                if (agente.oficinaId) {
+                  setValue('officeId', agente.oficinaId);
+                }
+              }}
+              error={errors.agentKey?.message}
+              placeholder="Ej: AGT-001234 o nombre del agente"
+            />
+          )}
         />
       </div>
 
-      {/* Nombre del agente */}
+      {/* Nombre del agente (solo lectura) */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-300">
-          Nombre del agente
-        </label>
-        <InputText
-          value={data.agentName}
-          disabled
-          className="w-full bg-[#1A1A2E] border border-gray-700 text-gray-400 cursor-not-allowed"
+        <label className="block text-sm font-medium text-gray-300">Nombre del agente</label>
+        <Controller
+          name="agentName"
+          control={control}
+          render={({ field }) => (
+            <InputText
+              value={field.value || ''}
+              disabled
+              className="w-full bg-[#1A1A2E] border border-gray-700 text-gray-400 cursor-not-allowed"
+            />
+          )}
         />
-        <p className="text-gray-500 text-xs">
-          Se completa automáticamente al seleccionar el agente
-        </p>
+        <p className="text-gray-500 text-xs">Se completa automáticamente al seleccionar el agente</p>
       </div>
 
       {/* Suscriptor */}
@@ -154,11 +74,20 @@ export function StepConduccionForm({ data, onChange, errors }: StepConduccionFor
         <label className="block text-sm font-medium text-gray-300">
           Suscriptor <span className="text-red-500">*</span>
         </label>
-        <SuscriptorAutocomplete
-          value={data.subscriber}
-          onChange={handleSuscriptorChange}
-          error={errors.subscriber}
-          placeholder="Ej: SUB-001 o nombre del suscriptor"
+        <Controller
+          name="subscriber"
+          control={control}
+          render={({ field }) => (
+            <SuscriptorAutocomplete
+              value={field.value || ''}
+              onChange={(suscriptor) => {
+                setValue('subscriberId', suscriptor.suscriptorId);
+                setValue('subscriber', suscriptor.nombre);
+              }}
+              error={errors.subscriber?.message}
+              placeholder="Ej: SUB-001 o nombre del suscriptor"
+            />
+          )}
         />
       </div>
 
@@ -167,11 +96,20 @@ export function StepConduccionForm({ data, onChange, errors }: StepConduccionFor
         <label className="block text-sm font-medium text-gray-300">
           Oficina <span className="text-red-500">*</span>
         </label>
-        <OficinaDropdown
-          value={data.officeId}
-          onChange={handleOficinaChange}
-          error={errors.office}
-          placeholder="Seleccione una oficina..."
+        <Controller
+          name="officeId"
+          control={control}
+          render={({ field }) => (
+            <OficinaDropdown
+              value={field.value || ''}
+              onChange={(oficina) => {
+                setValue('officeId', oficina.oficinaId);
+                setValue('office', oficina.nombre);
+              }}
+              error={errors.office?.message}
+              placeholder="Seleccione una oficina..."
+            />
+          )}
         />
       </div>
 

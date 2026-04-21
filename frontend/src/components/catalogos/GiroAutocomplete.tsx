@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { AutoComplete } from 'primereact/autocomplete';
-import { useGirosAutocomplete } from '../../hooks/useCatalogos';
+import { searchGiros } from '../../services/catalogoService';
 import type { Giro } from '../../types/catalogo';
 
 interface GiroAutocompleteProps {
@@ -19,71 +19,88 @@ export function GiroAutocomplete({
   disabled = false,
 }: GiroAutocompleteProps) {
   const [inputValue, setInputValue] = useState(value || '');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<Giro[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Sync with parent value
   useEffect(() => {
-    if (value !== undefined) {
+    if (value !== undefined && value !== inputValue) {
       setInputValue(value);
     }
   }, [value]);
 
-  // Debounce search query (300ms)
+  // Cleanup timeout on unmount
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(inputValue);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [inputValue]);
-
-  const { data: giros = [], isLoading } = useGirosAutocomplete(debouncedQuery);
-
-  const handleChange = useCallback(
-    (e: { value: unknown }) => {
-      const newValue = e.value;
-      if (typeof newValue === 'string') {
-        setInputValue(newValue);
-      } else if (newValue && typeof newValue === 'object') {
-        const giro = newValue as Giro;
-        setInputValue(giro.descripcion);
-        onChange({
-          code: giro.clave,
-          description: giro.descripcion,
-        });
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
       }
-    },
-    [onChange]
-  );
+    };
+  }, []);
+
+  const handleSearch = useCallback(async (query: string) => {
+    if (query.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const results = await searchGiros(query);
+      setSuggestions(results);
+    } catch (err) {
+      console.error('Error searching giros:', err);
+      setSuggestions([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  const handleComplete = useCallback((event: { query: string }) => {
+    const query = event.query;
+    
+    // Update input value
+    setInputValue(query);
+    
+    // Clear existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Debounce search
+    searchTimeoutRef.current = setTimeout(() => {
+      handleSearch(query);
+    }, 200);
+  }, [handleSearch]);
 
   const handleSelect = useCallback(
-    (e: { value: unknown }) => {
-      if (e.value && typeof e.value === 'object') {
-        const giro = e.value as Giro;
-        setInputValue(giro.descripcion);
-        onChange({
-          code: giro.clave,
-          description: giro.descripcion,
-        });
-      }
+    (e: { value: Giro }) => {
+      const giro = e.value;
+      setInputValue(giro.descripcion);
+      onChange({
+        code: giro.clave,
+        description: giro.descripcion,
+      });
     },
     [onChange]
   );
 
   const itemTemplate = (giro: Giro) => {
     return (
-      <div className="flex flex-col p-2">
+      <div className="flex flex-col p-2 hover:bg-[#1A1A2E] cursor-pointer">
         <span className="font-medium text-white">{giro.descripcion}</span>
         <span className="text-xs text-gray-400 mt-0.5">
-          Clave: {giro.clave} | Sector: {giro.sector || 'N/A'} | Riesgo:{' '}
+          Clave: <span className="text-[#C9A84C] font-mono">{giro.clave}</span> | Sector: {giro.sector || 'N/A'} | Riesgo:{' '}
           <span
             className={`font-medium ${
               giro.riesgo === 'BAJO'
                 ? 'text-green-400'
                 : giro.riesgo === 'MEDIO'
-                  ? 'text-yellow-400'
-                  : giro.riesgo === 'ALTO'
-                    ? 'text-orange-400'
-                    : 'text-red-400'
+                ? 'text-yellow-400'
+                : giro.riesgo === 'ALTO'
+                ? 'text-orange-400'
+                : 'text-red-400'
             }`}
           >
             {giro.riesgo}
@@ -98,9 +115,8 @@ export function GiroAutocomplete({
       <div className="relative">
         <AutoComplete
           value={inputValue}
-          suggestions={giros}
-          completeMethod={handleChange}
-          onChange={(e) => setInputValue(String(e.value))}
+          suggestions={suggestions}
+          completeMethod={handleComplete}
           onSelect={handleSelect}
           itemTemplate={itemTemplate}
           field="descripcion"
@@ -108,18 +124,18 @@ export function GiroAutocomplete({
           disabled={disabled}
           className={`w-full ${error ? 'p-invalid' : ''}`}
           inputClassName="w-full bg-[#1A1A2E] border border-gray-600 text-white placeholder-gray-500 focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C]"
-          panelClassName="bg-[#252540] border border-gray-600"
-          delay={300}
+          panelClassName="bg-[#252540] border border-gray-600 shadow-xl"
+          delay={0}
           minLength={3}
         />
-        {isLoading && (
+        {isSearching && (
           <i className="pi pi-spin pi-spinner text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
         )}
-        {!isLoading && (
+        {!isSearching && (
           <i className="pi pi-search text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
         )}
       </div>
-      {isLoading && <p className="text-xs text-gray-400">Buscando giros...</p>}
+      {isSearching && <p className="text-xs text-gray-400">Buscando giros...</p>}
       {error && <p className="text-red-500 text-xs">{error}</p>}
       <p className="text-gray-500 text-xs">
         Escribe al menos 3 caracteres para buscar giros

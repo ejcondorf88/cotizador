@@ -1,23 +1,17 @@
 import { useState, useCallback } from 'react';
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ProgressBar } from 'primereact/progressbar';
-import { useRef, useEffect } from 'react';
 import { WizardStepIndicator } from './WizardStepIndicator';
 import { StepAseguradoForm } from './StepAseguradoForm';
 import { StepConduccionForm } from './StepConduccionForm';
 import { StepVigenciaForm } from './StepVigenciaForm';
-import { 
-  useCompleteQuoteMutation, 
-  initialWizardFormData, 
-  type WizardFormData,
-  validateStep1,
-  validateStep2,
-  validateStep3,
-  prepareQuoteUpdateData,
-} from '../../hooks/queries/useUpdateQuoteMutation';
+import { useCompleteQuoteMutation } from '../../hooks/queries/useUpdateQuoteMutation';
+import { useWizardForm } from '../../hooks/useWizardForm';
+import { toUpdateQuoteRequest } from '../../lib/adapters/quote.adapter';
 import { catalogs } from '../../services/quoteService';
 import type { Quote } from '../../types/quote';
 
@@ -36,103 +30,32 @@ const steps = [
 
 export function QuoteOnboardingWizard({ quote, visible, onHide, onSuccess }: QuoteOnboardingWizardProps) {
   const navigate = useNavigate();
+  const toast = useRef<Toast>(null);
+
+  // UI state — navegación del stepper (no es estado de formulario)
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<WizardFormData>(initialWizardFormData);
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
-  const toast = useRef<Toast>(null);
+
+  // Hook que encapsula TODO el estado del formulario
+  const { form, validateStep, clearSaved } = useWizardForm(quote.id);
+  const { control, handleSubmit, formState: { errors }, setValue, getValues } = form;
+
   const completeMutation = useCompleteQuoteMutation();
 
-  // Load saved progress from localStorage
-  useEffect(() => {
-    if (visible && quote) {
-      const savedData = localStorage.getItem(`quote-wizard-${quote.id}`);
-      if (savedData) {
-        try {
-          const parsed = JSON.parse(savedData);
-          setFormData({
-            ...initialWizardFormData,
-            ...parsed,
-            validityStart: parsed.validityStart ? new Date(parsed.validityStart) : null,
-            validityEnd: parsed.validityEnd ? new Date(parsed.validityEnd) : null,
-          });
-        } catch {
-          // Invalid saved data, ignore
-        }
-      }
-    }
-  }, [visible, quote]);
-
-  // Save progress to localStorage
-  const saveProgress = useCallback(() => {
-    if (quote) {
-      localStorage.setItem(`quote-wizard-${quote.id}`, JSON.stringify(formData));
-    }
-  }, [formData, quote]);
-
-  useEffect(() => {
-    if (visible) {
-      saveProgress();
-    }
-  }, [formData, visible, saveProgress]);
-
-  const handleChange = (field: string, value: unknown) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error for this field
-    if (errors[field]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
-  };
-
-  const validateCurrentStep = (): boolean => {
-    let stepErrors: Record<string, string> = {};
-
-    switch (currentStep) {
-      case 1:
-        stepErrors = validateStep1({
-          companyName: formData.companyName,
-          rfc: formData.rfc,
-          businessLine: formData.businessLine,
-          businessType: formData.businessType,
-        });
-        break;
-      case 2:
-        stepErrors = validateStep2({ agentKey: formData.agentKey });
-        break;
-      case 3:
-        stepErrors = validateStep3({
-          validityStart: formData.validityStart,
-          validityEnd: formData.validityEnd,
-          currency: formData.currency,
-          paymentType: formData.paymentType,
-        });
-        break;
-    }
-
-    setErrors(stepErrors);
-    return Object.keys(stepErrors).length === 0;
-  };
-
-  const animateStepChange = (newStep: number) => {
+  const animateStepChange = useCallback((newStep: number) => {
     setIsAnimating(true);
     setTimeout(() => {
       setCurrentStep(newStep);
       setIsAnimating(false);
     }, 150);
-  };
+  }, []);
 
-  const handleNext = () => {
-    if (validateCurrentStep()) {
-      if (currentStep < 3) {
-        animateStepChange(currentStep + 1);
-      }
+  const handleNext = async () => {
+    const isValid = await validateStep(currentStep);
+    if (isValid) {
+      if (currentStep < 3) animateStepChange(currentStep + 1);
     } else {
-      // Shake animation or error feedback
       toast.current?.show({
         severity: 'warn',
         summary: 'Campos requeridos',
@@ -143,31 +66,18 @@ export function QuoteOnboardingWizard({ quote, visible, onHide, onSuccess }: Quo
   };
 
   const handlePrevious = () => {
-    if (currentStep > 1) {
-      animateStepChange(currentStep - 1);
-    }
+    if (currentStep > 1) animateStepChange(currentStep - 1);
   };
 
-  const handleComplete = async () => {
-    if (!validateCurrentStep()) {
-      toast.current?.show({
-        severity: 'warn',
-        summary: 'Campos requeridos',
-        detail: 'Por favor completa todos los campos antes de continuar',
-        life: 3000,
-      });
-      return;
-    }
-
+  const handleComplete = handleSubmit(async (data) => {
     setIsSubmitting(true);
     try {
       await completeMutation.mutateAsync({
         id: quote.id,
-        data: prepareQuoteUpdateData(formData),
+        data: toUpdateQuoteRequest(data),
       });
 
-      // Clear localStorage
-      localStorage.removeItem(`quote-wizard-${quote.id}`);
+      clearSaved();
 
       toast.current?.show({
         severity: 'success',
@@ -176,19 +86,9 @@ export function QuoteOnboardingWizard({ quote, visible, onHide, onSuccess }: Quo
         life: 3000,
       });
 
-      // Reset form
-      setFormData(initialWizardFormData);
       setCurrentStep(1);
-
-      // Hide the wizard dialog
       onHide();
-
-      // Navigate to properties page with state indicating wizard completion
-      navigate(`/quote/${quote.id}/properties`, {
-        state: { fromWizard: true },
-      });
-
-      // Call onSuccess callback
+      navigate(`/quote/${quote.id}/properties`, { state: { fromWizard: true } });
       onSuccess();
     } catch (error) {
       toast.current?.show({
@@ -200,11 +100,11 @@ export function QuoteOnboardingWizard({ quote, visible, onHide, onSuccess }: Quo
     } finally {
       setIsSubmitting(false);
     }
-  };
+  });
 
   const handleHide = () => {
-    // Check if there's unsaved data
-    const hasData = Object.values(formData).some((v) => {
+    const values = getValues();
+    const hasData = Object.values(values).some((v) => {
       if (v === null || v === undefined) return false;
       if (typeof v === 'string') return v.length > 0;
       if (v instanceof Date) return true;
@@ -212,71 +112,40 @@ export function QuoteOnboardingWizard({ quote, visible, onHide, onSuccess }: Quo
     });
 
     if (hasData) {
-      const confirm = window.confirm('Tienes datos sin guardar. ¿Seguro que deseas salir? Tu progreso se mantendrá guardado.');
+      const confirm = window.confirm(
+        'Tienes datos sin guardar. ¿Seguro que deseas salir? Tu progreso se mantendrá guardado.'
+      );
       if (!confirm) return;
     }
 
     onHide();
   };
 
-  const renderStepContent = () => {
-    const businessLine = catalogs.businessLines.find((l) => l.id === formData.businessLine);
-    
+  // Datos de resumen para StepVigenciaForm (solo lectura, se pasan como prop)
+  const businessLine = getValues('businessLine');
+  const businessLineName = catalogs.businessLines.find((l) => l.id === businessLine)?.name || businessLine;
+
+  const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return (
-          <div className={`transition-all duration-300 ${isAnimating ? 'opacity-0 translate-x-4' : 'opacity-100 translate-x-0'}`}>
-            <StepAseguradoForm
-              data={{
-                companyName: formData.companyName,
-                rfc: formData.rfc,
-                businessLine: formData.businessLine,
-                businessType: formData.businessType,
-              }}
-              onChange={handleChange}
-              errors={errors}
-            />
-          </div>
-        );
+        return <StepAseguradoForm control={control} errors={errors} />;
       case 2:
-        return (
-          <div className={`transition-all duration-300 ${isAnimating ? 'opacity-0 translate-x-4' : 'opacity-100 translate-x-0'}`}>
-      <StepConduccionForm
-        data={{
-          agentKey: formData.agentKey,
-          agentName: formData.agentName,
-          agentId: formData.agentId,
-          subscriber: formData.subscriber,
-          subscriberId: formData.subscriberId,
-          office: formData.office,
-          officeId: formData.officeId,
-        }}
-        onChange={handleChange}
-        errors={errors}
-      />
-          </div>
-        );
+        return <StepConduccionForm control={control} errors={errors} setValue={setValue} />;
       case 3:
         return (
-          <div className={`transition-all duration-300 ${isAnimating ? 'opacity-0 translate-x-4' : 'opacity-100 translate-x-0'}`}>
-            <StepVigenciaForm
-              data={{
-                validityStart: formData.validityStart,
-                validityEnd: formData.validityEnd,
-                currency: formData.currency,
-                paymentType: formData.paymentType,
-              }}
-              summary={{
-                companyName: formData.companyName,
-                rfc: formData.rfc,
-                businessLine: businessLine?.name || formData.businessLine,
-                agentKey: formData.agentKey,
-                agentName: formData.agentName,
-              }}
-              onChange={handleChange}
-              errors={errors}
-            />
-          </div>
+          <StepVigenciaForm
+            control={control}
+            errors={errors}
+            setValue={setValue}
+            getValues={getValues}
+            summary={{
+              companyName: getValues('companyName'),
+              rfc: getValues('rfc'),
+              businessLine: businessLineName,
+              agentKey: getValues('agentKey'),
+              agentName: getValues('agentName') || '',
+            }}
+          />
         );
       default:
         return null;
@@ -291,12 +160,8 @@ export function QuoteOnboardingWizard({ quote, visible, onHide, onSuccess }: Quo
       <Dialog
         header={
           <div className="flex flex-col">
-            <span className="text-lg font-semibold text-white">
-              Completar Cotización
-            </span>
-            <span className="text-sm text-[#C9A84C]">
-              {quote.folioNumber}
-            </span>
+            <span className="text-lg font-semibold text-white">Completar Cotización</span>
+            <span className="text-sm text-[#C9A84C]">{quote.folioNumber}</span>
           </div>
         }
         visible={visible}
@@ -318,13 +183,11 @@ export function QuoteOnboardingWizard({ quote, visible, onHide, onSuccess }: Quo
               <span>Paso {currentStep} de {steps.length}</span>
               <span>{Math.round(progressValue)}% completado</span>
             </div>
-            <ProgressBar 
-              value={progressValue} 
+            <ProgressBar
+              value={progressValue}
               showValue={false}
               className="h-2 bg-gray-700"
-              pt={{
-                value: { className: 'bg-gradient-to-r from-[#C9A84C] to-[#E5C47C]' }
-              }}
+              pt={{ value: { className: 'bg-gradient-to-r from-[#C9A84C] to-[#E5C47C]' } }}
             />
           </div>
 
@@ -334,8 +197,8 @@ export function QuoteOnboardingWizard({ quote, visible, onHide, onSuccess }: Quo
           </div>
 
           {/* Form Content */}
-          <div className="flex-1 px-6 py-4 overflow-y-auto max-h-[60vh]">
-            {renderStepContent()}
+          <div className={`flex-1 px-6 py-4 overflow-y-auto max-h-[60vh] transition-all duration-300 ${isAnimating ? 'opacity-0 translate-x-4' : 'opacity-100 translate-x-0'}`}>
+            {renderStep()}
           </div>
 
           {/* Footer Actions */}

@@ -29,6 +29,11 @@ export class UpdateQuoteDto {
   // Conducción
   @IsOptional()
   @IsString()
+  @MaxLength(36)
+  agentId?: string;
+
+  @IsOptional()
+  @IsString()
   @MaxLength(20)
   agentKey?: string;
 
@@ -39,8 +44,18 @@ export class UpdateQuoteDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(36)
+  subscriberId?: string;
+
+  @IsOptional()
+  @IsString()
   @MaxLength(100)
   subscriber?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(36)
+  officeId?: string;
 
   @IsOptional()
   @IsString()

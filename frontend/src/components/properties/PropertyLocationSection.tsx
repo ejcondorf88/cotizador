@@ -1,101 +1,34 @@
-import { useState, useCallback, useEffect } from 'react';
+import { Controller, useWatch, type Control, type FieldErrors } from 'react-hook-form';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
-import { Message } from 'primereact/message';
-import type { PropertyAddress } from '../../types/property';
+import { STATES_MX } from '../../constants/mexico';
+import type { PropertyFormData } from '../../schemas/property.schema';
 
 interface PropertyLocationSectionProps {
-  address: PropertyAddress;
-  propertyName: string;
-  onChange: (data: { name: string; address: PropertyAddress }) => void;
-  errors?: Record<string, string>;
+  control: Control<PropertyFormData>;
+  errors: FieldErrors<PropertyFormData>;
 }
 
-const statesMX = [
-  'Aguascalientes',
-  'Baja California',
-  'Baja California Sur',
-  'Campeche',
-  'Chiapas',
-  'Chihuahua',
-  'Ciudad de México',
-  'Coahuila',
-  'Colima',
-  'Durango',
-  'Estado de México',
-  'Guanajuato',
-  'Guerrero',
-  'Hidalgo',
-  'Jalisco',
-  'Michoacán',
-  'Morelos',
-  'Nayarit',
-  'Nuevo León',
-  'Oaxaca',
-  'Puebla',
-  'Querétaro',
-  'Quintana Roo',
-  'San Luis Potosí',
-  'Sinaloa',
-  'Sonora',
-  'Tabasco',
-  'Tamaulipas',
-  'Tlaxcala',
-  'Veracruz',
-  'Yucatán',
-  'Zacatecas',
-];
+const stateOptions = STATES_MX.map((s) => ({ label: s, value: s }));
 
-export function PropertyLocationSection({
-  address,
-  propertyName,
-  onChange,
-  errors = {},
-}: PropertyLocationSectionProps) {
-  const [localData, setLocalData] = useState({
-    name: propertyName,
-    address,
+/**
+ * Componente presentacional puro.
+ * Sin useState, sin useEffect, sin llamadas onChange genéricas.
+ * El "validation summary" usa useWatch para leer los valores reactivamente.
+ */
+export function PropertyLocationSection({ control, errors }: PropertyLocationSectionProps) {
+  // Lectura reactiva para el validation summary — sin estado local
+  const [name, street, zipCode, state, city, neighborhood] = useWatch({
+    control,
+    name: ['name', 'street', 'zipCode', 'state', 'city', 'neighborhood'],
   });
-
-  // Sync with parent
-  useEffect(() => {
-    setLocalData({ name: propertyName, address });
-  }, [propertyName, address]);
-
-  const handleFieldChange = useCallback(
-    (field: string, value: string) => {
-      const newData = { ...localData };
-
-      if (field === 'name') {
-        newData.name = value;
-      } else {
-        newData.address = { ...newData.address, [field]: value };
-      }
-
-      setLocalData(newData);
-      onChange(newData);
-    },
-    [localData, onChange]
-  );
-
-  const handleZipCodeChange = useCallback(
-    (value: string) => {
-      // Solo permitir números, máximo 5 dígitos
-      const cleaned = value.replace(/\D/g, '').slice(0, 5);
-      handleFieldChange('zipCode', cleaned);
-    },
-    [handleFieldChange]
-  );
-
-  // Validación simple: solo verificar que tenga 5 dígitos
-  const isZipCodeValid = localData.address.zipCode?.length === 5;
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-full bg-[#C9A84C]/20 flex items-center justify-center">
-          <i className="pi pi-map-marker text-[#C9A84C]"></i>
+          <i className="pi pi-map-marker text-[#C9A84C]" />
         </div>
         <div>
           <h3 className="text-lg font-semibold text-white">Ubicación del Inmueble</h3>
@@ -103,122 +36,146 @@ export function PropertyLocationSection({
         </div>
       </div>
 
-      {/* Property Name */}
+      {/* Nombre del inmueble */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-300">
           Nombre del inmueble <span className="text-red-400">*</span>
         </label>
-        <InputText
-          value={localData.name}
-          onChange={(e) => handleFieldChange('name', e.target.value)}
-          placeholder="Ej. Oficinas Corporativas"
-          className="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
+        <Controller
+          name="name"
+          control={control}
+          render={({ field }) => (
+            <InputText
+              {...field}
+              placeholder="Ej. Oficinas Corporativas"
+              className="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
+            />
+          )}
         />
-        {errors.name && <Message severity="error" text={errors.name} className="text-xs" />}
+        {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
       </div>
 
-      {/* Street */}
+      {/* Calle */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-300">
           Calle y número <span className="text-red-400">*</span>
         </label>
-        <InputText
-          value={localData.address.street}
-          onChange={(e) => handleFieldChange('street', e.target.value)}
-          placeholder="Ej. Av. Reforma 100"
-          className="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
+        <Controller
+          name="street"
+          control={control}
+          render={({ field }) => (
+            <InputText
+              {...field}
+              placeholder="Ej. Av. Reforma 100"
+              className="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
+            />
+          )}
         />
-        {errors.street && <Message severity="error" text={errors.street} className="text-xs" />}
+        {errors.street && <p className="text-red-500 text-xs">{errors.street.message}</p>}
       </div>
 
-      {/* ZIP Code */}
+      {/* Código Postal */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-300">
           Código Postal <span className="text-red-400">*</span>
         </label>
-        <InputText
-          value={localData.address.zipCode}
-          onChange={(e) => handleZipCodeChange(e.target.value)}
-          placeholder="00000"
-          maxLength={5}
-          className="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
+        <Controller
+          name="zipCode"
+          control={control}
+          render={({ field }) => (
+            <InputText
+              {...field}
+              onChange={(e) => field.onChange(e.target.value.replace(/\D/g, '').slice(0, 5))}
+              placeholder="00000"
+              maxLength={5}
+              className="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
+            />
+          )}
         />
-        {errors.zipCode && <Message severity="error" text={errors.zipCode} className="text-xs" />}
+        {errors.zipCode && <p className="text-red-500 text-xs">{errors.zipCode.message}</p>}
       </div>
 
-      {/* State and City */}
+      {/* Estado y Ciudad */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-300">
             Estado <span className="text-red-400">*</span>
           </label>
-          <Dropdown
-            value={localData.address.state}
-            options={statesMX}
-            onChange={(e) => handleFieldChange('state', e.value)}
-            placeholder="Seleccione"
-            className="w-full bg-[#1A1A2E] border border-gray-600 text-white"
-            panelClassName="bg-[#1A1A2E] border border-gray-600"
+          <Controller
+            name="state"
+            control={control}
+            render={({ field }) => (
+              <Dropdown
+                value={field.value}
+                options={stateOptions}
+                onChange={(e) => field.onChange(e.value)}
+                placeholder="Seleccione"
+                filter
+                className="w-full bg-[#1A1A2E] border border-gray-600 text-white"
+                panelClassName="bg-[#1A1A2E] border border-gray-600"
+              />
+            )}
           />
-          {errors.state && <Message severity="error" text={errors.state} className="text-xs" />}
+          {errors.state && <p className="text-red-500 text-xs">{errors.state.message}</p>}
         </div>
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-300">
             Ciudad <span className="text-red-400">*</span>
           </label>
-          <InputText
-            value={localData.address.city}
-            onChange={(e) => handleFieldChange('city', e.target.value)}
-            placeholder="Ej. Ciudad de México"
-            className="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
+          <Controller
+            name="city"
+            control={control}
+            render={({ field }) => (
+              <InputText
+                {...field}
+                placeholder="Ej. Ciudad de México"
+                className="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
+              />
+            )}
           />
-          {errors.city && <Message severity="error" text={errors.city} className="text-xs" />}
+          {errors.city && <p className="text-red-500 text-xs">{errors.city.message}</p>}
         </div>
       </div>
 
-      {/* Neighborhood */}
+      {/* Colonia */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-300">
           Colonia <span className="text-red-400">*</span>
         </label>
-        <InputText
-          value={localData.address.neighborhood}
-          onChange={(e) => handleFieldChange('neighborhood', e.target.value)}
-          placeholder="Ej. Juárez"
-          className="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
+        <Controller
+          name="neighborhood"
+          control={control}
+          render={({ field }) => (
+            <InputText
+              {...field}
+              placeholder="Ej. Juárez"
+              className="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
+            />
+          )}
         />
-        {errors.neighborhood && <Message severity="error" text={errors.neighborhood} className="text-xs" />}
+        {errors.neighborhood && (
+          <p className="text-red-500 text-xs">{errors.neighborhood.message}</p>
+        )}
       </div>
 
-      {/* Validation Summary */}
+      {/* Validation summary — reactivo vía useWatch, sin estado local */}
       <div className="bg-[#252540] rounded-lg p-4 border border-[#C9A84C]/20">
         <h4 className="text-sm font-medium text-[#C9A84C] mb-2">Campos requeridos:</h4>
         <div className="grid grid-cols-2 gap-2 text-sm">
-          <div className={`flex items-center gap-2 ${localData.name ? 'text-green-400' : 'text-gray-500'}`}>
-            <i className={`pi ${localData.name ? 'pi-check-circle' : 'pi-circle'}`}></i>
-            <span>Nombre</span>
-          </div>
-          <div className={`flex items-center gap-2 ${localData.address.street ? 'text-green-400' : 'text-gray-500'}`}>
-            <i className={`pi ${localData.address.street ? 'pi-check-circle' : 'pi-circle'}`}></i>
-            <span>Calle</span>
-          </div>
-          <div className={`flex items-center gap-2 ${localData.address.zipCode?.length === 5 ? 'text-green-400' : 'text-gray-500'}`}>
-            <i className={`pi ${localData.address.zipCode?.length === 5 ? 'pi-check-circle' : 'pi-circle'}`}></i>
-            <span>CP</span>
-          </div>
-          <div className={`flex items-center gap-2 ${localData.address.state ? 'text-green-400' : 'text-gray-500'}`}>
-            <i className={`pi ${localData.address.state ? 'pi-check-circle' : 'pi-circle'}`}></i>
-            <span>Estado</span>
-          </div>
-          <div className={`flex items-center gap-2 ${localData.address.city ? 'text-green-400' : 'text-gray-500'}`}>
-            <i className={`pi ${localData.address.city ? 'pi-check-circle' : 'pi-circle'}`}></i>
-            <span>Ciudad</span>
-          </div>
-          <div className={`flex items-center gap-2 ${localData.address.neighborhood ? 'text-green-400' : 'text-gray-500'}`}>
-            <i className={`pi ${localData.address.neighborhood ? 'pi-check-circle' : 'pi-circle'}`}></i>
-            <span>Colonia</span>
-          </div>
+          {[
+            { label: 'Nombre', ok: !!name },
+            { label: 'Calle', ok: !!street },
+            { label: 'CP', ok: zipCode?.length === 5 },
+            { label: 'Estado', ok: !!state },
+            { label: 'Ciudad', ok: !!city },
+            { label: 'Colonia', ok: !!neighborhood },
+          ].map(({ label, ok }) => (
+            <div key={label} className={`flex items-center gap-2 ${ok ? 'text-green-400' : 'text-gray-500'}`}>
+              <i className={`pi ${ok ? 'pi-check-circle' : 'pi-circle'}`} />
+              <span>{label}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
