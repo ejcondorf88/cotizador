@@ -79,6 +79,61 @@ Sistema de cotización de seguros de daños para empresas. Permite a agentes cre
 | **Base de Datos** | PostgreSQL | 16 | Persistencia |
 | **Contenedores** | Docker + Compose | 24+ | Orquestación |
 
+## Docker y Contenedores
+
+### Construcción de Imágenes
+
+Cada servicio incluye Dockerfiles optimizados con multi-stage builds:
+
+```bash
+# Microservicio de Catálogos (Node.js/NestJS - 2 stages)
+docker build -t ms-catalogos:latest -f ms-catalogos/Dockerfile ms-catalogos/
+
+# API Gateway (Java/Spring Boot - 2 stages)
+docker build -t ms-gateway:latest -f ms-gateway/Dockerfile ms-gateway/
+
+# Backend Core (Node.js/NestJS - 3 stages)
+docker build -t ms-core:latest -f ms-core/Dockerfile ms-core/
+
+# Frontend (React + Nginx - 2 stages)
+docker build -t frontend:latest -f frontend/Dockerfile frontend/
+```
+
+### Docker Compose
+
+```bash
+# Desarrollo local
+docker-compose up -d
+
+# Producción (multi-stage builds)
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Verificación de Seguridad (Usuario No-Root)
+
+Todos los contenedores ejecutan con usuario no-root por defecto:
+
+```bash
+# Verificar usuario dentro del contenedor
+docker exec <container> id
+docker exec <container> ps aux
+
+# Verificar que no corre como root
+docker inspect <container> --format='{{.Config.User}}'
+```
+
+### Tabla de Puertos por Microservicio
+
+| Servicio | Puerto Host | Puerto Container | Usuario | UID/GID |
+|----------|-------------|------------------|---------|---------|
+| Frontend (Nginx) | 80 | 8080 | appuser | 1001:1001 |
+| API Gateway | 8080 | 8080 | appuser | 1001:1001 |
+| ms-core | 3000 | 3000 | node | 1000:1000 |
+| ms-catalogos | 3001 | 3001 | appuser | 1001:1001 |
+| PostgreSQL | 5432 | 5432 | postgres | 70:70 |
+
+**Nota:** Todos los servicios usan imágenes base Alpine Linux para reducir el tamaño y superficie de ataque.
+
 ## Requisitos Previos
 
 - **Node.js**: 20+ (para ms-core y frontend)
@@ -133,27 +188,34 @@ npm run dev
 
 ```
 cotizador/
-├── ms-core/                    # Backend (NestJS + Hexagonal)
+├── ms-core/              # Backend (NestJS + Hexagonal)
 │   ├── src/
-│   │   ├── domain/            # Entidades, enums
-│   │   ├── application/       # Use cases, DTOs
-│   │   ├── infrastructure/    # TypeORM repos, mappers
-│   │   └── presentation/      # Controllers
+│   │   ├── domain/         # Entidades, enums
+│   │   ├── application/    # Use cases, DTOs
+│   │   ├── infrastructure/ # TypeORM repos, mappers
+│   │   └── presentation/   # Controllers
+│   ├── Dockerfile
 │   ├── Dockerfile.dev
 │   └── README.md
-├── ms-gateway/                 # API Gateway (Spring)
+├── ms-gateway/           # API Gateway (Spring Boot)
 │   ├── src/
 │   ├── Dockerfile
 │   └── README.md
-├── frontend/                   # Frontend (React + Vite)
+├── ms-catalogos/         # Microservicio Catálogos (NestJS)
 │   ├── src/
+│   ├── Dockerfile
+│   └── README.md
+├── frontend/             # Frontend (React + Vite)
+│   ├── src/
+│   ├── Dockerfile
 │   ├── Dockerfile.dev
 │   └── README.md
-├── docker-compose.yml          # Orquestación local
-├── docker-compose.prod.yml     # Orquestación producción
-└── docs/                       # Documentación
-    ├── diagrams/              # Diagramas C4 PlantUML
-    └── adr/                   # Architecture Decision Records
+├── docker-compose.yml    # Orquestación local
+├── docker-compose.prod.yml  # Orquestación producción
+└── docs/                 # Documentación
+    ├── diagrams/         # Diagramas C4 PlantUML
+    ├── adr/              # Architecture Decision Records
+    └── docker/           # Documentación Docker
 ```
 
 ## Servicios y Puertos
@@ -172,6 +234,7 @@ cotizador/
 - [README Frontend](./frontend/README.md)
 - [Diagramas C4](./docs/diagrams/)
 - [ADRs](./docs/adr/)
+- [Docker Documentation](./docs/docker/)
 
 ## Testing
 
@@ -223,6 +286,7 @@ mvn spring-boot:run
 | [ADR-005](./docs/adr/ADR-005-tailwind.md) | Tailwind CSS | Estilos utilitarios, bundle pequeño |
 | [ADR-006](./docs/adr/ADR-006-gateway.md) | API Gateway | CORS centralizado, logging unificado |
 | [ADR-007](./docs/adr/ADR-007-hexagonal.md) | Hexagonal | Independencia de frameworks y testabilidad |
+| [ADR-008](./docs/adr/ADR-008-dockerfile-optimization.md) | Docker Optimization | Multi-stage builds, usuarios no-root, Alpine base |
 
 ## Contribución
 
