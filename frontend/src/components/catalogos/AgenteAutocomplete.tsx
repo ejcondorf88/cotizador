@@ -11,6 +11,7 @@ interface AgenteAutocompleteProps {
     nombre: string;
     email?: string;
     telefono?: string;
+    oficinaId?: string;
   }) => void;
   error?: string;
   placeholder?: string;
@@ -45,41 +46,43 @@ export function AgenteAutocomplete({
   const { data: agentes = [], isLoading } = useAgentesAutocomplete(debouncedQuery);
 
 const handleChange = useCallback(
-  (e: { value: unknown }) => {
-    const newValue = e.value;
-    if (typeof newValue === 'string') {
-      setInputValue(newValue.toUpperCase());
-    } else if (newValue && typeof newValue === 'object') {
-      const agente = newValue as AgenteSearchResponse;
-      setInputValue(agente.codigo);
-      onChange({
-        agenteId: agente.id,
-        codigo: agente.codigo,
-        nombre: agente.nombre,
-        email: agente.email,
-        telefono: agente.telefono,
-      });
-    }
-  },
-  [onChange]
-);
+    (e: { value: unknown }) => {
+      const newValue = e.value;
+      if (typeof newValue === 'string') {
+        setInputValue(newValue.toUpperCase());
+      } else if (newValue && typeof newValue === 'object') {
+        const agente = newValue as AgenteSearchResponse;
+        setInputValue(agente.codigo);
+        onChange({
+          agenteId: agente.id,
+          codigo: agente.codigo,
+          nombre: agente.nombre,
+          email: agente.email,
+          telefono: agente.telefono,
+          oficinaId: agente.oficinaId,
+        });
+      }
+    },
+    [onChange]
+  );
 
-const handleSelect = useCallback(
-  (e: { value: unknown }) => {
-    if (e.value && typeof e.value === 'object') {
-      const agente = e.value as AgenteSearchResponse;
-      setInputValue(agente.codigo);
-      onChange({
-        agenteId: agente.id,
-        codigo: agente.codigo,
-        nombre: agente.nombre,
-        email: agente.email,
-        telefono: agente.telefono,
-      });
-    }
-  },
-  [onChange]
-);
+  const handleSelect = useCallback(
+    (e: { value: unknown }) => {
+      if (e.value && typeof e.value === 'object') {
+        const agente = e.value as AgenteSearchResponse;
+        setInputValue(agente.codigo);
+        onChange({
+          agenteId: agente.id,
+          codigo: agente.codigo,
+          nombre: agente.nombre,
+          email: agente.email,
+          telefono: agente.telefono,
+          oficinaId: agente.oficinaId,
+        });
+      }
+    },
+    [onChange]
+  );
 
 const itemTemplate = (agente: AgenteSearchResponse) => {
   return (

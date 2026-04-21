@@ -1,5 +1,6 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Dropdown } from 'primereact/dropdown';
-import { useOficinas } from '../../hooks/useCatalogos';
+import { getOficinas } from '../../services/catalogoService';
 import type { Oficina } from '../../types/catalogo';
 
 interface OficinaDropdownProps {
@@ -17,14 +18,52 @@ export function OficinaDropdown({
   placeholder = 'Seleccione una oficina...',
   disabled = false,
 }: OficinaDropdownProps) {
-  const { data: oficinas = [], isLoading } = useOficinas();
+  const [oficinas, setOficinas] = useState<Oficina[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [internalValue, setInternalValue] = useState<string>(value || '');
+  const isManualSelection = useRef(false);
 
-  // Find the selected oficina object based on value (could be ID or codigo)
-  const selectedOficina = oficinas.find(
-    (o) => o.id === value || o.codigo === value
-  );
+  // Load offices on mount
+  useEffect(() => {
+    const loadOficinas = async () => {
+      try {
+        const results = await getOficinas();
+        setOficinas(results);
+      } catch (err) {
+        console.error('Error loading oficinas:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadOficinas();
+  }, []);
 
-  const handleChange = (e: { value: string }) => {
+  // Sync external value with internal state
+  useEffect(() => {
+    console.log('OficinaDropdown: useEffect triggered:', { value, internalValue, isManual: isManualSelection.current, oficinasCount: oficinas.length });
+    
+    if (value !== undefined && value !== internalValue && !isManualSelection.current) {
+      console.log('OficinaDropdown: External value changed, syncing:', value);
+      setInternalValue(value);
+      // Find and notify parent about the selected office
+      const oficina = oficinas.find((o) => o.id === value);
+      console.log('OficinaDropdown: Found office:', oficina);
+      if (oficina) {
+        console.log('OficinaDropdown: Calling onChange with:', { oficinaId: oficina.id, codigo: oficina.codigo, nombre: oficina.nombre });
+        onChange({
+          oficinaId: oficina.id,
+          codigo: oficina.codigo,
+          nombre: oficina.nombre,
+        });
+      }
+    }
+    // Reset manual selection flag
+    isManualSelection.current = false;
+  }, [value, oficinas, internalValue, onChange]);
+
+  const handleChange = useCallback((e: { value: string }) => {
+    isManualSelection.current = true;
+    setInternalValue(e.value);
     const oficina = oficinas.find((o) => o.id === e.value);
     if (oficina) {
       onChange({
@@ -33,12 +72,15 @@ export function OficinaDropdown({
         nombre: oficina.nombre,
       });
     }
-  };
+  }, [oficinas, onChange]);
 
   const optionLabel = (oficina: Oficina) => {
     const ciudad = oficina.ciudad ? ` - ${oficina.ciudad}` : '';
     return `${oficina.nombre} (${oficina.codigo})${ciudad}`;
   };
+
+  // Find the selected oficina for display
+  const selectedOficina = oficinas.find((o) => o.id === (internalValue || value));
 
   return (
     <div className="space-y-2">

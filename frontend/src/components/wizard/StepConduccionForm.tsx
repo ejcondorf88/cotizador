@@ -75,11 +75,18 @@ export function StepConduccionForm({ data, onChange, errors }: StepConduccionFor
     nombre: string;
     email?: string;
     telefono?: string;
+    oficinaId?: string;
   }) => {
     setSelectedAgente(value);
     onChange('agentId', value.agenteId);
     onChange('agentKey', value.codigo);
     onChange('agentName', value.nombre);
+
+    // Auto-select office if agent has one
+    if (value.oficinaId) {
+      onChange('officeId', value.oficinaId);
+      // The office name will be set by the OficinaDropdown when it loads
+    }
   };
 
   const handleSuscriptorChange = (value: {

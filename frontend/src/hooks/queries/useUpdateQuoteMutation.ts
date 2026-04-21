@@ -53,8 +53,11 @@ export interface WizardFormData {
   // Step 2: Conducción
   agentKey: string;
   agentName: string;
+  agentId?: string;
   subscriber: string;
+  subscriberId?: string;
   office: string;
+  officeId?: string;
 
   // Step 3: Vigencia
   validityStart: Date | null;
@@ -70,8 +73,11 @@ export const initialWizardFormData: WizardFormData = {
   businessType: '',
   agentKey: '',
   agentName: '',
+  agentId: '',
   subscriber: '',
+  subscriberId: '',
   office: '',
+  officeId: '',
   validityStart: null,
   validityEnd: null,
   currency: 'MXN',
@@ -163,8 +169,11 @@ export function prepareQuoteUpdateData(formData: WizardFormData): UpdateQuoteReq
     businessType: formData.businessType,
     agentKey: formData.agentKey,
     agentName: formData.agentName,
+    agentId: formData.agentId,
     subscriber: formData.subscriber,
+    subscriberId: formData.subscriberId,
     office: formData.office,
+    officeId: formData.officeId,
     validityStart: formData.validityStart?.toISOString(),
     validityEnd: formData.validityEnd?.toISOString(),
     currency: formData.currency,

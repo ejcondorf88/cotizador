@@ -65,24 +65,24 @@ export function StepVigenciaForm({ data, summary, onChange, errors }: StepVigenc
           <label className="block text-sm font-medium text-gray-300">
             Fecha de inicio <span className="text-red-500">*</span>
           </label>
-          <Calendar
-            value={data.validityStart}
-            onChange={(e) => handleStartDateChange(e.value as Date | null)}
-            minDate={today}
-            locale="es"
-            dateFormat="dd/mm/yy"
-            placeholder="Selecciona fecha"
-            className={`w-full ${errors.validityStart ? 'p-invalid' : ''}`}
-            panelClassName="bg-[#252540]"
-            pt={{
-              root: { className: 'w-full' },
-              input: { 
-                className: `w-full bg-[#252540] border ${
-                  errors.validityStart ? 'border-red-500' : 'border-gray-600'
-                } text-white placeholder-gray-500 focus:border-[#C9A84C]` 
-              },
-            }}
-          />
+        <Calendar
+          value={data.validityStart}
+          onChange={(e) => handleStartDateChange(e.value as Date | null)}
+          minDate={today}
+          locale="es"
+          dateFormat="dd/mm/yy"
+          placeholder="Selecciona fecha"
+          className={`w-full ${errors.validityStart ? 'p-invalid' : ''}`}
+          panelClassName="bg-[#252540]"
+          pt={{
+            root: { className: 'w-full' },
+            input: {
+              className: `w-full bg-[#1A1A2E] border-2 ${
+                errors.validityStart ? 'border-red-500' : 'border-gray-600'
+              } text-white placeholder-gray-400 focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C] rounded-lg py-3 px-4`
+            },
+          }}
+        />
           {errors.validityStart && (
             <p className="text-red-500 text-xs">{errors.validityStart}</p>
           )}
@@ -92,27 +92,27 @@ export function StepVigenciaForm({ data, summary, onChange, errors }: StepVigenc
           <label className="block text-sm font-medium text-gray-300">
             Fecha de fin <span className="text-red-500">*</span>
           </label>
-          <Calendar
-            value={data.validityEnd}
-            onChange={(e) => onChange('validityEnd', e.value)}
-            minDate={data.validityStart ? new Date(data.validityStart.getTime() + 86400000) : today}
-            locale="es"
-            dateFormat="dd/mm/yy"
-            placeholder="Selecciona fecha"
-            disabled={!data.validityStart}
-            className={`w-full ${errors.validityEnd ? 'p-invalid' : ''}`}
-            panelClassName="bg-[#252540]"
-            pt={{
-              root: { className: 'w-full' },
-              input: { 
-                className: `w-full bg-[#252540] border ${
-                  errors.validityEnd ? 'border-red-500' : 'border-gray-600'
-                } text-white placeholder-gray-500 focus:border-[#C9A84C] ${
-                  !data.validityStart ? 'cursor-not-allowed opacity-50' : ''
-                }` 
-              },
-            }}
-          />
+        <Calendar
+          value={data.validityEnd}
+          onChange={(e) => onChange('validityEnd', e.value)}
+          minDate={data.validityStart ? new Date(data.validityStart.getTime() + 86400000) : today}
+          locale="es"
+          dateFormat="dd/mm/yy"
+          placeholder="Selecciona fecha"
+          disabled={!data.validityStart}
+          className={`w-full ${errors.validityEnd ? 'p-invalid' : ''}`}
+          panelClassName="bg-[#252540]"
+          pt={{
+            root: { className: 'w-full' },
+            input: {
+              className: `w-full bg-[#1A1A2E] border-2 ${
+                errors.validityEnd ? 'border-red-500' : 'border-gray-600'
+              } text-white placeholder-gray-400 focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C] rounded-lg py-3 px-4 ${
+                !data.validityStart ? 'cursor-not-allowed opacity-60' : ''
+              }`
+            },
+          }}
+        />
           {errors.validityEnd && (
             <p className="text-red-500 text-xs">{errors.validityEnd}</p>
           )}
@@ -130,36 +130,36 @@ export function StepVigenciaForm({ data, summary, onChange, errors }: StepVigenc
           <label className="block text-sm font-medium text-gray-300">
             Moneda <span className="text-red-500">*</span>
           </label>
-          <Dropdown
-            value={data.currency}
-            options={catalogs.currencies}
-            onChange={(e) => onChange('currency', e.value)}
-            placeholder="Selecciona moneda"
-            className="w-full"
-            panelClassName="bg-[#252540] border-gray-600"
-            pt={{
-              root: { className: 'bg-[#252540] border-gray-600 text-white' },
-              input: { className: 'text-white' },
-            }}
-          />
+        <Dropdown
+          value={data.currency}
+          options={catalogs.currencies}
+          onChange={(e) => onChange('currency', e.value)}
+          placeholder="Selecciona moneda"
+          className="w-full"
+          panelClassName="bg-[#252540] border-gray-600"
+          pt={{
+            root: { className: 'bg-[#1A1A2E] border-2 border-gray-600 text-white rounded-lg hover:border-[#C9A84C] transition-colors' },
+            input: { className: 'text-white py-3 px-4' },
+          }}
+        />
         </div>
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-300">
             Tipo de pago <span className="text-red-500">*</span>
           </label>
-          <Dropdown
-            value={data.paymentType}
-            options={catalogs.paymentTypes}
-            onChange={(e) => onChange('paymentType', e.value)}
-            placeholder="Selecciona tipo"
-            className="w-full"
-            panelClassName="bg-[#252540] border-gray-600"
-            pt={{
-              root: { className: 'bg-[#252540] border-gray-600 text-white' },
-              input: { className: 'text-white' },
-            }}
-          />
+        <Dropdown
+          value={data.paymentType}
+          options={catalogs.paymentTypes}
+          onChange={(e) => onChange('paymentType', e.value)}
+          placeholder="Selecciona tipo"
+          className="w-full"
+          panelClassName="bg-[#252540] border-gray-600"
+          pt={{
+            root: { className: 'bg-[#1A1A2E] border-2 border-gray-600 text-white rounded-lg hover:border-[#C9A84C] transition-colors' },
+            input: { className: 'text-white py-3 px-4' },
+          }}
+        />
         </div>
       </div>
 
@@ -173,56 +173,58 @@ export function StepVigenciaForm({ data, summary, onChange, errors }: StepVigenc
 
           <div className="space-y-4">
             {/* Asegurado */}
-            <div className="border-b border-gray-700 pb-3">
-              <h4 className="text-sm font-medium text-gray-400 mb-2">🏢 Asegurado</h4>
+            <div className="border-b border-gray-600 pb-3">
+              <h4 className="text-sm font-semibold text-[#C9A84C] mb-2">🏢 Asegurado</h4>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div>
-                  <span className="text-gray-500">Empresa:</span>
-                  <span className="text-white ml-2">{summary.companyName || '-'}</span>
+                  <span className="text-gray-300 font-medium">Empresa:</span>
+                  <span className="text-white ml-2 font-normal">{summary.companyName || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500">RFC:</span>
-                  <span className="text-white ml-2">{summary.rfc || '-'}</span>
+                  <span className="text-gray-300 font-medium">RFC:</span>
+                  <span className="text-white ml-2 font-normal">{summary.rfc || '-'}</span>
                 </div>
                 <div className="col-span-2">
-                  <span className="text-gray-500">Giro:</span>
-                  <span className="text-white ml-2">{summary.businessLine || '-'}</span>
+                  <span className="text-gray-300 font-medium">Giro:</span>
+                  <span className="text-white ml-2 font-normal">{summary.businessLine || '-'}</span>
                 </div>
               </div>
             </div>
 
             {/* Conducción */}
-            <div className="border-b border-gray-700 pb-3">
-              <h4 className="text-sm font-medium text-gray-400 mb-2">🧑‍💼 Conducción</h4>
+            <div className="border-b border-gray-600 pb-3">
+              <h4 className="text-sm font-semibold text-[#C9A84C] mb-2">🧑‍💼 Conducción</h4>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div>
-                  <span className="text-gray-500">Agente:</span>
-                  <span className="text-white ml-2">{summary.agentName || '-'}</span>
+                  <span className="text-gray-300 font-medium">Agente:</span>
+                  <span className="text-white ml-2 font-normal">{summary.agentName || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500">Clave:</span>
-                  <span className="text-white ml-2">{summary.agentKey || '-'}</span>
+                  <span className="text-gray-300 font-medium">Clave:</span>
+                  <span className="text-white ml-2 font-mono text-[#C9A84C]">{summary.agentKey || '-'}</span>
                 </div>
               </div>
             </div>
 
             {/* Vigencia */}
             <div>
-              <h4 className="text-sm font-medium text-gray-400 mb-2">📅 Vigencia</h4>
+              <h4 className="text-sm font-semibold text-[#C9A84C] mb-2">📅 Vigencia</h4>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <div>
-                  <span className="text-gray-500">Período:</span>
-                  <span className="text-white ml-2">
-                    {formatDate(data.validityStart)} - {formatDate(data.validityEnd)}
+                <div className="col-span-2">
+                  <span className="text-gray-300 font-medium">Período:</span>
+                  <span className="text-white ml-2 font-normal">
+                    {data.validityStart && data.validityEnd 
+                      ? `${formatDate(data.validityStart)} - ${formatDate(data.validityEnd)}`
+                      : 'Por definir'}
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-500">Moneda:</span>
-                  <span className="text-white ml-2">{data.currency === 'MXN' ? '💲 MXN' : '💵 USD'}</span>
+                  <span className="text-gray-300 font-medium">Moneda:</span>
+                  <span className="text-white ml-2 font-normal">{data.currency === 'MXN' ? '💲 MXN' : '💵 USD'}</span>
                 </div>
-                <div className="col-span-2">
-                  <span className="text-gray-500">Pago:</span>
-                  <span className="text-white ml-2">{getPaymentLabel(data.paymentType)}</span>
+                <div>
+                  <span className="text-gray-300 font-medium">Pago:</span>
+                  <span className="text-white ml-2 font-normal">{getPaymentLabel(data.paymentType)}</span>
                 </div>
               </div>
             </div>

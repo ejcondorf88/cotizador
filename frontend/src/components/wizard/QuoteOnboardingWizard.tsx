@@ -241,16 +241,19 @@ export function QuoteOnboardingWizard({ quote, visible, onHide, onSuccess }: Quo
       case 2:
         return (
           <div className={`transition-all duration-300 ${isAnimating ? 'opacity-0 translate-x-4' : 'opacity-100 translate-x-0'}`}>
-            <StepConduccionForm
-              data={{
-                agentKey: formData.agentKey,
-                agentName: formData.agentName,
-                subscriber: formData.subscriber,
-                office: formData.office,
-              }}
-              onChange={handleChange}
-              errors={errors}
-            />
+      <StepConduccionForm
+        data={{
+          agentKey: formData.agentKey,
+          agentName: formData.agentName,
+          agentId: formData.agentId,
+          subscriber: formData.subscriber,
+          subscriberId: formData.subscriberId,
+          office: formData.office,
+          officeId: formData.officeId,
+        }}
+        onChange={handleChange}
+        errors={errors}
+      />
           </div>
         );
       case 3:

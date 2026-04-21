@@ -97,6 +97,7 @@ const mapAgenteResponse = (agente: BackendAgente): AgenteSearchResponse => ({
   nombre: agente.nombre,
   email: agente.email,
   telefono: agente.telefono,
+  oficinaId: agente.oficinaId,
 });
 
 export const searchAgentes = async (query: string): Promise<AgenteSearchResponse[]> => {
