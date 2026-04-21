@@ -137,6 +137,21 @@ export class QuoteRepositoryAdapter implements QuoteRepositoryPort {
     return entity ? QuoteMapper.toDomain(entity) : null;
   }
 
+  async findByIdWithProperties(id: string): Promise<Quote | null> {
+    this.logger.debug(
+      'infrastructure',
+      'QuoteRepositoryAdapter',
+      'DB_QUERY',
+      'Finding quote by ID with properties',
+      { id },
+    );
+    const entity = await this.quoteRepo.findOne({
+      where: { id },
+      relations: ['properties'],
+    });
+    return entity ? QuoteMapper.toDomain(entity) : null;
+  }
+
   async findAll(): Promise<Quote[]> {
     this.logger.debug(
       'infrastructure',

@@ -4,6 +4,7 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useCoverages } from '../../hooks/useCoverages';
+import { useCalculate } from '../../hooks/useCalculate';
 import { MandatoryCoverage } from './MandatoryCoverage';
 import { OptionalCoverage } from './OptionalCoverage';
 import { CoverageSummary } from './CoverageSummary';
@@ -39,6 +40,8 @@ export function CoverageStep() {
     refresh,
   } = useCoverages(quoteId);
 
+  const { calculate, isLoading: isCalculating } = useCalculate(quoteId);
+
   const handleToggle = useCallback(
     (coverageId: CoverageCode) => {
       toggle(coverageId);
@@ -59,29 +62,37 @@ export function CoverageStep() {
 
     setIsSubmitting(true);
     try {
-      const response = await saveCoverages();
-      if (response) {
-        toast.current?.show({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Coberturas guardadas correctamente',
-          life: 3000,
-        });
-        // Navigate to summary/step 6
-        navigate(`/quote/${quoteId}/summary`);
-      } else {
+      // Paso 1: Guardar coberturas
+      const coverageResponse = await saveCoverages();
+      if (!coverageResponse) {
         toast.current?.show({
           severity: 'warn',
           summary: 'Advertencia',
           detail: 'No se pudo guardar las coberturas',
           life: 3000,
         });
+        return;
+      }
+
+      // Paso 2: Calcular prima
+      const calculationResult = await calculate();
+      if (calculationResult) {
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Prima calculada correctamente',
+          life: 3000,
+        });
+        // Navigate to summary/step 6
+        navigate(`/quote/${quoteId}/summary`);
       }
     } catch (err) {
+      // Los errores ya son manejados por el hook useCalculate
+      // Solo mostramos el toast si hay error
       toast.current?.show({
         severity: 'error',
         summary: 'Error',
-        detail: err instanceof Error ? err.message : 'Error al guardar las coberturas',
+        detail: err instanceof Error ? err.message : 'Error al calcular la prima',
         life: 5000,
       });
     } finally {
@@ -105,6 +116,24 @@ export function CoverageStep() {
             className="text-[#C9A84C]"
           />
           <p className="mt-4 text-gray-400">Cargando coberturas...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isCalculating) {
+    return (
+      <div className="min-h-screen bg-[#1A1A2E] flex items-center justify-center">
+        <div className="text-center">
+          <ProgressSpinner
+            style={{ width: '60px', height: '60px' }}
+            strokeWidth="4"
+            className="text-[#C9A84C]"
+          />
+          <p className="mt-4 text-gray-400 text-lg">Calculando prima...</p>
+          <p className="mt-2 text-sm text-gray-500">
+            Esto puede tomar unos segundos
+          </p>
         </div>
       </div>
     );

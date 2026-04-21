@@ -30,6 +30,11 @@ export class Quote {
     public updatedAt: Date,
     public details?: QuoteDetails,
     public propertyCount?: number,
+    public netPremium?: number,
+    public commercialPremium?: number,
+    public commercialFactor: number = 1.2,
+    public calculatedAt?: Date,
+    public version: number = 1,
   ) {}
 
   static create(folioNumber: string): Quote {
@@ -54,6 +59,20 @@ export class Quote {
 
   setPropertyCount(count: number): void {
     this.propertyCount = count;
+    this.updatedAt = new Date();
+  }
+
+  setPremiumCalculation(
+    netPremium: number,
+    commercialPremium: number,
+    commercialFactor: number = 1.2,
+  ): void {
+    this.netPremium = netPremium;
+    this.commercialPremium = commercialPremium;
+    this.commercialFactor = commercialFactor;
+    this.calculatedAt = new Date();
+    this.version += 1;
+    this.status = QuoteStatus.CALCULATED;
     this.updatedAt = new Date();
   }
 }

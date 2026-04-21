@@ -6,7 +6,7 @@ import { PropertyStatus } from '../../../domain/property/enums/property-status.e
 
 export class PropertyMapper {
   static toDomain(entity: PropertyTypeOrmEntity): Property {
-    return new Property(
+    const property = new Property(
       entity.id,
       entity.quoteId,
       entity.name,
@@ -18,13 +18,13 @@ export class PropertyMapper {
         zipCode: entity.zipCode,
       },
       {
-      type: entity.constructionType as ConstructionType,
-      year: entity.constructionYear ?? undefined,
-      levels: entity.levels ?? undefined,
-      usage: entity.propertyUsage as PropertyUsage,
-      specificActivity: entity.specificActivity,
-      activityCode: entity.activityCode ?? undefined,
-    },
+        type: entity.constructionType as ConstructionType,
+        year: entity.constructionYear ?? undefined,
+        levels: entity.levels ?? undefined,
+        usage: entity.propertyUsage as PropertyUsage,
+        specificActivity: entity.specificActivity,
+        activityCode: entity.activityCode ?? undefined,
+      },
       {
         building: Number(entity.coverageBuilding),
         contents: Number(entity.coverageContents),
@@ -37,6 +37,13 @@ export class PropertyMapper {
       entity.createdAt,
       entity.updatedAt,
     );
+
+    // Asignar campos adicionales de prima
+    property.netPremium = entity.netPremium ?? undefined;
+    property.commercialPremium = entity.commercialPremium ?? undefined;
+    property.incompleteReason = entity.incompleteReason ?? undefined;
+
+    return property;
   }
 
   static toEntity(domain: Property): PropertyTypeOrmEntity {
@@ -70,7 +77,12 @@ export class PropertyMapper {
     // Estado
     entity.status = domain.status;
     entity.completionPercentage = domain.completionPercentage;
-    
+
+    // Prima y cálculo
+    entity.netPremium = domain.netPremium;
+    entity.commercialPremium = domain.commercialPremium;
+    entity.incompleteReason = domain.incompleteReason;
+
     entity.createdAt = domain.createdAt;
     entity.updatedAt = domain.updatedAt;
     return entity;

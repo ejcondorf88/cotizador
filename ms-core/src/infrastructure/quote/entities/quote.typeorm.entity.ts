@@ -65,4 +65,20 @@ export class QuoteTypeOrmEntity {
     cascade: true,
   })
   properties: PropertyTypeOrmEntity[];
+
+  // Prima y cálculo
+  @Column({ name: 'net_premium', nullable: true, type: 'decimal', precision: 12, scale: 2 })
+  netPremium: number;
+
+  @Column({ name: 'commercial_premium', nullable: true, type: 'decimal', precision: 12, scale: 2 })
+  commercialPremium: number;
+
+  @Column({ name: 'commercial_factor', default: 1.2, type: 'decimal', precision: 4, scale: 2 })
+  commercialFactor: number;
+
+  @Column({ name: 'calculated_at', nullable: true, type: 'timestamp' })
+  calculatedAt: Date;
+
+  @Column({ name: 'version', default: 1, type: 'int' })
+  version: number;
 }

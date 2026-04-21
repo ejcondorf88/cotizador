@@ -107,6 +107,16 @@ export class PropertyTypeOrmEntity {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
+  // Prima y cálculo
+  @Column({ name: 'net_premium', nullable: true, type: 'decimal', precision: 12, scale: 2 })
+  netPremium: number;
+
+  @Column({ name: 'commercial_premium', nullable: true, type: 'decimal', precision: 12, scale: 2 })
+  commercialPremium: number;
+
+  @Column({ name: 'incomplete_reason', nullable: true, type: 'text' })
+  incompleteReason: string;
+
   @ManyToOne(() => QuoteTypeOrmEntity, (quote) => quote.properties)
   @JoinColumn({ name: 'quote_id' })
   quote: QuoteTypeOrmEntity;

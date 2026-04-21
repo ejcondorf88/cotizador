@@ -3,6 +3,11 @@ import { ConstructionType } from '../enums/construction-type.enum';
 import { PropertyUsage } from '../enums/property-usage.enum';
 import { PropertyStatus } from '../enums/property-status.enum';
 
+export enum PropertyCalculationStatus {
+  CALCULATED = 'CALCULATED',
+  INCOMPLETE = 'INCOMPLETE',
+}
+
 export interface PropertyAddress {
   street: string;
   neighborhood: string;
@@ -29,6 +34,10 @@ export interface PropertyCoverages {
 }
 
 export class Property {
+  netPremium?: number;
+  commercialPremium?: number;
+  incompleteReason?: string;
+
   constructor(
     public readonly id: string,
     public readonly quoteId: string,
@@ -99,7 +108,7 @@ export class Property {
     coverages: Partial<PropertyCoverages>;
   }>): void {
     if (data.name !== undefined) this.name = data.name;
-    
+
     if (data.address) {
       if (data.address.street !== undefined) this.address.street = data.address.street;
       if (data.address.neighborhood !== undefined) this.address.neighborhood = data.address.neighborhood;
@@ -107,7 +116,7 @@ export class Property {
       if (data.address.state !== undefined) this.address.state = data.address.state;
       if (data.address.zipCode !== undefined) this.address.zipCode = data.address.zipCode;
     }
-    
+
     if (data.construction) {
       if (data.construction.type !== undefined) this.construction.type = data.construction.type;
       if (data.construction.year !== undefined) this.construction.year = data.construction.year;
@@ -116,7 +125,7 @@ export class Property {
       if (data.construction.specificActivity !== undefined) this.construction.specificActivity = data.construction.specificActivity;
       if (data.construction.activityCode !== undefined) this.construction.activityCode = data.construction.activityCode;
     }
-    
+
     if (data.coverages) {
       if (data.coverages.building !== undefined) this.coverages.building = data.coverages.building;
       if (data.coverages.contents !== undefined) this.coverages.contents = data.coverages.contents;
@@ -148,8 +157,8 @@ export class Property {
 
     const completedFields = validations.filter(Boolean).length;
     this.completionPercentage = Math.round((completedFields / validations.length) * 100);
-    this.status = this.completionPercentage === 100 
-      ? PropertyStatus.COMPLETE 
+    this.status = this.completionPercentage === 100
+      ? PropertyStatus.COMPLETE
       : PropertyStatus.INCOMPLETE;
   }
 

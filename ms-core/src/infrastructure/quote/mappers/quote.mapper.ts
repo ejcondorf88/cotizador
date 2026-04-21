@@ -27,6 +27,12 @@ export class QuoteMapper {
       entity.createdAt,
       entity.updatedAt,
       details,
+      entity.propertyCount,
+      entity.netPremium,
+      entity.commercialPremium,
+      entity.commercialFactor,
+      entity.calculatedAt,
+      entity.version,
     );
   }
 
@@ -53,6 +59,14 @@ export class QuoteMapper {
       entity.paymentType = domain.details.paymentType;
     }
 
+    // Campos de prima
+    entity.netPremium = domain.netPremium;
+    entity.commercialPremium = domain.commercialPremium;
+    entity.commercialFactor = domain.commercialFactor;
+    entity.calculatedAt = domain.calculatedAt;
+    entity.version = domain.version;
+    entity.propertyCount = domain.propertyCount;
+
     return entity;
   }
 
@@ -63,6 +77,11 @@ export class QuoteMapper {
       status: quote.status,
       createdAt: quote.createdAt,
       updatedAt: quote.updatedAt,
+      netPremium: quote.netPremium,
+      commercialPremium: quote.commercialPremium,
+      commercialFactor: quote.commercialFactor,
+      calculatedAt: quote.calculatedAt,
+      version: quote.version,
     };
 
     if (quote.details) {

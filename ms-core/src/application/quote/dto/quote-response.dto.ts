@@ -27,4 +27,9 @@ export class QuoteResponseDto {
   createdAt: Date;
   updatedAt: Date;
   details?: QuoteDetailsDto;
+  netPremium?: number;
+  commercialPremium?: number;
+  commercialFactor?: number;
+  calculatedAt?: Date;
+  version?: number;
 }
