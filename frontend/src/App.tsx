@@ -6,6 +6,7 @@ import { QuotesListPage } from './pages/QuotesListPage';
 import { InsuredPropertiesPage } from './pages/InsuredPropertiesPage';
 import { PropertyDetailsPage } from './pages/PropertyDetailsPage';
 import { CoverageStep } from './components/coverage/CoverageStep';
+import { SummaryPage } from './pages/SummaryPage';
 
 // PrimeReact styles
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -27,6 +28,8 @@ function App() {
           <Route path="/quote/:id/properties/details" element={<PropertyDetailsPage />} />
           <Route path="/quote/:id/coverage" element={<CoverageStep />} />
           <Route path="/quote/:id/coberturas" element={<CoverageStep />} />
+          <Route path="/quote/:id/summary" element={<SummaryPage />} />
+          <Route path="/quote/:id/resumen" element={<SummaryPage />} />
         </Routes>
       </BrowserRouter>
     </PrimeReactProvider>
