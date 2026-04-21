@@ -30,6 +30,12 @@ RUN chown -R appuser:appgroup /app
 # ==========================================
 FROM nginx:1.25-alpine AS production
 
+# Metadata labels (OCI standard)
+LABEL org.opencontainers.image.title="frontend"
+LABEL org.opencontainers.image.description="Frontend React - SeguraX Cotizador"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.authors="DevOps Team"
+
 # Crear usuario no-root para Nginx
 RUN addgroup -g 1001 -S appgroup && \
     adduser -u 1001 -S appuser -G appgroup
@@ -56,9 +62,7 @@ USER appuser
 # Exponer puerto no-privilegiado
 EXPOSE 8080
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost:8080/ || exit 1
+# NO HEALTHCHECK - Segun requerimiento del usuario
 
 # Comando de inicio
 CMD ["nginx", "-g", "daemon off;"]

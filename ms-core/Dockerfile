@@ -1,70 +1,75 @@
-# ==========================================
+# ============================================================================
 # Stage 1: Dependencies
-# ==========================================
+# ============================================================================
 FROM node:20-alpine AS dependencies
 
 WORKDIR /app
 
-# Copiar archivos de dependencias
+# Copy dependency files
 COPY package*.json ./
 
-# Instalar solo dependencias de producción
-RUN npm ci --only=production && npm cache clean --force
+# Install only production dependencies
+# --omit=dev es la forma moderna (npm 8.0+)
+RUN npm ci --omit=dev && npm cache clean --force
 
-# ==========================================
+# ============================================================================
 # Stage 2: Builder
-# ==========================================
+# ============================================================================
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copiar dependencias del stage anterior
+# Copy dependencies from previous stage
 COPY --from=dependencies /app/node_modules ./node_modules
 
-# Copiar archivos de configuración
+# Copy configuration files
 COPY package*.json tsconfig.json ./
 
-# Copiar código fuente
+# Copy source code
 COPY src/ ./src/
 
-# Compilar TypeScript
+# Compile TypeScript
 RUN npm run build
 
-# ==========================================
+# ============================================================================
 # Stage 3: Production
-# ==========================================
+# ============================================================================
 FROM node:20-alpine AS production
 
-# Instalar dumb-init para manejo correcto de señales
+# Metadata labels (OCI standard)
+LABEL org.opencontainers.image.title="ms-core"
+LABEL org.opencontainers.image.description="Backend Core API - SeguraX Cotizador"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.authors="DevOps Team"
+
+# Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
 
-# Directorio de trabajo
+# Working directory
 WORKDIR /app
 
-# Copiar dependencias de producción
+# Copy production dependencies
 COPY --from=dependencies /app/node_modules ./node_modules
 
-# Copiar archivos compilados
+# Copy compiled files
 COPY --from=builder /app/dist ./dist
 
-# Copiar package.json (para metadata)
+# Copy package.json (for metadata)
 COPY --from=builder /app/package.json ./
 
-# Crear directorio para logs
+# Create log directory
 RUN mkdir -p /app/logs && chown -R node:node /app
 
-# Cambiar a usuario no-root (node ya existe en imagen oficial)
+# Change to non-root user (node already exists in official image)
 USER node
 
-# Exponer puerto
+# Expose port
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})" || exit 1
+# NO HEALTHCHECK - Segun requerimiento del usuario
 
-# Usar dumb-init para manejo correcto de señales
+# Use dumb-init for proper signal handling
 ENTRYPOINT ["dumb-init", "--"]
 
-# Comando de inicio
+# Start command
 CMD ["node", "dist/main.js"]
