@@ -28,11 +28,21 @@ public class ElTituloDeLaPagina implements Question<String> {
     }
 
     /**
-     * Factory method.
+     * Factory method para obtener el título mostrado.
      *
      * @return instancia de ElTituloDeLaPagina
      */
     public static ElTituloDeLaPagina mostrado() {
+        return new ElTituloDeLaPagina();
+    }
+
+    /**
+     * Factory method para verificar el título.
+     * Alias semántico para uso en assertions.
+     *
+     * @return instancia de ElTituloDeLaPagina
+     */
+    public static ElTituloDeLaPagina es() {
         return new ElTituloDeLaPagina();
     }
 

@@ -1,7 +1,10 @@
 package com.segurax.questions;
 
+import com.segurax.targets.QuotePageTargets;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Question;
+import net.serenitybdd.screenplay.questions.Presence;
+import net.serenitybdd.screenplay.questions.Text;
 
 /**
  * Question para obtener el folio de la cotización creada.
@@ -9,28 +12,30 @@ import net.serenitybdd.screenplay.Question;
  * <p>Esta pregunta permite verificar el folio generado
  * después de crear una nueva cotización.</p>
  *
- * <p>Nota: Esta es una implementación placeholder. En una implementación
- * real, leería el valor de un elemento UI específico.</p>
- *
- * <p>Usage example:</p>
+ * <p>Ejemplo de uso:</p>
  * <pre>
  * elActor.should(seeThat(ElFolioDeLaCotizacion.mostrado(), containsString("COT-")));
+ * elActor.should(seeThat(ElFolioDeLaCotizacion.estaVisible(), is(true)));
  * </pre>
  *
- * @author Serenity BDD Template
+ * @author QA Team - ASDD
  * @version 1.0.0
  * @see Question
  */
 public class ElFolioDeLaCotizacion implements Question<String> {
 
-    /**
-     * Default constructor.
-     */
-    public ElFolioDeLaCotizacion() {
+    private final boolean verificarPresencia;
+
+    private ElFolioDeLaCotizacion() {
+        this.verificarPresencia = false;
+    }
+
+    private ElFolioDeLaCotizacion(boolean verificarPresencia) {
+        this.verificarPresencia = verificarPresencia;
     }
 
     /**
-     * Factory method.
+     * Factory method para obtener el texto del folio.
      *
      * @return instancia de ElFolioDeLaCotizacion
      */
@@ -38,13 +43,22 @@ public class ElFolioDeLaCotizacion implements Question<String> {
         return new ElFolioDeLaCotizacion();
     }
 
+    /**
+     * Factory method para verificar que el folio está visible.
+     *
+     * @return Question<Boolean> para verificar presencia
+     */
+    public static Question<Boolean> estaVisible() {
+        return new Question<Boolean>() {
+            @Override
+            public Boolean answeredBy(Actor actor) {
+                return Presence.of(QuotePageTargets.TEXTO_FOLIO_COTIZACION).answeredBy(actor);
+            }
+        };
+    }
+
     @Override
     public String answeredBy(Actor actor) {
-        // Placeholder implementation
-        // En una implementación real, esto leería el valor del campo
-        // de folio en la UI usando Target
-
-        // Retornamos un folio dummy con el formato esperado
-        return "COT-2026-00001";
+        return Text.of(QuotePageTargets.TEXTO_FOLIO_COTIZACION).answeredBy(actor);
     }
 }
