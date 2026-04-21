@@ -425,10 +425,86 @@ public class HappyPathFlujoCompletoStepDefinitions {
         );
     }
 
-    @Y("debe ser redirigido al paso de resumen final {string}")
-    public void debeSerRedirigidoAlPasoDeResumenFinal(String rutaEsperada) {
-        OnStage.theActorInTheSpotlight().should(
-            seeThat(LaUrlActual.es(), containsString("/summary"))
-        );
+  @Y("debe ser redirigido al paso de resumen final {string}")
+  public void debeSerRedirigidoAlPasoDeResumenFinal(String rutaEsperada) {
+    OnStage.theActorInTheSpotlight().should(
+      seeThat(LaUrlActual.es(), containsString("/summary"))
+    );
+  }
+
+  // ============================================
+  // MICROFLUJO 6: Cálculo de Prima y Resumen
+  // ============================================
+
+  @Dado("que el agente ha configurado las coberturas exitosamente")
+  public void queElAgenteHaConfiguradoLasCoberturasExitosamente() {
+    // Precondición: coberturas configuradas en MF5
+  }
+
+  @Y("está en la página de resumen {string}")
+  public void estaEnLaPaginaDeResumen(String rutaEsperada) {
+    OnStage.theActorInTheSpotlight().should(
+      seeThat(LaUrlActual.es(), containsString("/summary"))
+    );
+  }
+
+  @Cuando("el sistema calcula la prima automáticamente")
+  public void elSistemaCalculaLaPrimaAutomaticamente() {
+    // El cálculo ocurre automáticamente al navegar a Summary
+    OnStage.theActorInTheSpotlight().attemptsTo(
+      CalcularLaPrima.automaticamente()
+    );
+  }
+
+  @Y("debe ver el panel de prima total con:")
+  public void debeVerElPanelDePrimaTotalCon(DataTable dataTable) {
+    List<Map<String, String>> primas = dataTable.asMaps();
+    for (Map<String, String> prima : primas) {
+      String tipo = prima.get("tipo");
+      boolean visible = Boolean.parseBoolean(prima.get("visible"));
+      OnStage.theActorInTheSpotlight().should(
+        seeThat(ElPanelDePrimaTotal.muestra(tipo), is(visible))
+      );
     }
+  }
+
+  @Y("la prima comercial debe ser mayor a cero")
+  public void laPrimaComercialDebeSerMayorACero() {
+    OnStage.theActorInTheSpotlight().should(
+      seeThat(LaPrimaComercial.esMayorAZero(), is(true))
+    );
+  }
+
+  @Y("debe ver el desglose por inmueble con:")
+  public void debeVerElDesglosePorInmuebleCon(DataTable dataTable) {
+    List<Map<String, String>> inmuebles = dataTable.asMaps();
+    for (Map<String, String> inmueble : inmuebles) {
+      String nombre = inmueble.get("inmueble");
+      String estadoEsperado = inmueble.get("estado");
+      OnStage.theActorInTheSpotlight().should(
+        seeThat(ElDesglosePorInmueble.estaVisible(nombre), is(true)),
+        seeThat(ElDesglosePorInmueble.delInmueble(nombre), equalTo(estadoEsperado))
+      );
+    }
+  }
+
+  @Y("cada inmueble debe mostrar su desglose de coberturas")
+  public void cadaInmuebleDebeMostrarSuDesgloseDeCoberturas() {
+    OnStage.theActorInTheSpotlight().should(
+      seeThat(ElResumenDeCoberturas.estaVisible(), is(true))
+    );
+  }
+
+  @Y("debe ver los botones de acción:")
+  public void debeVerLosBotonesDeAccion(DataTable dataTable) {
+    List<Map<String, String>> botones = dataTable.asMaps();
+    for (Map<String, String> boton : botones) {
+      String nombre = boton.get("boton");
+      String estadoEsperado = boton.get("estado");
+      boolean habilitado = "habilitado".equalsIgnoreCase(estadoEsperado);
+      OnStage.theActorInTheSpotlight().should(
+        seeThat(LosBotonesDeAccionSummary.estaHabilitado(nombre), is(habilitado))
+      );
+    }
+  }
 }
