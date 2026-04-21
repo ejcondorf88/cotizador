@@ -59,15 +59,54 @@ export function PropertyStepper({
 
   // Solo guardar al final (paso 4)
   const handleFinalSave = useCallback(() => {
+    // Validar año de construcción antes de enviar
+    const year = formData.construction.year;
+    if (year && (year < 1900 || year > new Date().getFullYear())) {
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Año de construcción inválido',
+        detail: `El año debe estar entre 1900 y ${new Date().getFullYear()}`,
+        life: 5000,
+      });
+      return;
+    }
+
+    // Validar ciudad antes de enviar
+    if (!formData.address?.city?.trim()) {
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Campo requerido',
+        detail: 'La ciudad es obligatoria',
+        life: 5000,
+      });
+      return;
+    }
+    if (/^\d+$/.test(formData.address.city)) {
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Ciudad inválida',
+        detail: 'La ciudad no puede contener solo números',
+        life: 5000,
+      });
+      return;
+    }
+
     const updateData: UpdatePropertyRequest = {
+      // Ubicación - campos planos (no anidados)
       name: formData.name,
-      address: formData.address,
+      street: formData.address.street,
+      neighborhood: formData.address.neighborhood,
+      city: formData.address.city,
+      state: formData.address.state,
+      zipCode: formData.address.zipCode,
+      // Construcción
       constructionType: formData.construction.type,
       constructionYear: formData.construction.year,
       levels: formData.construction.levels,
       propertyUsage: formData.construction.usage,
       specificActivity: formData.construction.specificActivity,
       activityCode: formData.construction.activityCode,
+      // Garantías
       coverageBuilding: formData.coverages.building,
       coverageContents: formData.coverages.contents,
       coverageElectronic: formData.coverages.electronicEquipment,
@@ -126,12 +165,18 @@ export function PropertyStepper({
         if (!formData.address?.state?.trim()) {
           newErrors.state = 'El estado es obligatorio';
         }
-        if (!formData.address?.city?.trim()) {
-          newErrors.city = 'La ciudad es obligatoria';
-        }
-        if (!formData.address?.neighborhood?.trim()) {
-          newErrors.neighborhood = 'La colonia es obligatoria';
-        }
+      if (!formData.address?.city?.trim()) {
+        newErrors.city = 'La ciudad es obligatoria';
+      } else if (/^\d+$/.test(formData.address.city)) {
+        newErrors.city = 'La ciudad no puede ser solo números';
+      } else if (formData.address.city.length > 100) {
+        newErrors.city = 'La ciudad es demasiado larga (máx 100 caracteres)';
+      }
+      if (!formData.address?.neighborhood?.trim()) {
+        newErrors.neighborhood = 'La colonia es obligatoria';
+      } else if (/^\d+$/.test(formData.address.neighborhood)) {
+        newErrors.neighborhood = 'La colonia no puede ser solo números';
+      }
         break;
 
       case 1: // Construction
@@ -143,6 +188,13 @@ export function PropertyStepper({
         }
         if (!formData.construction?.specificActivity?.trim()) {
           newErrors.specificActivity = 'El giro específico es obligatorio';
+        }
+        // Validar año de construcción si está presente
+        if (formData.construction?.year) {
+          const currentYear = new Date().getFullYear();
+          if (formData.construction.year < 1900 || formData.construction.year > currentYear) {
+            newErrors.year = `El año debe estar entre 1900 y ${currentYear}`;
+          }
         }
         break;
 

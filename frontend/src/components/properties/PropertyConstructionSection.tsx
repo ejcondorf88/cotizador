@@ -110,21 +110,23 @@ export function PropertyConstructionSection({
           {errors.type && <Message severity="error" text={errors.type} className="text-xs" />}
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-300">
-            Año de construcción
-          </label>
-          <InputNumber
-            value={localData.year}
-            onChange={(e) => handleFieldChange('year', e.value)}
-            min={1900}
-            max={currentYear}
-            placeholder={`1900-${currentYear}`}
-            className="w-full"
-            inputClassName="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
-          />
-          {errors.year && <Message severity="error" text={errors.year} className="text-xs" />}
-        </div>
+      <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-300">
+              Año de construcción
+            </label>
+            <InputText
+              value={localData.year?.toString() || ''}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+                handleFieldChange('year', value ? parseInt(value) : null);
+              }}
+              placeholder={`1900-${currentYear}`}
+              maxLength={4}
+              keyfilter="num"
+              className="w-full bg-[#1A1A2E] border border-gray-600 text-white focus:border-[#C9A84C]"
+            />
+            {errors.year && <Message severity="error" text={errors.year} className="text-xs" />}
+          </div>
       </div>
 
       {/* Levels and Usage */}
