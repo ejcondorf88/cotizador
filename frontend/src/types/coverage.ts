@@ -29,8 +29,10 @@ export interface Coverage {
 }
 
 export interface CoverageResponse {
-  mandatory: Coverage[];
-  optional: Coverage[];
+  data: {
+    mandatory: Coverage[];
+    optional: Coverage[];
+  };
 }
 
 export interface UpdateCoveragesRequest {

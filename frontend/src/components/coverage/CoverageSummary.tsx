@@ -12,11 +12,11 @@ export function CoverageSummary({
   mandatoryCount,
   optionalSelected,
   totalCount,
-  basePremium,
+  basePremium = 0,
   currency = 'MXN',
 }: CoverageSummaryProps) {
   const currencySymbol = currency === 'USD' ? '$' : '$';
-  const formattedPremium = basePremium.toLocaleString('es-MX', {
+  const formattedPremium = (basePremium ?? 0).toLocaleString('es-MX', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });

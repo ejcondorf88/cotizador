@@ -36,7 +36,8 @@ export function useCoverages(quoteId: string | undefined): UseCoveragesReturn {
     setError(null);
 
     try {
-      const data: CoverageResponse = await coverageService.getCoverages();
+      const response: CoverageResponse = await coverageService.getCoverages();
+      const data = response.data;
 
       // Combine mandatory and optional
       const allCoverages = [...data.mandatory, ...data.optional];
