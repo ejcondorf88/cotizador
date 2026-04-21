@@ -49,8 +49,16 @@ export function CoverageStep() {
     [toggle],
   );
 
+  const log = (level: 'info' | 'error' | 'warn', action: string, data?: any) => {
+    const timestamp = new Date().toISOString();
+    console[level](`[${timestamp}] [CoverageStep] ${action}`, data || '');
+  };
+
   const handleContinue = async () => {
+    log('info', 'handleContinue() - Iniciando', { quoteId });
+
     if (!quoteId) {
+      log('error', 'handleContinue() - Error: No quoteId');
       toast.current?.show({
         severity: 'error',
         summary: 'Error',
@@ -61,10 +69,16 @@ export function CoverageStep() {
     }
 
     setIsSubmitting(true);
+    log('info', 'handleContinue() - isSubmitting = true');
+
     try {
       // Paso 1: Guardar coberturas
+      log('info', 'handleContinue() - Paso 1: Guardando coberturas');
       const coverageResponse = await saveCoverages();
+      log('info', 'handleContinue() - Respuesta de saveCoverages', { coverageResponse });
+
       if (!coverageResponse) {
+        log('warn', 'handleContinue() - No se pudo guardar las coberturas');
         toast.current?.show({
           severity: 'warn',
           summary: 'Advertencia',
@@ -75,27 +89,40 @@ export function CoverageStep() {
       }
 
       // Paso 2: Calcular prima
+      log('info', 'handleContinue() - Paso 2: Calculando prima');
       const calculationResult = await calculate();
-      if (calculationResult) {
-        toast.current?.show({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Prima calculada correctamente',
-          life: 3000,
-        });
-        // Navigate to summary/step 6
-        navigate(`/quote/${quoteId}/summary`);
+      log('info', 'handleContinue() - Respuesta de calculate', { calculationResult });
+
+    if (calculationResult) {
+      log('info', 'handleContinue() - Cálculo exitoso, navegando a summary con state', {
+        folio: calculationResult.folio,
+        netPremium: calculationResult.netPremium,
+        commercialPremium: calculationResult.commercialPremium,
+      });
+      toast.current?.show({
+        severity: 'success',
+        summary: 'Éxito',
+        detail: 'Prima calculada correctamente',
+        life: 3000,
+      });
+      // Navigate to summary/step 6 with calculation result
+      navigate(`/quote/${quoteId}/summary`, {
+        state: { calculationResult },
+      });
+    } else {
+        log('error', 'handleContinue() - calculationResult es null');
       }
     } catch (err) {
-      // Los errores ya son manejados por el hook useCalculate
-      // Solo mostramos el toast si hay error
+      const errorMsg = err instanceof Error ? err.message : 'Error al calcular la prima';
+      log('error', 'handleContinue() - Error en el proceso', { error: errorMsg });
       toast.current?.show({
         severity: 'error',
         summary: 'Error',
-        detail: err instanceof Error ? err.message : 'Error al calcular la prima',
+        detail: errorMsg,
         life: 5000,
       });
     } finally {
+      log('info', 'handleContinue() - Finalizado, isSubmitting = false');
       setIsSubmitting(false);
     }
   };

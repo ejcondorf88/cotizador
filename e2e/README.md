@@ -1,10 +1,11 @@
-# Happy Path E2E - Serenity BDD Tests
+# 🧪 Happy Path E2E - Serenity BDD Tests
 
 Suite de pruebas End-to-End (E2E) automatizadas para el cotizador **SeguraX**, cubriendo el flujo completo desde la homepage hasta la configuración de coberturas.
 
 > **SPEC:** [SPEC-021 - Happy Path E2E](../.github/specs/happy-path-e2e-serenity.spec.md)  
 > **Estado:** IMPLEMENTED ✅  
-> **Última actualización:** 2026-04-21
+> **Última actualización:** 2026-04-21  
+> **Ciclo de vida:** DRAFT → APPROVED → IN_PROGRESS → **IMPLEMENTED** → DEPRECATED
 
 ---
 
@@ -153,8 +154,75 @@ mvn clean verify -Dwebdriver.base.url=https://staging.segurax.com
 
 ---
 
-## Estructura del Proyecto
+## 📂 Estructura del Proyecto
 
+```
+e2e/
+├── pom.xml                              # Configuración Maven + dependencias
+├── serenity.properties                  # Configuración Serenity BDD
+├── README.md                            # Este archivo
+├── CONTRIBUTING.md                      # Guía de contribución
+├── .gitignore                           # Exclusiones de Git
+│
+├── src/test/
+│   ├── java/com/segurax/
+│   │   ├── runners/
+│   │   │   └── HappyPathRunner.java              # Runner principal de Cucumber
+│   │   │
+│   │   ├── stepdefinitions/
+│   │   │   ├── HappyPathFlujoCompletoStepDefinitions.java  # Glue: mapeo Gherkin→Java
+│   │   │   └── CotizacionStepDefinitions.java              # Steps adicionales
+│   │   │
+│   │   ├── actors/
+│   │   │   └── ElAgente.java                     # Factory del actor principal
+│   │   │
+│   │   ├── tasks/                                # 🎬 ACCIONES (When)
+│   │   │   ├── Navegar.java                      # Navegar a páginas
+│   │   │   ├── CrearUnaCotizacion.java           # Crear cotización
+│   │   │   ├── SeleccionarCantidadDeInmuebles.java
+│   │   │   ├── CompletarElInmueble.java
+│   │   │   ├── GuardarElInmueble.java
+│   │   │   ├── FinalizarElPasoDeInmuebles.java
+│   │   │   ├── ActivarCobertura.java
+│   │   │   ├── ContinuarEnCoberturas.java
+│   │   │   └── HacerClick.java
+│   │   │
+│   │   ├── questions/                            # ✅ VERIFICACIONES (Then)
+│   │   │   ├── ElFolioDeLaCotizacion.java
+│   │   │   ├── ElEstadoDeLaCotizacion.java
+│   │   │   ├── LaCantidadDeFichasDeInmueble.java
+│   │   │   ├── LosInmueblesEstanCompletos.java
+│   │   │   ├── LaSumaAseguradaTotal.java
+│   │   │   ├── LaCoberturaObligatoria.java
+│   │   │   ├── LasCoberturasOpcionales.java
+│   │   │   └── ElTituloDeLaPagina.java
+│   │   │
+│   │   ├── targets/                              # 🎯 LOCALIZADORES UI
+│   │   │   ├── HomepageTargets.java              # Homepage (botón Cotizar)
+│   │   │   ├── QuotePageTargets.java             # Página de cotización
+│   │   │   ├── PropertyCountTargets.java         # Selector de cantidad
+│   │   │   ├── PropertyDetailsTargets.java       # Fichas de inmuebles
+│   │   │   ├── PropertyFormTargets.java          # Formulario de inmueble
+│   │   │   ├── CoverageTargets.java              # Configuración coberturas
+│   │   │   └── CommonTargets.java                # Elementos comunes
+│   │   │
+│   │   └── models/                               # 📦 OBJETOS DE DOMINIO
+│   │       ├── InmuebleData.java                 # Builder pattern
+│   │       ├── Cotizacion.java
+│   │       ├── Propiedad.java
+│   │       └── Direccion.java
+│   │
+│   └── resources/
+│       └── features/
+│           ├── happy_path_flujo_completo.feature # 🥒 FEATURE PRINCIPAL (Gherkin)
+│           └── crear_cotizacion.feature          # Feature adicional
+│
+└── target/
+    └── site/serenity/                            # 📊 REPORTES GENERADOS
+        ├── index.html                            # Reporte principal (¡abrir este!)
+        ├── requirements/                         # Requerimientos/features
+        ├── capabilities/                       # Capabilities del navegador
+        └── serenity-report.csv                 # Datos en CSV
 ```
 e2e/
 ├── pom.xml                              # Configuración Maven
@@ -212,51 +280,82 @@ e2e/
 
 ---
 
-## Tags de Cucumber Disponibles
+## 🏷️ Tags de Cucumber Disponibles
 
-### Tags de Flujo
+Los tags permiten filtrar y ejecutar tests específicos según el contexto.
+
+### 🚀 Tags de Flujo Principal
 
 | Tag | Descripción | Microflujos |
 |-----|-------------|-------------|
-| `@happy-path` | Todo el flujo E2E | 1-5 |
+| `@happy-path` | Todo el flujo E2E del camino feliz | 1-5 |
 | `@e2e` | Tests de extremo a extremo | Todos |
 | `@flujo-completo` | Cobertura del flujo completo | 1-5 |
-| `@final` | Último paso del flujo | 5 |
+| `@final` | Último paso del flujo (configurar coberturas) | 5 |
 
-### Tags por Microflujo
+### 🔢 Tags por Microflujo
 
-| Tag | Descripción |
-|-----|-------------|
-| `@microflujo-1` | Homepage → Página de cotización |
-| `@microflujo-2` | Crear nueva cotización |
-| `@microflujo-3` | Seleccionar cantidad de inmuebles |
-| `@microflujo-4` | Completar datos de inmuebles |
-| `@microflujo-5` | Configurar coberturas |
+| Tag | Descripción | Escenario |
+|-----|-------------|-----------|
+| `@microflujo-1` | Homepage → Página de cotización | Navegar desde homepage |
+| `@microflujo-2` | Crear nueva cotización | Crear y verificar folio |
+| `@microflujo-3` | Seleccionar cantidad de inmuebles | Seleccionar 2 inmuebles |
+| `@microflujo-4` | Completar datos de inmuebles | Completar datos de ambos |
+| `@microflujo-5` | Configurar coberturas | Activar coberturas opcionales |
 
-### Tags por Dominio
+### 🏛️ Tags por Dominio
 
-| Tag | Descripción |
-|-----|-------------|
-| `@homepage` | Tests relacionados con la homepage |
-| `@navegacion` | Tests de navegación entre páginas |
-| `@crear-cotizacion` | Tests de creación de cotización |
-| `@folio` | Tests relacionados con folios |
-| `@seleccion-inmuebles` | Tests de selección de cantidad |
-| `@cantidad` | Tests de cantidad de inmuebles |
-| `@completar-inmuebles` | Tests de completar formularios |
-| `@formularios` | Tests de formularios |
-| `@configurar-coberturas` | Tests de configuración de coberturas |
-| `@coberturas` | Tests de coberturas |
+| Tag | Descripción | Uso |
+|-----|-------------|-----|
+| `@homepage` | Tests relacionados con la homepage | Página inicial |
+| `@navegacion` | Tests de navegación entre páginas | Transiciones |
+| `@crear-cotizacion` | Tests de creación de cotización | Microflujo 2 |
+| `@folio` | Tests relacionados con folios | Generación de folios |
+| `@seleccion-inmuebles` | Tests de selección de cantidad | Microflujo 3 |
+| `@cantidad` | Tests de cantidad de inmuebles | Input de cantidad |
+| `@completar-inmuebles` | Tests de completar formularios | Microflujo 4 |
+| `@formularios` | Tests de formularios | Validación de campos |
+| `@configurar-coberturas` | Tests de configuración de coberturas | Microflujo 5 |
+| `@coberturas` | Tests de coberturas | Obligatorias y opcionales |
 
-### Tags de Prioridad
+### ⚡ Tags de Prioridad y Estado
 
-| Tag | Descripción |
-|-----|-------------|
-| `@critical` | Tests críticos para el negocio |
-| `@ui` | Tests de interfaz de usuario |
-| `@wip` | Work in progress (excluido por defecto) |
-| `@manual` | Requiere ejecución manual |
-| `@pending` | Pendiente de implementación |
+| Tag | Descripción | Uso Recomendado |
+|-----|-------------|-----------------|
+| `@critical` | Tests críticos para el negocio | Ejecutar en CI/CD siempre |
+| `@ui` | Tests de interfaz de usuario | Validación visual |
+| `@wip` | Work in progress (excluido por defecto) | Tests en desarrollo |
+| `@manual` | Requiere ejecución manual | Validaciones complejas |
+| `@pending` | Pendiente de implementación | Planificado |
+| `@smoke` | Tests rápidos de verificación | Pre-commit |
+| `@regression` | Tests de regresión | Release completo |
+
+### 📋 Ejemplos de Uso de Tags
+
+```bash
+# Ejecutar todo el happy path (todos los microflujos)
+mvn clean verify -Dcucumber.filter.tags="@happy-path"
+
+# Ejecutar un microflujo específico
+mvn clean verify -Dcucumber.filter.tags="@microflujo-1"
+mvn clean verify -Dcucumber.filter.tags="@microflujo-3"
+
+# Combinar tags (AND)
+mvn clean verify -Dcucumber.filter.tags="@happy-path and @critical"
+
+# Excluir tests en progreso
+mvn clean verify -Dcucumber.filter.tags="@happy-path and not @wip"
+
+# Tests de un dominio específico
+mvn clean verify -Dcucumber.filter.tags="@coberturas"
+mvn clean verify -Dcucumber.filter.tags="@formularios"
+
+# Tests críticos solamente
+mvn clean verify -Dcucumber.filter.tags="@critical"
+
+# Hasta el paso final (útil para CI/CD)
+mvn clean verify -Dcucumber.filter.tags="@final"
+```
 
 ---
 
@@ -382,13 +481,23 @@ Ver [CONTRIBUTING.md](./CONTRIBUTING.md) para guías de contribución al proyect
 
 ---
 
-## Especificaciones Relacionadas
+## 📋 Especificaciones Relacionadas
 
-- [SPEC-021: Happy Path E2E](../.github/specs/happy-path-e2e-serenity.spec.md)
-- [SPEC-002: Backend Quotes API](../.github/specs/backend-quotes-api.spec.md)
-- [SPEC-003: Frontend Gateway Integration](../.github/specs/frontend-gateway-integration.spec.md)
-- [SPEC-012: Add Insured Properties Flow](../.github/specs/add-insured-properties-flow.spec.md)
-- [SPEC-018: Coverage Selection](../.github/specs/coverage-selection.spec.md)
+### Principales
+- **[SPEC-021: Happy Path E2E](../.github/specs/happy-path-e2e-serenity.spec.md)** - Especificación completa de los tests E2E
+- [SPEC-024: Update All READMEs](../.github/specs/update-all-readmes.spec.md) - Actualización de documentación
+
+### Backend & APIs
+- [SPEC-002: Backend Quotes API](../.github/specs/backend-quotes-api.spec.md) - API de cotizaciones
+- [SPEC-003: Frontend Gateway Integration](../.github/specs/frontend-gateway-integration.spec.md) - Integración con Gateway
+- [SPEC-012: Add Insured Properties Flow](../.github/specs/add-insured-properties-flow.spec.md) - Flujo de propiedades
+
+### Frontend
+- [SPEC-018: Coverage Selection](../.github/specs/coverage-selection.spec.md) - Selección de coberturas
+- [SPEC-024: Frontend Cotizador](../.github/specs/frontend-cotizador-segurax.spec.md) - Frontend React
+
+### Infraestructura
+- [SPEC-001: Dockerfiles Optimization](../.github/specs/dockerfiles-optimization.spec.md) - Docker optimizado
 
 ---
 

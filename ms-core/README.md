@@ -159,7 +159,27 @@ npm run migration:revert
 }
 ```
 
-## Docker
+## 🐳 Docker
+
+### Dockerfile Optimizado (Multi-Stage)
+
+El Dockerfile usa **3 stages** para optimizar la imagen final:
+
+```dockerfile
+# Stage 1: Dependencies (solo prod)
+# Stage 2: Builder (compila TypeScript)
+# Stage 3: Production (imagen final mínima)
+```
+
+**Características de seguridad:**
+- ✅ Multi-stage build
+- ✅ Usuario `node` (no-root, UID 1000)
+- ✅ Labels OCI estándar
+- ✅ Imagen base Alpine Linux
+- ✅ Sin HEALTHCHECK (gestión externa)
+- ✅ `dumb-init` para manejo de señales
+
+### Comandos Docker
 
 ```bash
 # Build
@@ -170,9 +190,27 @@ docker run -p 3000:3000 --env-file .env ms-core
 
 # Development con Docker Compose (desde raíz)
 docker-compose up ms-core
+
+# Verificar usuario no-root
+docker run --rm ms-core id
+# Output: uid=1000(node) gid=1000(node)
+
+# Verificar labels OCI
+docker inspect ms-core --format='{{.Config.Labels}}'
 ```
 
-## Testing
+### Labels OCI
+
+La imagen incluye metadata estándar OCI:
+
+| Label | Valor |
+|-------|-------|
+| `org.opencontainers.image.title` | ms-core |
+| `org.opencontainers.image.description` | Backend Core API - SeguraX Cotizador |
+| `org.opencontainers.image.version` | 1.0.0 |
+| `org.opencontainers.image.authors` | DevOps Team |
+
+## 🧪 Testing
 
 El proyecto usa **Jest** con configuración para testing de arquitectura hexagonal:
 
@@ -180,21 +218,46 @@ El proyecto usa **Jest** con configuración para testing de arquitectura hexagon
 # Tests unitarios (use cases, domain)
 npm run test
 
-# Coverage report
+# Tests con cobertura
 npm run test:cov
+
+# Tests en modo watch
+npm run test:watch
 
 # Tests de integración (repositorios, controllers)
 npm run test:e2e
+
+# Tests de integración (alias)
+npm run test:integration
 ```
 
 ### Estrategia de Testing
 
-| Capa | Tipo de Test | Ejemplo |
-|------|--------------|---------|
-| Domain | Unit test puro | `quote.entity.spec.ts` |
-| Application | Unit con mocks | `create-quote.use-case.spec.ts` |
-| Infrastructure | Integration | `quote.typeorm.repository.spec.ts` |
-| Presentation | E2E | `quote.controller.e2e-spec.ts` |
+| Capa | Tipo de Test | Ejemplo | Cobertura |
+|------|--------------|---------|-----------|
+| Domain | Unit test puro | `quote.entity.spec.ts` | 90% |
+| Application | Unit con mocks | `create-quote.use-case.spec.ts` | 80% |
+| Infrastructure | Integration | `quote.typeorm.repository.spec.ts` | 80% |
+| Presentation | E2E | `quote.controller.e2e-spec.ts` | - |
+
+### Comandos de Testing Actualizados
+
+```bash
+# Ejecutar todos los tests
+npm run test
+
+# Cobertura con umbral mínimo 80%
+npm run test:cov
+
+# Modo watch para desarrollo
+npm run test:watch
+
+# Debug de tests
+npm run test:debug
+
+# Tests E2E completos
+npm run test:e2e
+```
 
 ## Logging
 

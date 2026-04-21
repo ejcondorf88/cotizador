@@ -146,13 +146,36 @@ management:
 
 ## Rutas Configuradas
 
-| Ruta Gateway | Destino | Servicio |
-|--------------|---------|----------|
-| `/api/v1/quotes/**` | `http://localhost:3000/quotes/**` | ms-core |
-| `/api/v1/properties/**` | `http://localhost:3000/properties/**` | ms-core |
-| `/**` | `http://localhost:5173/**` | frontend |
+| Ruta Gateway | Destino | Servicio | Descripción |
+|--------------|---------|----------|-------------|
+| `/api/v1/quotes/**` | `http://localhost:3000/quotes/**` | ms-core | Cotizaciones |
+| `/api/v1/properties/**` | `http://localhost:3000/properties/**` | ms-core | Propiedades |
+| `/api/v1/catalogos/**` | `http://localhost:3001/catalogos/**` | ms-catalogos | Catálogos maestros |
+| `/**` | `http://localhost:5173/**` | frontend | Frontend SPA |
 
-## Docker
+### Nota sobre ms-catalogos
+
+El Gateway enruta todas las peticiones a `/api/v1/catalogos/**` hacia el microservicio **ms-catalogos** en el puerto 3001, que gestiona los catálogos maestros del sistema (Giros, Agentes, Suscriptores, Oficinas).
+
+## 🐳 Docker
+
+### Dockerfile Optimizado (Multi-Stage)
+
+El Dockerfile usa **2 stages** para optimizar la imagen final:
+
+```dockerfile
+# Stage 1: Build (Maven + JDK)
+# Stage 2: Production (JRE only, usuario no-root)
+```
+
+**Características de seguridad:**
+- ✅ Multi-stage build
+- ✅ Usuario `appuser` (no-root, UID 1001)
+- ✅ Labels OCI estándar
+- ✅ Imagen base Alpine Linux (eclipse-temurin)
+- ✅ Sin HEALTHCHECK (gestión externa)
+
+### Comandos Docker
 
 ```bash
 # Build requiere JAR pre-compilado
@@ -164,19 +187,28 @@ docker build -t ms-gateway .
 # Run
 docker run -p 8080:8080 \
   -e CORE_URL=http://host.docker.internal:3000 \
+  -e CATALOGOS_URL=http://host.docker.internal:3001 \
   -e FRONTEND_URL=http://host.docker.internal:5173 \
   ms-gateway
+
+# Verificar usuario no-root
+docker run --rm ms-gateway id
+# Output: uid=1001(appuser) gid=1001(appgroup)
+
+# Verificar labels OCI
+docker inspect ms-gateway --format='{{.Config.Labels}}'
 ```
 
-### Dockerfile
+### Labels OCI
 
-```dockerfile
-FROM eclipse-temurin:17-jre-alpine
-WORKDIR /app
-COPY target/ms-gateway-*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
-```
+La imagen incluye metadata estándar OCI:
+
+| Label | Valor |
+|-------|-------|
+| `org.opencontainers.image.title` | ms-gateway |
+| `org.opencontainers.image.description` | API Gateway for Cotizador SeguraX |
+| `org.opencontainers.image.version` | 1.0.0 |
+| `org.opencontainers.image.authors` | DevOps Team |
 
 ## Logging
 

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ProgressSpinner } from 'primereact/progressspinner';
@@ -21,40 +21,71 @@ const steps = [
   { label: 'Resumen', icon: '✓', description: 'Confirmación' },
 ];
 
+const log = (level: 'info' | 'error' | 'warn', action: string, data?: any) => {
+  const timestamp = new Date().toISOString();
+  console[level](`[${timestamp}] [SummaryPage] ${action}`, data || '');
+};
+
 export function SummaryPage() {
   const { id: quoteId } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const toast = useRef<Toast>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRecalculating, setIsRecalculating] = useState(false);
   const [result, setResult] = useState<PremiumCalculationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  log('info', 'Componente montado', { quoteId, hasState: !!location.state?.calculationResult });
+
   const hasIncomplete = result?.properties.some((p) => p.status === 'INCOMPLETE') ?? false;
   const incompleteCount =
     result?.properties.filter((p) => p.status === 'INCOMPLETE').length ?? 0;
 
   useEffect(() => {
+    log('info', 'useEffect - Iniciando', { quoteId });
+
     if (!quoteId) {
+      log('error', 'useEffect - No quoteId');
       setError('No se encontró el ID de la cotización');
       setIsLoading(false);
       return;
     }
 
-    fetchPremiumResult();
+    // Intentar usar el resultado pasado desde CoverageStep
+    const calculationResult = location.state?.calculationResult as PremiumCalculationResult | undefined;
+    if (calculationResult) {
+      log('info', 'useEffect - Usando resultado del state', {
+        folio: calculationResult.folio,
+        netPremium: calculationResult.netPremium,
+      });
+      setResult(calculationResult);
+      setIsLoading(false);
+      return;
+    }
+
+    // Si no hay state, intentar recalcular (o mostrar error)
+    log('warn', 'useEffect - No hay calculationResult en state, intentando recalcular');
+    recalculate();
   }, [quoteId]);
 
-  const fetchPremiumResult = async () => {
+  const recalculate = async () => {
+    log('info', 'recalculate() - Iniciando', { quoteId });
     if (!quoteId) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await premiumService.getPremiumResult(quoteId);
+      const response = await premiumService.calculatePremium(quoteId);
+      log('info', 'recalculate() - Respuesta recibida', {
+        folio: response.folio,
+        netPremium: response.netPremium,
+      });
       setResult(response);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error cargando el resultado';
+      log('error', 'recalculate() - Error', { error: message });
       setError(message);
       toast.current?.show({
         severity: 'error',
@@ -68,11 +99,17 @@ export function SummaryPage() {
   };
 
   const handleRecalculate = async () => {
+    log('info', 'handleRecalculate() - Iniciando', { quoteId });
     if (!quoteId) return;
 
     setIsRecalculating(true);
     try {
+      log('info', 'handleRecalculate() - Llamando a premiumService.calculatePremium');
       const response = await premiumService.calculatePremium(quoteId);
+      log('info', 'handleRecalculate() - Respuesta recibida', {
+        folio: response.folio,
+        netPremium: response.netPremium,
+      });
       setResult(response);
       toast.current?.show({
         severity: 'success',
@@ -141,19 +178,19 @@ export function SummaryPage() {
           <div className="text-5xl mb-4">⚠️</div>
           <h2 className="text-xl font-bold text-white mb-2">Error al cargar</h2>
           <p className="text-gray-400 mb-4">{error || 'No se pudo cargar el resumen'}</p>
-          <div className="flex gap-3 justify-center">
-            <Button
-              label="Reintentar"
-              icon="pi pi-refresh"
-              onClick={fetchPremiumResult}
-              className="bg-[#C9A84C] hover:bg-[#B8983E] text-white border-none"
-            />
-            <Button
-              label="Volver"
-              onClick={handleBack}
-              className="bg-transparent border border-gray-600 text-gray-300"
-            />
-          </div>
+      <div className="flex gap-3 justify-center">
+              <Button
+                label="Reintentar"
+                icon="pi pi-refresh"
+                onClick={recalculate}
+                className="bg-[#C9A84C] hover:bg-[#B8983E] text-white border-none"
+              />
+              <Button
+                label="Volver"
+                onClick={handleBack}
+                className="bg-transparent border border-gray-600 text-gray-300"
+              />
+            </div>
         </div>
       </div>
     );
