@@ -1,9 +1,9 @@
 ---
 id: SPEC-006
-status: IN_PROGRESS
+status: IMPLEMENTED
 feature: mf6-calculate-premium
 created: 2025-01-21
-updated: 2025-01-21
+updated: 2026-04-21
 author: spec-generator
 version: "1.0"
 related-specs: [SPEC-001, SPEC-002, SPEC-003, SPEC-004, SPEC-005]
@@ -431,7 +431,35 @@ SummaryPage
 - [ ] `CoverageStep calls calculate on continue` — modificación del flujo
 - [ ] `IncompletePropertyAlert triggers navigation` — botón completar datos
 
-### QA
+### Tests E2E (Serenity BDD + Screenplay)
+
+**Feature File**: `e2e/src/test/resources/features/calculo_prima_resumen.feature`
+
+#### Scenarios Gherkin:
+- [x] **@happy-path** - Calcular prima exitosamente
+- [x] **@desglose** - Ver desglose por cobertura e inmueble
+- [x] **@acciones** - Acciones disponibles en resumen
+- [x] **@inmueble-incompleto** - Manejar inmuebles incompletos
+- [x] **@recalcular** - Recalcular prima (idempotencia)
+- [x] **@validacion-negocio** - Validar fórmulas matemáticas
+- [x] **@api-integration** - Validar integración con backend
+
+#### Step Definitions Creados:
+- [x] `SummaryStepDefinitions.java` - 8 step definitions
+- [x] `HappyPathFlujoCompletoStepDefinitions.java` - Actualizado con MF6
+
+#### Tasks Screenplay:
+- [x] `CalcularLaPrima.java` - Esperar cálculo automático
+- [x] `RecalcularLaPrima.java` - Click en recalcular
+- [x] `NavegarASummary.java` - Navegar a /quote/:id/summary
+
+#### Questions Screenplay:
+- [x] `ElPanelDePrimaTotal.java` - Verificar panel visible
+- [x] `LaPrimaComercial.java` - Obtener valor de prima
+- [x] `ElDesglosePorInmueble.java` - Verificar desglose
+- [x] `LosBotonesDeAccionSummary.java` - Verificar botones
+
+### QA Manual
 - [ ] Ejecutar skill `/gherkin-case-generator` → criterios CRITERIO-1.1, 1.2, 1.3, 2.1
 - [ ] Ejecutar skill `/risk-identifier` → clasificación ASD de riesgos
 - [ ] Validar cálculo manual: suma asegurada × tasa = prima esperada

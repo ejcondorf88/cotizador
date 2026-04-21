@@ -118,3 +118,30 @@ Característica: Happy Path - Flujo Completo de Cotización hasta Coberturas
     Entonces las coberturas deben guardarse correctamente
     Y debe ver mensaje de éxito "Coberturas guardadas exitosamente"
     Y debe ser redirigido al paso de resumen final "/quote/{id}/summary"
+
+  @microflujo-6 @calculo-prima @premium @mf6 @critical
+  Escenario: Paso 6 - Calcular y ver resumen de prima
+    Dado que el agente ha configurado las coberturas exitosamente
+    Y está en la página de resumen "/quote/{id}/summary"
+    Cuando el sistema calcula la prima automáticamente
+    Entonces debe ver el título "Resumen de Cotización"
+    Y debe ver el número de folio generado
+    Y debe ver el estado "CALCULATED" en el badge
+    Y debe ver el panel de prima total con:
+      | tipo               | visible |
+      | Prima Neta         | true    |
+      | Factor Comercial   | true    |
+      | Prima Comercial    | true    |
+    Y la prima comercial debe ser mayor a cero
+    Y debe ver el desglose por inmueble con:
+      | inmueble           | estado      |
+      | Oficinas Corporativas | CALCULATED |
+      | Sucursal Norte     | CALCULATED |
+    Y cada inmueble debe mostrar su desglose de coberturas
+    Y debe ver los botones de acción:
+      | boton              | estado      |
+      | Recalcular         | habilitado  |
+      | Descargar          | habilitado  |
+      | Nueva Cotización   | habilitado  |
+    Cuando hace clic en "Nueva Cotización"
+    Entonces debe ser redirigido a la página de inicio "/quote"
